@@ -13,6 +13,17 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v2
 
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Lint with RuboCop
+        run: bundle exec rubocop
+
+      - name: Run tests
+        run: bundle exec rake test
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:

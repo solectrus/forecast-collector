@@ -1,0 +1,59 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://<INFLUX_HOST>/api/v2/write?bucket=<INFLUX_BUCKET>&org=<INFLUX_ORG>&precision=s
+    body:
+      encoding: UTF-8
+      string: |-
+        Forecast watt=0i 1632979620
+        Forecast watt=28i 1632984240
+        Forecast watt=119i 1632988800
+        Forecast watt=812i 1632992400
+        Forecast watt=2264i 1632996000
+        Forecast watt=3645i 1632999600
+        Forecast watt=2337i 1633003200
+        Forecast watt=2719i 1633006800
+        Forecast watt=2827i 1633010400
+        Forecast watt=2664i 1633014000
+        Forecast watt=2325i 1633017600
+        Forecast watt=1777i 1633021200
+        Forecast watt=351i 1633021860
+        Forecast watt=0i 1633022460
+        Forecast watt=0i 1633066080
+        Forecast watt=9i 1633070640
+        Forecast watt=24i 1633075200
+        Forecast watt=380i 1633078800
+        Forecast watt=1246i 1633082400
+        Forecast watt=2249i 1633086000
+        Forecast watt=3051i 1633089600
+        Forecast watt=3533i 1633093200
+        Forecast watt=3656i 1633096800
+        Forecast watt=3367i 1633100400
+        Forecast watt=2661i 1633104000
+        Forecast watt=1818i 1633107600
+        Forecast watt=360i 1633108200
+        Forecast watt=0i 1633108740
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - influxdb-client-ruby/2.0.0
+      Authorization:
+      - Token <INFLUX_TOKEN>
+      Content-Type:
+      - text/plain
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      Date:
+      - Thu, 30 Sep 2021 08:48:05 GMT
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Thu, 30 Sep 2021 08:48:05 GMT
+recorded_with: VCR 6.0.0
