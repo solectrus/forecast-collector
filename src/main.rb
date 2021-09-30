@@ -3,9 +3,9 @@
 require 'dotenv/load'
 require 'influxdb-client'
 
-require_relative 'forecast_loop'
+require_relative 'loop'
 
 # Flush output immediately
 $stdout.sync = true
 
-ForecastLoop.start
+Loop.start
