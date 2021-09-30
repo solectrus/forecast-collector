@@ -6,6 +6,7 @@ WORKDIR /forecast-collector
 COPY Gemfile* /forecast-collector/
 RUN bundle config --local frozen 1 && \
     bundle config --local without 'development test' && \
-    bundle install -j4 --retry 3
+    bundle install -j4 --retry 3 && \
+    bundle clean --force
 
 COPY . /forecast-collector/
