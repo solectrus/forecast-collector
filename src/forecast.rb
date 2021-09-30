@@ -2,13 +2,22 @@ require 'net/http'
 
 class Forecast
   def current
+    # Change mapping:
+    #   "result": {
+    #     "watts": {
+    #       "1632979620": 0,
+    #       "1632984240": 28,
+    #       "1632988800": 119,
+    #    .....
+    #   =>
+    #   { 1632979620 => 0, 1632980640 => 28, 1632981600 => 119, ... }
     forecast_response.dig('result', 'watts').map do |point|
-      [Time.parse(point[0]), { watt: point[1] }]
+      [point[0].to_i, point[1]]
     end.to_h
   end
 
   def uri
-    URI.parse("https://api.forecast.solar/estimate/#{latitude}/#{longitude}/#{declination}/#{azimuth}/#{kwp}?time=utc")
+    URI.parse("https://api.forecast.solar/estimate/#{latitude}/#{longitude}/#{declination}/#{azimuth}/#{kwp}?time=seconds")
   end
 
   private

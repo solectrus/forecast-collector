@@ -8,8 +8,8 @@ class ForecastTest < Minitest::Test
 
       assert forecast.is_a?(Hash)
       forecast.each do |key, value|
-        assert key.is_a?(Time)
-        assert value.is_a?(Hash) && value[:watt].is_a?(Integer)
+        assert key.is_a?(Integer)
+        assert value.is_a?(Integer)
       end
     end
   end

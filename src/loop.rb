@@ -40,8 +40,8 @@ class Loop
     points = data.map do |key, value|
       InfluxDB2::Point.new(
         name: influx_measurement,
-        time: key.to_i,
-        fields: value
+        time: key,
+        fields: { watt: value }
       )
     end
 
