@@ -28,8 +28,8 @@ class ForecastLoop
   def push_to_influx(data)
     points = data.map do |key, value|
       InfluxDB2::Point.new(
-        name:   influx_measurement,
-        time:   key.to_i,
+        name: influx_measurement,
+        time: key.to_i,
         fields: value
       )
     end
@@ -49,7 +49,7 @@ class ForecastLoop
     puts 'OK'
 
     json.dig('result', 'watts').map do |point|
-      [ Time.parse(point[0]), { watt: point[1] } ]
+      [Time.parse(point[0]), { watt: point[1] }]
     end.to_h
   end
 
