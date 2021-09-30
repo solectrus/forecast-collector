@@ -13,7 +13,7 @@ docker build -t forecast-collector .
 Prepare an `.env` file (see `.env.example`). Then:
 
 ```bash
-docker run --env-file .env forecast-collector app/main.rb
+docker run --env-file .env forecast-collector src/main.rb
 ```
 
 Copyright (c) 2020-2021 Georg Ledermann, released under the MIT License

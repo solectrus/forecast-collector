@@ -14,5 +14,5 @@ services:
       - FORECAST_AZIMUTH
       - FORECAST_KWP
       - FORECAST_INTERVAL
-    command: bundle exec app/main.rb
+    command: bundle exec src/main.rb
     restart: unless-stopped
