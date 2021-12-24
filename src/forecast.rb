@@ -11,9 +11,10 @@ class Forecast
     #    .....
     #   =>
     #   { 1632979620 => 0, 1632980640 => 28, 1632981600 => 119, ... }
-    forecast_response.dig('result', 'watts').map do |point|
-      [point[0].to_i, point[1]]
-    end.to_h
+
+    forecast_response
+      .dig('result', 'watts')
+      .transform_keys(&:to_i)
   end
 
   def uri
