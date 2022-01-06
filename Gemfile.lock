@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/vcr/vcr.git
-  revision: 90ea3ea462384dd5335167a27fe47404623036d4
+  revision: 8ced6c96e01737a418cd270e0382a8c2c6d85f7f
   specs:
     vcr (6.0.0)
 
