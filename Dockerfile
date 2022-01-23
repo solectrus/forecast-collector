@@ -10,3 +10,5 @@ RUN bundle config --local frozen 1 && \
     bundle clean --force
 
 COPY . /forecast-collector/
+
+ENTRYPOINT bundle exec src/main.rb

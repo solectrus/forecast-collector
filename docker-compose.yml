@@ -3,16 +3,5 @@ version: "2"
 services:
   collector:
     image: ghcr.io/solectrus/forecast-collector:latest
-    environment:
-      - INFLUX_HOST
-      - INFLUX_TOKEN
-      - INFLUX_ORG
-      - INFLUX_BUCKET
-      - FORECAST_LATITUDE
-      - FORECAST_LONGITUDE
-      - FORECAST_DECLINATION
-      - FORECAST_AZIMUTH
-      - FORECAST_KWP
-      - FORECAST_INTERVAL
-    command: bundle exec src/main.rb
+    env_file: .env
     restart: unless-stopped
