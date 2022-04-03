@@ -10,6 +10,8 @@ GEM
     hashdiff (1.0.1)
     influxdb-client (2.3.0)
     minitest (5.15.0)
+    minitest-silence (0.2.4)
+      minitest (~> 5.12)
     parallel (1.22.1)
     parser (3.1.1.0)
       ast (~> 2.4.1)
@@ -48,6 +50,7 @@ DEPENDENCIES
   dotenv
   influxdb-client
   minitest
+  minitest-silence
   rake
   rubocop
   rubocop-minitest

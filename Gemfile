@@ -19,6 +19,9 @@ group :development, :test do
   # Automatic Minitest code style checking tool.
   gem 'rubocop-minitest'
 
+  # Minitest plugin to suppress output from tests. (https://github.com/Shopify/minitest-silence)
+  gem 'minitest-silence'
+
   # A RuboCop plugin for Rake (https://github.com/rubocop/rubocop-rake)
   gem 'rubocop-rake'
 
