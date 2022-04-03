@@ -1,10 +1,13 @@
 require 'test_helper'
 require 'forecast'
+require 'config'
 
 class ForecastTest < Minitest::Test
   def test_current_success
+    config = Config.from_env
+
     VCR.use_cassette('forecast_solar_success') do
-      forecast = Forecast.new.current
+      forecast = Forecast.new(config:).current
 
       assert forecast.is_a?(Hash)
       forecast.each do |key, value|
@@ -15,9 +18,11 @@ class ForecastTest < Minitest::Test
   end
 
   def test_current_fail
+    config = Config.from_env
+
     VCR.use_cassette('forecast_solar_fail') do
-      assert_raises Net::HTTPClientException do
-        Forecast.new.current
+      assert_raises Net::HTTPFatalError do
+        Forecast.new(config:).current
       end
     end
   end

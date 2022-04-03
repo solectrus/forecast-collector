@@ -1,6 +1,13 @@
 require 'net/http'
+require_relative 'config'
 
 class Forecast
+  def initialize(config:)
+    @config = config
+  end
+
+  attr_reader :config
+
   def current
     # Change mapping:
     #   "result": {
@@ -18,7 +25,13 @@ class Forecast
   end
 
   def uri
-    URI.parse("https://api.forecast.solar/estimate/#{latitude}/#{longitude}/#{declination}/#{azimuth}/#{kwp}?time=seconds")
+    URI.parse 'https://api.forecast.solar/estimate/' \
+              "#{config.forecast_latitude}/" \
+              "#{config.forecast_longitude}/" \
+              "#{config.forecast_declination}/" \
+              "#{config.forecast_azimuth}/" \
+              "#{config.forecast_kwp}" \
+              '?time=seconds'
   end
 
   private
@@ -32,25 +45,5 @@ class Forecast
     else
       throw "Failure: #{response.value}"
     end
-  end
-
-  def latitude
-    @latitude ||= ENV.fetch('FORECAST_LATITUDE')
-  end
-
-  def longitude
-    @longitude ||= ENV.fetch('FORECAST_LONGITUDE')
-  end
-
-  def declination
-    @declination ||= ENV.fetch('FORECAST_DECLINATION')
-  end
-
-  def azimuth
-    @azimuth ||= ENV.fetch('FORECAST_AZIMUTH')
-  end
-
-  def kwp
-    @kwp ||= ENV.fetch('FORECAST_KWP')
   end
 end

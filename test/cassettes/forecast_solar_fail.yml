@@ -13,45 +13,27 @@ http_interactions:
       - "*/*"
       User-Agent:
       - Ruby
+      Host:
+      - api.forecast.solar
   response:
     status:
-      code: 429
-      message: Too Many Requests
+      code: 500
+      message: Internal Server Error
     headers:
       Server:
       - nginx
       Date:
-      - Thu, 30 Sep 2021 08:54:56 GMT
+      - Sun, 03 Apr 2022 08:15:08 GMT
       Content-Type:
-      - application/json; charset=utf-8
-      Transfer-Encoding:
-      - chunked
+      - text/html; charset=UTF-8
+      Content-Length:
+      - '0'
       Connection:
       - keep-alive
       Keep-Alive:
       - timeout=60
-      X-Pid:
-      - Q39I5741
-      X-Version:
-      - v3.29.2
-      Access-Control-Allow-Origin:
-      - "*"
-      X-Ratelimit-Period:
-      - '3600'
-      X-Ratelimit-Limit:
-      - '12'
-      X-Ratelimit-Retry-At:
-      - '2021-09-30T10:58:20+00:00'
-      X-Ratelimit-Zone:
-      - IP 78.94.43.198
-      Set-Cookie:
-      - _pk_cvar.2.24ce=false; expires=Thu, 30-Sep-2021 09:24:56 GMT; path=/
-      - _pk_id.2.24ce=21d7c9ab5ea3cefa.1632992096; expires=Fri, 28-Oct-2022 08:54:56
-        GMT; path=/
-      - _pk_ses.2.24ce=%2A; expires=Thu, 30-Sep-2021 09:24:56 GMT; path=/
     body:
       encoding: UTF-8
-      string: '{"result":null,"message":{"code":null,"type":"error","text":"Rate limit
-        for API calls reached.","info":null,"ratelimit":{"period":3600,"limit":12,"retry-at":"2021-09-30T10:58:20+00:00"}}}'
-  recorded_at: Thu, 30 Sep 2021 08:54:56 GMT
-recorded_with: VCR 6.0.0
+      string: ''
+  recorded_at: Sun, 03 Apr 2022 08:15:08 GMT
+recorded_with: VCR 6.1.0

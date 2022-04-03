@@ -5,28 +5,25 @@ require_relative 'flux_writer'
 require_relative 'forecast'
 
 class Loop
-  include FluxWriter
+  def initialize(config:)
+    @config = config
+  end
 
-  def self.start(max_count: nil)
-    new.start(max_count)
+  attr_reader :config
+
+  def self.start(config:, max_count: nil)
+    new(config:).start(max_count)
   end
 
   def start(max_count)
-    unless interval.positive?
-      puts 'Interval missing, stopping.'
-      return
-    end
-
-    puts "Starting forecast collector...\n\n"
-
     self.count = 0
     loop do
       self.count += 1
       push_to_influx(data)
       break if max_count && count >= max_count
 
-      puts "Sleeping #{interval} seconds ..."
-      sleep interval
+      puts 'Sleeping ...'
+      sleep config.forecast_interval
     end
   end
 
@@ -37,22 +34,13 @@ class Loop
   def push_to_influx(data)
     return unless data
 
-    points = data.map do |key, value|
-      InfluxDB2::Point.new(
-        name: influx_measurement,
-        time: key,
-        fields: { watt: value }
-      )
-    end
-
     print 'Pushing forecast to InfluxDB ... '
-    write_api.write(data: points, bucket: influx_bucket, org: influx_org)
+    FluxWriter.push(config:, data:)
     puts 'OK'
   end
 
   def data
-    puts "\n-------------------------------------------------------\n"
-    forecast = Forecast.new
+    forecast = Forecast.new(config:)
     print "##{count}: Getting data from #{forecast.uri} ... "
 
     begin
@@ -62,13 +50,5 @@ class Loop
     rescue StandardError => e
       puts "Error #{e}"
     end
-  end
-
-  def influx_measurement
-    'Forecast'
-  end
-
-  def interval
-    @interval ||= ENV['FORECAST_INTERVAL'].to_i
   end
 end

@@ -1,33 +1,49 @@
-module FluxWriter
-  def influx_host
-    @influx_host ||= ENV.fetch('INFLUX_HOST')
+require 'influxdb-client'
+
+class FluxWriter
+  def initialize(config:)
+    @config = config
   end
 
-  def influx_token
-    @influx_token ||= ENV.fetch('INFLUX_TOKEN')
+  attr_reader :config
+
+  def self.push(config:, data:)
+    new(config:).push(data)
   end
 
-  def influx_org
-    @influx_org ||= ENV.fetch('INFLUX_ORG')
+  def push(data)
+    return unless data
+
+    points = data.map do |key, value|
+      InfluxDB2::Point.new(
+        name: influx_measurement,
+        time: key,
+        fields: { watt: value }
+      )
+    end
+
+    write_api.write(data: points, bucket: config.influx_bucket, org: config.influx_org)
   end
 
-  def influx_schema
-    @influx_schema ||= ENV.fetch('INFLUX_SCHEMA', 'http')
+  private
+
+  def point(value)
+    InfluxDB2::Point.new(
+      name: influx_measurement,
+      time: record.measure_time,
+      fields: { watt: value }
+    )
   end
 
-  def influx_port
-    @influx_port ||= ENV.fetch('INFLUX_PORT', 8086)
-  end
-
-  def influx_bucket
-    @influx_bucket ||= ENV.fetch('INFLUX_BUCKET')
+  def influx_measurement
+    'Forecast'
   end
 
   def influx_client
     @influx_client ||= InfluxDB2::Client.new(
-      "#{influx_schema}://#{influx_host}:#{influx_port}",
-      influx_token,
-      use_ssl: influx_schema == 'https',
+      config.influx_url,
+      config.influx_token,
+      use_ssl: config.influx_schema == 'https',
       precision: InfluxDB2::WritePrecision::SECOND
     )
   end
