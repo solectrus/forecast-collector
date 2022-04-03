@@ -1,24 +1,25 @@
 # Forecast collector
 
-Collect solar forecast data from https://forecast.solar and push it to InfluxDB 2.
+Collect solar forecast data from https://forecast.solar and push it to InfluxDB.
 
-## Getting started
 
-1. Make sure your InfluxDB2 database is ready (not subject of this README)
+## Usage
 
-2. Prepare an `.env` file (see `.env.example`)
+1. Make sure your InfluxDB database is ready (not subject of this README)
+
+2. Prepare an `.env` file (see `.env.example`) with your InfluxDB credentials and some details about your PV plant (Geo location, azimuth, declination etc.)
 
 3. Run the Docker container on your Linux box:
 
    ```bash
-   docker-commpose up
+   docker run -it --rm \
+              --env-file .env \
+              ghcr.io/solectrus/forecast-collector
    ```
 
-## Build Docker image by yourself
+It's recommended to integrate the `forecast-collector` into your Solectrus hosting. See more here:
+https://github.com/solectrus/hosting
 
-```bash
-docker build -t forecast-collector .
-```
 
 ## License
 

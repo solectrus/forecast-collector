@@ -1,7 +1,0 @@
-version: "2"
-
-services:
-  collector:
-    image: ghcr.io/solectrus/forecast-collector:latest
-    env_file: .env
-    restart: unless-stopped
