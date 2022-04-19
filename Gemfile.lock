@@ -8,7 +8,7 @@ GEM
       rexml
     dotenv (2.7.6)
     hashdiff (1.0.1)
-    influxdb-client (2.3.0)
+    influxdb-client (2.4.0)
     minitest (5.15.0)
     minitest-silence (0.2.4)
       minitest (~> 5.12)
