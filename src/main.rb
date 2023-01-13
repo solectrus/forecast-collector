@@ -9,7 +9,7 @@ $stdout.sync = true
 
 puts 'Forecast collector for SOLECTRUS'
 puts 'https://github.com/solectrus/forecast-collector'
-puts 'Copyright (c) 2020,2022 Georg Ledermann, released under the MIT License'
+puts 'Copyright (c) 2020,2023 Georg Ledermann, released under the MIT License'
 puts "\n"
 
 config = Config.from_env
