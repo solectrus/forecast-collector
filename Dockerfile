@@ -14,6 +14,15 @@ LABEL maintainer="georg@ledermann.dev"
 # Decrease memory usage
 ENV MALLOC_ARENA_MAX 2
 
+# Move build arguments to environment variables
+ARG BUILDTIME
+ENV BUILDTIME ${BUILDTIME}
+
+ARG VERSION
+ENV VERSION ${VERSION}
+
+ARG REVISION
+ENV REVISION ${REVISION}
 
 WORKDIR /forecast-collector
 

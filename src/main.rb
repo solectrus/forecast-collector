@@ -7,7 +7,9 @@ require_relative 'config'
 # Flush output immediately
 $stdout.sync = true
 
-puts 'Forecast collector for SOLECTRUS'
+puts 'Forecast collector for SOLECTRUS, ' \
+       "Version #{ENV.fetch('VERSION', '<unknown>')}, " \
+       "built at #{ENV.fetch('BUILDTIME', '<unknown>')}"
 puts 'https://github.com/solectrus/forecast-collector'
 puts 'Copyright (c) 2020,2023 Georg Ledermann, released under the MIT License'
 puts "\n"
