@@ -11,6 +11,9 @@ RUN bundle config --local frozen 1 && \
 FROM ruby:3.2.0-alpine
 LABEL maintainer="georg@ledermann.dev"
 
+# Decrease memory usage
+ENV MALLOC_ARENA_MAX 2
+
 
 WORKDIR /forecast-collector
 
