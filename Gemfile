@@ -28,6 +28,6 @@ group :development, :test do
   # Record your test suite's HTTP interactions and replay them during future test runs for fast, deterministic, accurate tests. (https://relishapp.com/vcr/vcr/docs)
   gem 'vcr'
 
-  # Library for stubbing HTTP requests in Ruby. (http://github.com/bblimke/webmock)
+  # Library for stubbing HTTP requests in Ruby. (https://github.com/bblimke/webmock)
   gem 'webmock'
 end
