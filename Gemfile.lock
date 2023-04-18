@@ -13,7 +13,7 @@ GEM
     minitest (5.18.0)
     minitest-silence (0.2.4)
       minitest (~> 5.12)
-    parallel (1.22.1)
+    parallel (1.23.0)
     parser (3.2.2.0)
       ast (~> 2.4.1)
     public_suffix (5.0.1)
