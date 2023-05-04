@@ -12,6 +12,8 @@ Collect solar forecast data from https://forecast.solar and push it to InfluxDB.
 
 2. Prepare an `.env` file (see `.env.example`) with your InfluxDB credentials and some details about your PV plant (Geo location, azimuth, declination etc.)
 
+   You find details about the params on the [forecast.solar API documentation](https://doc.forecast.solar/api:estimate).
+
 3. Run the Docker container on your Linux box:
 
    ```bash
