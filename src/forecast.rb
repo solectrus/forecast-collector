@@ -19,9 +19,7 @@ class Forecast
     #   =>
     #   { 1632979620 => 0, 1632980640 => 28, 1632981600 => 119, ... }
 
-    forecast_response
-      .dig('result', 'watts')
-      .transform_keys(&:to_i)
+    forecast_response.dig('result', 'watts').transform_keys(&:to_i)
   end
 
   def uri

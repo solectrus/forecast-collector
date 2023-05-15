@@ -16,7 +16,16 @@ Style/FrozenStringLiteralComment:
   Enabled: false
 
 Metrics/MethodLength:
-  Max: 15
+  Max: 20
 
 Layout/LineEndStringConcatenationIndentation:
   Enabled: false
+
+Style/TrailingCommaInArguments:
+  Enabled: false
+
+Style/TrailingCommaInHashLiteral:
+  Enabled: false
+
+Metrics/AbcSize:
+  Max: 18

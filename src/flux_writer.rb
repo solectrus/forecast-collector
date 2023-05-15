@@ -14,15 +14,22 @@ class FluxWriter
   def push(data)
     return unless data
 
-    points = data.map do |key, value|
-      InfluxDB2::Point.new(
-        name: influx_measurement,
-        time: key,
-        fields: { watt: value }
-      )
-    end
+    points =
+      data.map do |key, value|
+        InfluxDB2::Point.new(
+          name: influx_measurement,
+          time: key,
+          fields: {
+            watt: value,
+          },
+        )
+      end
 
-    write_api.write(data: points, bucket: config.influx_bucket, org: config.influx_org)
+    write_api.write(
+      data: points,
+      bucket: config.influx_bucket,
+      org: config.influx_org,
+    )
   end
 
   private
@@ -31,7 +38,9 @@ class FluxWriter
     InfluxDB2::Point.new(
       name: influx_measurement,
       time: record.measure_time,
-      fields: { watt: value }
+      fields: {
+        watt: value,
+      },
     )
   end
 
@@ -40,12 +49,13 @@ class FluxWriter
   end
 
   def influx_client
-    @influx_client ||= InfluxDB2::Client.new(
-      config.influx_url,
-      config.influx_token,
-      use_ssl: config.influx_schema == 'https',
-      precision: InfluxDB2::WritePrecision::SECOND
-    )
+    @influx_client ||=
+      InfluxDB2::Client.new(
+        config.influx_url,
+        config.influx_token,
+        use_ssl: config.influx_schema == 'https',
+        precision: InfluxDB2::WritePrecision::SECOND,
+      )
   end
 
   def write_api
