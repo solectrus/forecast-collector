@@ -22,7 +22,7 @@ class Loop
       push_to_influx(data)
       break if max_count && count >= max_count
 
-      puts 'Sleeping ...'
+      puts "Sleeping for #{config.forecast_interval} seconds ..."
       sleep config.forecast_interval
     end
   end
