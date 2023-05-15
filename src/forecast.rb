@@ -40,6 +40,8 @@ class Forecast
 
   def raw_url
     "#{base_url}/:lat/:lon/:dec/:az/:kwp" \
+      '?damping_morning=:damping_morning' \
+      '&damping_evening=:damping_evening' \
       '&time=seconds'
   end
 
@@ -50,6 +52,8 @@ class Forecast
       dec: config.forecast_declination,
       az: config.forecast_azimuth,
       kwp: config.forecast_kwp,
+      damping_morning: config.forecast_damping_morning,
+      damping_evening: config.forecast_damping_evening,
     }
   end
 
