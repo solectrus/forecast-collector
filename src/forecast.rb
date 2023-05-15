@@ -2,6 +2,8 @@ require 'net/http'
 require_relative 'config'
 
 class Forecast
+  BASE_URL = 'https://api.forecast.solar'.freeze
+
   def initialize(config:)
     @config = config
   end
@@ -23,16 +25,39 @@ class Forecast
   end
 
   def uri
-    URI.parse 'https://api.forecast.solar/estimate/' \
-              "#{config.forecast_latitude}/" \
-              "#{config.forecast_longitude}/" \
-              "#{config.forecast_declination}/" \
-              "#{config.forecast_azimuth}/" \
-              "#{config.forecast_kwp}" \
-              '?time=seconds'
+    @uri ||= URI.parse(formatted_url)
   end
 
   private
+
+  def base_url
+    if config.forecast_apikey
+      "#{BASE_URL}/#{config.forecast_apikey}/estimate"
+    else
+      "#{BASE_URL}/estimate"
+    end
+  end
+
+  def raw_url
+    "#{base_url}/:lat/:lon/:dec/:az/:kwp" \
+      '&time=seconds'
+  end
+
+  def parameters
+    {
+      lat: config.forecast_latitude,
+      lon: config.forecast_longitude,
+      dec: config.forecast_declination,
+      az: config.forecast_azimuth,
+      kwp: config.forecast_kwp,
+    }
+  end
+
+  def formatted_url
+    raw_url.tap do |url|
+      parameters.each { |key, value| url.sub!(":#{key}", value) }
+    end
+  end
 
   def forecast_response
     response = Net::HTTP.get_response(uri)
