@@ -31,8 +31,8 @@ class Forecast
   private
 
   def base_url
-    if config.forecast_apikey
-      "#{BASE_URL}/#{config.forecast_apikey}/estimate"
+    if config.forecast_solar_apikey
+      "#{BASE_URL}/#{config.forecast_solar_apikey}/estimate"
     else
       "#{BASE_URL}/estimate"
     end
