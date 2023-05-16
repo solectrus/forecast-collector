@@ -2,49 +2,53 @@
 http_interactions:
 - request:
     method: post
-    uri: https://<INFLUX_HOST>/api/v2/write?bucket=<INFLUX_BUCKET>&org=<INFLUX_ORG>&precision=s
+    uri: http://<INFLUX_HOST>:<INFLUX_PORT>/api/v2/write?bucket=<INFLUX_BUCKET>&org=<INFLUX_ORG>&precision=s
     body:
       encoding: UTF-8
       string: |-
-        Forecast watt=0i 1632979620
-        Forecast watt=28i 1632980640
-        Forecast watt=119i 1632981600
-        Forecast watt=812i 1632985200
-        Forecast watt=2264i 1632988800
-        Forecast watt=3645i 1632992400
-        Forecast watt=2317i 1632996000
-        Forecast watt=2698i 1632999600
-        Forecast watt=2808i 1633003200
-        Forecast watt=2343i 1633006800
-        Forecast watt=2104i 1633010400
-        Forecast watt=1692i 1633014000
-        Forecast watt=1314i 1633017600
-        Forecast watt=611i 1633021200
-        Forecast watt=120i 1633021860
-        Forecast watt=0i 1633022460
-        Forecast watt=0i 1633066080
-        Forecast watt=18i 1633067040
-        Forecast watt=82i 1633068000
-        Forecast watt=631i 1633071600
-        Forecast watt=1698i 1633075200
-        Forecast watt=2620i 1633078800
-        Forecast watt=3181i 1633082400
-        Forecast watt=3574i 1633086000
-        Forecast watt=3595i 1633089600
-        Forecast watt=3202i 1633093200
-        Forecast watt=2475i 1633096800
-        Forecast watt=1665i 1633100400
-        Forecast watt=1116i 1633104000
-        Forecast watt=597i 1633107600
-        Forecast watt=120i 1633108200
-        Forecast watt=0i 1633108740
+        Forecast watt=0i 1684208616
+        Forecast watt=521i 1684209600
+        Forecast watt=1244i 1684213200
+        Forecast watt=1902i 1684216800
+        Forecast watt=3099i 1684220400
+        Forecast watt=4319i 1684224000
+        Forecast watt=5276i 1684227600
+        Forecast watt=5756i 1684231200
+        Forecast watt=5788i 1684234800
+        Forecast watt=5502i 1684238400
+        Forecast watt=3850i 1684242000
+        Forecast watt=2044i 1684245600
+        Forecast watt=1607i 1684249200
+        Forecast watt=1183i 1684252800
+        Forecast watt=820i 1684256400
+        Forecast watt=350i 1684260000
+        Forecast watt=167i 1684263600
+        Forecast watt=0i 1684264693
+        Forecast watt=0i 1684294933
+        Forecast watt=644i 1684296000
+        Forecast watt=1696i 1684299600
+        Forecast watt=2939i 1684303200
+        Forecast watt=3731i 1684306800
+        Forecast watt=3802i 1684310400
+        Forecast watt=3838i 1684314000
+        Forecast watt=4851i 1684317600
+        Forecast watt=5544i 1684321200
+        Forecast watt=6113i 1684324800
+        Forecast watt=5909i 1684328400
+        Forecast watt=5535i 1684332000
+        Forecast watt=4299i 1684335600
+        Forecast watt=2852i 1684339200
+        Forecast watt=1466i 1684342800
+        Forecast watt=464i 1684346400
+        Forecast watt=199i 1684350000
+        Forecast watt=0i 1684351180
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
       - "*/*"
       User-Agent:
-      - influxdb-client-ruby/2.0.0
+      - influxdb-client-ruby/2.9.0
       Authorization:
       - Token <INFLUX_TOKEN>
       Content-Type:
@@ -54,10 +58,14 @@ http_interactions:
       code: 204
       message: No Content
     headers:
+      X-Influxdb-Build:
+      - OSS
+      X-Influxdb-Version:
+      - v2.7.1
       Date:
-      - Thu, 30 Sep 2021 13:12:17 GMT
+      - Tue, 16 May 2023 06:31:54 GMT
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Thu, 30 Sep 2021 13:12:17 GMT
-recorded_with: VCR 6.0.0
+  recorded_at: Tue, 16 May 2023 06:31:54 GMT
+recorded_with: VCR 6.1.0
