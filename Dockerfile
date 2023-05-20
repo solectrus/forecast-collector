@@ -29,4 +29,4 @@ WORKDIR /forecast-collector
 COPY --from=Builder /usr/local/bundle/ /usr/local/bundle/
 COPY . /forecast-collector/
 
-ENTRYPOINT bundle exec src/main.rb
+ENTRYPOINT bundle exec app/main.rb
