@@ -33,4 +33,10 @@ group :development, :test do
 
   # Library for stubbing HTTP requests in Ruby. (https://github.com/bblimke/webmock)
   gem 'webmock'
+
+  # Modify your ENV easily with ClimateControl (https://github.com/thoughtbot/climate_control)
+  gem 'climate_control'
+
+  # Code coverage for Ruby (https://github.com/simplecov-ruby/simplecov)
+  gem 'simplecov'
 end
