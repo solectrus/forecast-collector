@@ -6,42 +6,42 @@ http_interactions:
     body:
       encoding: UTF-8
       string: |-
-        Forecast watt=0i 1684208616
-        Forecast watt=521i 1684209600
-        Forecast watt=1244i 1684213200
-        Forecast watt=1902i 1684216800
-        Forecast watt=3099i 1684220400
-        Forecast watt=4319i 1684224000
-        Forecast watt=5276i 1684227600
-        Forecast watt=5756i 1684231200
-        Forecast watt=5788i 1684234800
-        Forecast watt=5502i 1684238400
-        Forecast watt=3850i 1684242000
-        Forecast watt=2044i 1684245600
-        Forecast watt=1607i 1684249200
-        Forecast watt=1183i 1684252800
-        Forecast watt=820i 1684256400
-        Forecast watt=350i 1684260000
-        Forecast watt=167i 1684263600
-        Forecast watt=0i 1684264693
-        Forecast watt=0i 1684294933
-        Forecast watt=644i 1684296000
-        Forecast watt=1696i 1684299600
-        Forecast watt=2939i 1684303200
-        Forecast watt=3731i 1684306800
-        Forecast watt=3802i 1684310400
-        Forecast watt=3838i 1684314000
-        Forecast watt=4851i 1684317600
-        Forecast watt=5544i 1684321200
-        Forecast watt=6113i 1684324800
-        Forecast watt=5909i 1684328400
-        Forecast watt=5535i 1684332000
-        Forecast watt=4299i 1684335600
-        Forecast watt=2852i 1684339200
-        Forecast watt=1466i 1684342800
-        Forecast watt=464i 1684346400
-        Forecast watt=199i 1684350000
-        Forecast watt=0i 1684351180
+        my-forecast watt=0i 1684208616
+        my-forecast watt=521i 1684209600
+        my-forecast watt=1244i 1684213200
+        my-forecast watt=1902i 1684216800
+        my-forecast watt=3099i 1684220400
+        my-forecast watt=4319i 1684224000
+        my-forecast watt=5276i 1684227600
+        my-forecast watt=5756i 1684231200
+        my-forecast watt=5788i 1684234800
+        my-forecast watt=5502i 1684238400
+        my-forecast watt=3850i 1684242000
+        my-forecast watt=2044i 1684245600
+        my-forecast watt=1607i 1684249200
+        my-forecast watt=1183i 1684252800
+        my-forecast watt=820i 1684256400
+        my-forecast watt=350i 1684260000
+        my-forecast watt=167i 1684263600
+        my-forecast watt=0i 1684264693
+        my-forecast watt=0i 1684294933
+        my-forecast watt=644i 1684296000
+        my-forecast watt=1696i 1684299600
+        my-forecast watt=2939i 1684303200
+        my-forecast watt=3731i 1684306800
+        my-forecast watt=3802i 1684310400
+        my-forecast watt=3838i 1684314000
+        my-forecast watt=4851i 1684317600
+        my-forecast watt=5544i 1684321200
+        my-forecast watt=6113i 1684324800
+        my-forecast watt=5909i 1684328400
+        my-forecast watt=5535i 1684332000
+        my-forecast watt=4299i 1684335600
+        my-forecast watt=2852i 1684339200
+        my-forecast watt=1466i 1684342800
+        my-forecast watt=464i 1684346400
+        my-forecast watt=199i 1684350000
+        my-forecast watt=0i 1684351180
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -63,9 +63,9 @@ http_interactions:
       X-Influxdb-Version:
       - v2.7.1
       Date:
-      - Tue, 16 May 2023 06:31:54 GMT
+      - Fri, 26 May 2023 14:30:08 GMT
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Tue, 16 May 2023 06:31:54 GMT
+  recorded_at: Fri, 26 May 2023 14:30:08 GMT
 recorded_with: VCR 6.1.0

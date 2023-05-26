@@ -45,7 +45,7 @@ class FluxWriter
   end
 
   def influx_measurement
-    'Forecast'
+    config.influx_measurement
   end
 
   def influx_client

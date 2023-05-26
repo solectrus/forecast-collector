@@ -15,6 +15,7 @@ Config =
     :influx_token,
     :influx_org,
     :influx_bucket,
+    :influx_measurement,
     keyword_init: true,
   ) do
     def initialize(*options)
@@ -59,6 +60,7 @@ Config =
         influx_token: ENV.fetch('INFLUX_TOKEN'),
         influx_org: ENV.fetch('INFLUX_ORG'),
         influx_bucket: ENV.fetch('INFLUX_BUCKET'),
+        influx_measurement: ENV.fetch('INFLUX_MEASUREMENT', 'Forecast'),
       }
     end
 
