@@ -45,23 +45,34 @@ Config =
 
     def self.from_env(options = {})
       new(
-        {
-          forecast_latitude: ENV.fetch('FORECAST_LATITUDE'),
-          forecast_longitude: ENV.fetch('FORECAST_LONGITUDE'),
-          forecast_declination: ENV.fetch('FORECAST_DECLINATION'),
-          forecast_azimuth: ENV.fetch('FORECAST_AZIMUTH'),
-          forecast_kwp: ENV.fetch('FORECAST_KWP'),
-          forecast_damping_morning: ENV.fetch('FORECAST_DAMPING_MORNING', '0'),
-          forecast_damping_evening: ENV.fetch('FORECAST_DAMPING_EVENING', '0'),
-          forecast_interval: ENV.fetch('FORECAST_INTERVAL').to_i,
-          forecast_solar_apikey: ENV.fetch('FORECAST_SOLAR_APIKEY', nil),
-          influx_host: ENV.fetch('INFLUX_HOST'),
-          influx_schema: ENV.fetch('INFLUX_SCHEMA', 'http'),
-          influx_port: ENV.fetch('INFLUX_PORT', '8086'),
-          influx_token: ENV.fetch('INFLUX_TOKEN'),
-          influx_org: ENV.fetch('INFLUX_ORG'),
-          influx_bucket: ENV.fetch('INFLUX_BUCKET'),
-        }.merge(options),
+        {}.merge(forecast_settings_from_env)
+          .merge(influx_credentials_from_env)
+          .merge(options),
       )
+    end
+
+    def self.influx_credentials_from_env
+      {
+        influx_host: ENV.fetch('INFLUX_HOST'),
+        influx_schema: ENV.fetch('INFLUX_SCHEMA', 'http'),
+        influx_port: ENV.fetch('INFLUX_PORT', '8086'),
+        influx_token: ENV.fetch('INFLUX_TOKEN'),
+        influx_org: ENV.fetch('INFLUX_ORG'),
+        influx_bucket: ENV.fetch('INFLUX_BUCKET'),
+      }
+    end
+
+    def self.forecast_settings_from_env
+      {
+        forecast_latitude: ENV.fetch('FORECAST_LATITUDE'),
+        forecast_longitude: ENV.fetch('FORECAST_LONGITUDE'),
+        forecast_declination: ENV.fetch('FORECAST_DECLINATION'),
+        forecast_azimuth: ENV.fetch('FORECAST_AZIMUTH'),
+        forecast_kwp: ENV.fetch('FORECAST_KWP'),
+        forecast_damping_morning: ENV.fetch('FORECAST_DAMPING_MORNING', '0'),
+        forecast_damping_evening: ENV.fetch('FORECAST_DAMPING_EVENING', '0'),
+        forecast_interval: ENV.fetch('FORECAST_INTERVAL').to_i,
+        forecast_solar_apikey: ENV.fetch('FORECAST_SOLAR_APIKEY', nil),
+      }
     end
   end
