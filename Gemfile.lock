@@ -12,7 +12,7 @@ GEM
     hashdiff (1.0.1)
     influxdb-client (2.9.0)
     json (2.6.3)
-    minitest (5.18.0)
+    minitest (5.18.1)
     minitest-silence (0.2.4)
       minitest (~> 5.12)
     parallel (1.23.0)
