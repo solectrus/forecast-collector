@@ -5,7 +5,6 @@
 
 Collect solar forecast data from https://forecast.solar and push it to InfluxDB.
 
-
 ## Usage
 
 1. Make sure your InfluxDB database is ready (not subject of this README)
@@ -22,9 +21,8 @@ Collect solar forecast data from https://forecast.solar and push it to InfluxDB.
               ghcr.io/solectrus/forecast-collector
    ```
 
-It's recommended to integrate the `forecast-collector` into your Solectrus hosting. See more here:
+It's recommended to integrate the `forecast-collector` into your SOLECTRUS hosting. See more here:
 https://github.com/solectrus/hosting
-
 
 ## License
 

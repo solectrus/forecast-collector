@@ -1,6 +1,7 @@
 require:
   - rubocop-minitest
   - rubocop-rake
+  - rubocop-performance
 
 AllCops:
   TargetRubyVersion: 3.2
@@ -16,7 +17,16 @@ Style/FrozenStringLiteralComment:
   Enabled: false
 
 Metrics/MethodLength:
-  Max: 15
+  Max: 20
+
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: consistent_comma
 
 Layout/LineEndStringConcatenationIndentation:
+  Enabled: false
+
+Layout/FirstArrayElementIndentation:
   Enabled: false

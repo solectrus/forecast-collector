@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: get
-    uri: https://api.forecast.solar/estimate/<FORECAST_LATITUDE>/<FORECAST_LONGITUDE>/30/20/9.24?time=seconds
+    uri: https://api.forecast.solar/estimate/<FORECAST_LATITUDE>/<FORECAST_LONGITUDE>/30/20/9.24?damping=0,0&time=seconds
     body:
       encoding: US-ASCII
       string: ''
@@ -17,23 +17,38 @@ http_interactions:
       - api.forecast.solar
   response:
     status:
-      code: 500
-      message: Internal Server Error
+      code: 429
+      message: Too Many Requests
     headers:
       Server:
       - nginx
       Date:
-      - Sun, 03 Apr 2022 08:15:08 GMT
+      - Tue, 16 May 2023 06:23:32 GMT
       Content-Type:
-      - text/html; charset=UTF-8
-      Content-Length:
-      - '0'
+      - application/json; charset=utf-8
+      Transfer-Encoding:
+      - chunked
       Connection:
       - keep-alive
       Keep-Alive:
       - timeout=60
+      Access-Control-Allow-Origin:
+      - "*"
+      X-Pid:
+      - 6bnqjYx1
+      X-Version:
+      - v6.1.0.1424
+      X-Ratelimit-Period:
+      - '3600'
+      X-Ratelimit-Limit:
+      - '12'
+      X-Ratelimit-Retry-At:
+      - '2023-05-16T08:33:18+02:00'
+      X-Ratelimit-Zone:
+      - IP 78.94.43.198
     body:
       encoding: UTF-8
-      string: ''
-  recorded_at: Sun, 03 Apr 2022 08:15:08 GMT
+      string: '{"result":null,"message":{"code":429,"type":"error","text":"Rate limit
+        for API calls reached.","ratelimit":{"period":3600,"limit":12,"retry-at":"2023-05-16T08:33:18+02:00"}}}'
+  recorded_at: Tue, 16 May 2023 06:23:32 GMT
 recorded_with: VCR 6.1.0

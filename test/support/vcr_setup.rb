@@ -6,6 +6,7 @@ VCR.configure do |config|
 
   sensitive_environment_variables = %w[
     INFLUX_HOST
+    INFLUX_PORT
     INFLUX_TOKEN
     INFLUX_ORG
     INFLUX_BUCKET

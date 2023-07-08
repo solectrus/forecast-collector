@@ -21,7 +21,7 @@ class ForecastTest < Minitest::Test
     config = Config.from_env
 
     VCR.use_cassette('forecast_solar_fail') do
-      assert_raises Net::HTTPFatalError do
+      assert_raises Net::HTTPClientException do
         Forecast.new(config:).current
       end
     end
