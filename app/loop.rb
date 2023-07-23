@@ -41,14 +41,32 @@ class Loop
 
   def data
     forecast = Forecast.new(config:)
-    print "##{count}: Getting data from #{forecast.uri} ... "
 
-    begin
-      hash = forecast.current
-      puts 'OK'
-      hash
-    rescue StandardError => e
-      puts "Error #{e}"
+    hashes = []
+
+    (0...config.forecast_configurations.length).each do |index|
+      print "##{count}.#{index}: Getting data from #{forecast.uri(index)} ... "
+
+      begin
+        hashes.append(forecast.current(index))
+        puts 'OK'
+      rescue StandardError => e
+        puts "Error #{e}"
+      end
     end
+
+    accumulate(hashes)
+  end
+
+  def accumulate(hashes)
+    result = hashes[0]
+    (1...hashes.length).each do |index|
+      hashes[index].each do |k, v|
+        result[k] ||= 0
+        result[k] += v
+      end
+    end
+
+    result
   end
 end
