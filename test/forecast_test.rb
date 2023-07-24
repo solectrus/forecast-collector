@@ -6,8 +6,8 @@ class ForecastTest < Minitest::Test
   def test_current_success
     config = Config.from_env
 
-    VCR.use_cassette('forecast_solar_success') do
-      forecast = Forecast.new(config:).current
+    VCR.use_cassette('forecast_solar_success_0') do
+      forecast = Forecast.new(config:).current(0)
 
       assert forecast.is_a?(Hash)
       forecast.each do |key, value|
@@ -22,7 +22,7 @@ class ForecastTest < Minitest::Test
 
     VCR.use_cassette('forecast_solar_fail') do
       assert_raises Net::HTTPClientException do
-        Forecast.new(config:).current
+        Forecast.new(config:).current(0)
       end
     end
   end

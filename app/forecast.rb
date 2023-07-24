@@ -10,7 +10,7 @@ class Forecast
 
   attr_reader :config
 
-  def current
+  def current(index)
     # Change mapping:
     #   "result": {
     #     "watts": {
@@ -21,11 +21,11 @@ class Forecast
     #   =>
     #   { 1632979620 => 0, 1632980640 => 28, 1632981600 => 119, ... }
 
-    forecast_response.dig('result', 'watts').transform_keys(&:to_i)
+    forecast_response(index).dig('result', 'watts').transform_keys(&:to_i)
   end
 
-  def uri
-    @uri ||= URI.parse(formatted_url)
+  def uri(index)
+    URI.parse(formatted_url(index))
   end
 
   private
@@ -44,26 +44,27 @@ class Forecast
       '&time=seconds'
   end
 
-  def parameters
+  def parameters(index)
+    cfg = config.forecast_configurations[index]
     {
-      lat: config.forecast_latitude,
-      lon: config.forecast_longitude,
-      dec: config.forecast_declination,
-      az: config.forecast_azimuth,
-      kwp: config.forecast_kwp,
-      damping_morning: config.forecast_damping_morning,
-      damping_evening: config.forecast_damping_evening,
+      lat: cfg[:latitude],
+      lon: cfg[:longitude],
+      dec: cfg[:declination],
+      az: cfg[:azimuth],
+      kwp: cfg[:kwp],
+      damping_morning: cfg[:damping_morning],
+      damping_evening: cfg[:damping_evening],
     }
   end
 
-  def formatted_url
+  def formatted_url(index)
     raw_url.tap do |url|
-      parameters.each { |key, value| url.sub!(":#{key}", value) }
+      parameters(index).each { |key, value| url.sub!(":#{key}", value) }
     end
   end
 
-  def forecast_response
-    response = Net::HTTP.get_response(uri)
+  def forecast_response(index)
+    response = Net::HTTP.get_response(uri(index))
 
     case response
     when Net::HTTPOK
