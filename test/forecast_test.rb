@@ -6,7 +6,7 @@ class ForecastTest < Minitest::Test
   def test_current_success
     config = Config.from_env
 
-    VCR.use_cassette('forecast_solar_success_0') do
+    VCR.use_cassette('forecast_solar_success') do
       forecast = Forecast.new(config:).current(0)
 
       assert forecast.is_a?(Hash)

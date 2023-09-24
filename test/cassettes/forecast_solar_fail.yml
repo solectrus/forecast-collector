@@ -23,7 +23,7 @@ http_interactions:
       Server:
       - nginx
       Date:
-      - Tue, 16 May 2023 06:23:32 GMT
+      - Sun, 24 Sep 2023 12:47:48 GMT
       Content-Type:
       - application/json; charset=utf-8
       Transfer-Encoding:
@@ -35,20 +35,20 @@ http_interactions:
       Access-Control-Allow-Origin:
       - "*"
       X-Pid:
-      - 6bnqjYx1
+      - 960sNAqe
       X-Version:
-      - v6.1.0.1424
+      - v6.12.2.1499
       X-Ratelimit-Period:
       - '3600'
       X-Ratelimit-Limit:
       - '12'
       X-Ratelimit-Retry-At:
-      - '2023-05-16T08:33:18+02:00'
+      - '2023-09-24T14:50:12+02:00'
       X-Ratelimit-Zone:
       - IP 78.94.43.198
     body:
       encoding: UTF-8
       string: '{"result":null,"message":{"code":429,"type":"error","text":"Rate limit
-        for API calls reached.","ratelimit":{"period":3600,"limit":12,"retry-at":"2023-05-16T08:33:18+02:00"}}}'
-  recorded_at: Tue, 16 May 2023 06:23:32 GMT
-recorded_with: VCR 6.1.0
+        for API calls reached.","pid":"960sNAqe","ratelimit":{"period":3600,"limit":12,"retry-at":"2023-09-24T14:50:12+02:00"}}}'
+  recorded_at: Sun, 24 Sep 2023 12:47:48 GMT
+recorded_with: VCR 6.2.0
