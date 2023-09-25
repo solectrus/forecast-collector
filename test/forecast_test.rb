@@ -3,27 +3,41 @@ require 'forecast'
 require 'config'
 
 class ForecastTest < Minitest::Test
-  def test_current_success
+  def test_fetch_data_success
     config = Config.from_env
+    forecast = Forecast.new(config:)
 
-    VCR.use_cassette('forecast_solar_success') do
-      forecast = Forecast.new(config:).current(0)
+    out, err =
+      capture_io do
+        VCR.use_cassette('forecast_solar_success') do
+          data = forecast.fetch_data
 
-      assert forecast.is_a?(Hash)
-      forecast.each do |key, value|
-        assert key.is_a?(Integer)
-        assert value.is_a?(Integer)
+          assert data.is_a?(Hash)
+          data.each do |key, value|
+            assert key.is_a?(Integer)
+            assert value.is_a?(Integer)
+          end
+        end
       end
-    end
+
+    assert_match(/OK/, out)
+    assert_empty(err)
   end
 
-  def test_current_fail
+  def test_fetch_data_fail
     config = Config.from_env
+    forecast = Forecast.new(config:)
 
-    VCR.use_cassette('forecast_solar_fail') do
-      assert_raises Net::HTTPClientException do
-        Forecast.new(config:).current(0)
+    out, err =
+      capture_io do
+        VCR.use_cassette('forecast_solar_fail') do
+          data = forecast.fetch_data
+
+          assert_nil data
+        end
       end
-    end
+
+    assert_match(/Too Many Requests/, out)
+    assert_empty(err)
   end
 end

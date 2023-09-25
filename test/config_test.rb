@@ -63,7 +63,7 @@ class ConfigTest < Minitest::Test
     assert_equal 'my-bucket', config.influx_bucket
     assert_equal 'my-forecast', config.influx_measurement
 
-    assert_equal 2, config.forecast_configurations.length
+    assert_equal 1, config.forecast_configurations.length
     assert_equal(
       [
         {
@@ -75,15 +75,6 @@ class ConfigTest < Minitest::Test
           damping_morning: '0',
           damping_evening: '0',
         },
-        {
-          latitude: '50.9215',
-          longitude: '6.3627',
-          declination: '30',
-          azimuth: '-20',
-          kwp: '9.25',
-          damping_morning: '0',
-          damping_evening: '0',
-        }
       ],
       config.forecast_configurations,
     )

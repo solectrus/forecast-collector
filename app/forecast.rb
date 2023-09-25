@@ -10,6 +10,25 @@ class Forecast
 
   attr_reader :config
 
+  def fetch_data
+    hashes = []
+
+    (0...config.forecast_configurations.length).each do |index|
+      print "  #{index}: #{uri(index)} ... "
+
+      begin
+        hashes.append(current(index))
+        puts 'OK'
+      rescue StandardError => e
+        puts "Error #{e}"
+      end
+    end
+
+    accumulate(hashes)
+  end
+
+  private
+
   def current(index)
     # Change mapping:
     #   "result": {
@@ -27,8 +46,6 @@ class Forecast
   def uri(index)
     URI.parse(formatted_url(index))
   end
-
-  private
 
   def base_url
     [BASE_URL, config.forecast_solar_apikey, 'estimate'].compact.join('/')
@@ -68,5 +85,17 @@ class Forecast
     else
       throw "Failure: #{response.value}"
     end
+  end
+
+  def accumulate(hashes)
+    result = hashes[0]
+    (1...hashes.length).each do |index|
+      hashes[index].each do |k, v|
+        result[k] ||= 0
+        result[k] += v
+      end
+    end
+
+    result
   end
 end
