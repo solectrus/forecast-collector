@@ -34,16 +34,6 @@ class FluxWriter
 
   private
 
-  def point(value)
-    InfluxDB2::Point.new(
-      name: influx_measurement,
-      time: record.measure_time,
-      fields: {
-        watt: value,
-      },
-    )
-  end
-
   def influx_measurement
     config.influx_measurement
   end
