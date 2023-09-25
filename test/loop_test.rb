@@ -10,7 +10,7 @@ class LoopTest < Minitest::Test
 
     out, err =
       capture_io do
-        VCR.use_cassettes(cassettes) { Loop.start(config:, max_count: 1) }
+        VCR.use_cassettes(cassettes) { Loop.start(config:, max_count: 2) }
       end
 
     assert_match(/Getting data from/, out)
