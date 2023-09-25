@@ -7,6 +7,14 @@ class LoopTest < Minitest::Test
     config = Config.from_env
 
     cassettes = [{ name: 'forecast_solar_success' }, { name: 'influxdb' }]
-    VCR.use_cassettes(cassettes) { Loop.start(config:, max_count: 1) }
+
+    out, err =
+      capture_io do
+        VCR.use_cassettes(cassettes) { Loop.start(config:, max_count: 1) }
+      end
+
+    assert_match(/Getting data from/, out)
+    assert_match(/Pushing forecast to InfluxDB/, out)
+    assert_empty(err)
   end
 end
