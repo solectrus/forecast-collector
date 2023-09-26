@@ -1,14 +1,8 @@
 Config =
   Struct.new(
-    :forecast_interval,
-    :forecast_latitude,
-    :forecast_longitude,
-    :forecast_declination,
-    :forecast_azimuth,
-    :forecast_kwp,
-    :forecast_damping_morning,
-    :forecast_damping_evening,
+    :forecast_configurations,
     :forecast_solar_apikey,
+    :forecast_interval,
     :influx_schema,
     :influx_host,
     :influx_port,
@@ -65,16 +59,54 @@ Config =
     end
 
     def self.forecast_settings_from_env
+      defaults = single_forecast_settings_from_env
       {
-        forecast_latitude: ENV.fetch('FORECAST_LATITUDE'),
-        forecast_longitude: ENV.fetch('FORECAST_LONGITUDE'),
-        forecast_declination: ENV.fetch('FORECAST_DECLINATION'),
-        forecast_azimuth: ENV.fetch('FORECAST_AZIMUTH'),
-        forecast_kwp: ENV.fetch('FORECAST_KWP'),
-        forecast_damping_morning: ENV.fetch('FORECAST_DAMPING_MORNING', '0'),
-        forecast_damping_evening: ENV.fetch('FORECAST_DAMPING_EVENING', '0'),
+        forecast_configurations: all_forecast_settings_from_env(defaults),
         forecast_interval: ENV.fetch('FORECAST_INTERVAL').to_i,
         forecast_solar_apikey: ENV.fetch('FORECAST_SOLAR_APIKEY', nil),
+      }
+    end
+
+    def self.single_forecast_settings_from_env
+      {
+        latitude: ENV.fetch('FORECAST_LATITUDE', ''),
+        longitude: ENV.fetch('FORECAST_LONGITUDE', ''),
+        declination: ENV.fetch('FORECAST_DECLINATION', ''),
+        azimuth: ENV.fetch('FORECAST_AZIMUTH', ''),
+        kwp: ENV.fetch('FORECAST_KWP', ''),
+        damping_morning: ENV.fetch('FORECAST_DAMPING_MORNING', '0'),
+        damping_evening: ENV.fetch('FORECAST_DAMPING_EVENING', '0'),
+      }
+    end
+
+    def self.all_forecast_settings_from_env(defaults)
+      config_count = ENV.fetch('FORECAST_CONFIGURATIONS', '1').to_i
+
+      (0...config_count).map do |index|
+        ForecastConfiguration.from_env(index, defaults)
+      end
+    end
+  end
+
+ForecastConfiguration =
+  Struct.new(
+    :latitude,
+    :longitude,
+    :declination,
+    :azimuth,
+    :kwp,
+    :damping_morning,
+    :damping_evening,
+  ) do
+    def self.from_env(index, defaults)
+      {
+        latitude: ENV.fetch("FORECAST_#{index}_LATITUDE", defaults[:latitude]),
+        longitude: ENV.fetch("FORECAST_#{index}_LONGITUDE", defaults[:longitude]),
+        declination: ENV.fetch("FORECAST_#{index}_DECLINATION", defaults[:declination]),
+        azimuth: ENV.fetch("FORECAST_#{index}_AZIMUTH", defaults[:azimuth]),
+        kwp: ENV.fetch("FORECAST_#{index}_KWP", defaults[:kwp]),
+        damping_morning: ENV.fetch("FORECAST_#{index}_DAMPING_MORNING", defaults[:damping_morning]),
+        damping_evening: ENV.fetch("FORECAST_#{index}_DAMPING_EVENING", defaults[:damping_evening]),
       }
     end
   end

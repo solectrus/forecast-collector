@@ -17,7 +17,10 @@ Style/FrozenStringLiteralComment:
   Enabled: false
 
 Metrics/MethodLength:
-  Max: 20
+  Max: 40
+
+Metrics/AbcSize:
+  Max: 25
 
 Style/TrailingCommaInArguments:
   EnforcedStyleForMultiline: consistent_comma
@@ -25,8 +28,14 @@ Style/TrailingCommaInArguments:
 Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: consistent_comma
 
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+
 Layout/LineEndStringConcatenationIndentation:
   Enabled: false
 
 Layout/FirstArrayElementIndentation:
+  Enabled: false
+
+Minitest/MultipleAssertions:
   Enabled: false
