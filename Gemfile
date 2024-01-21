@@ -6,18 +6,6 @@ gem 'dotenv'
 # Ruby library for InfluxDB 2. (https://github.com/influxdata/influxdb-client-ruby)
 gem 'influxdb-client'
 
-# Mixin to extend objects to be handled like a Mutex. (https://github.com/ruby/mutex_m)
-gem 'mutex_m'
-
-# Support for encoding and decoding binary data using a Base64 representation. (https://github.com/ruby/base64)
-gem 'base64'
-
-# Arbitrary-precision decimal floating-point number library. (https://github.com/ruby/bigdecimal)
-gem 'bigdecimal'
-
-# CSV Reading and Writing (https://github.com/ruby/csv)
-gem 'csv'
-
 group :development, :test do
   # minitest provides a complete suite of testing facilities supporting TDD, BDD, mocking, and benchmarking (https://github.com/minitest/minitest)
   gem 'minitest'
