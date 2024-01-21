@@ -12,10 +12,10 @@ class ForecastTest < Minitest::Test
         VCR.use_cassette('forecast_solar_success') do
           data = forecast.fetch_data
 
-          assert data.is_a?(Hash)
+          assert_kind_of Hash, data
           data.each do |key, value|
-            assert key.is_a?(Integer)
-            assert value.is_a?(Integer)
+            assert_kind_of Integer, key
+            assert_kind_of Integer, value
           end
         end
       end
