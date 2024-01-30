@@ -4,8 +4,10 @@ GEM
     addressable (2.8.6)
       public_suffix (>= 2.0.2, < 6.0)
     ast (2.4.2)
+    bigdecimal (3.1.6)
     climate_control (1.2.0)
-    crack (0.4.5)
+    crack (0.4.6)
+      bigdecimal
       rexml
     docile (1.4.0)
     dotenv (2.8.1)
