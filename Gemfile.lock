@@ -15,7 +15,7 @@ GEM
     influxdb-client (3.0.0)
     json (2.7.1)
     language_server-protocol (3.17.0.3)
-    minitest (5.22.0)
+    minitest (5.22.2)
     minitest-silence (0.2.4)
       minitest (~> 5.12)
     parallel (1.24.0)
