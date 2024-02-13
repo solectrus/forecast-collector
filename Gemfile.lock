@@ -10,7 +10,7 @@ GEM
       bigdecimal
       rexml
     docile (1.4.0)
-    dotenv (2.8.1)
+    dotenv (3.0.0)
     hashdiff (1.1.0)
     influxdb-client (3.0.0)
     json (2.7.1)
