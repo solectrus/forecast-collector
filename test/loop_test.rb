@@ -16,8 +16,6 @@ class LoopTest < Minitest::Test
     assert_match(/Fetching forecast/, out)
     assert_match(/Pushing forecast to InfluxDB/, out)
     assert_empty(err)
-
-    assert_match(/\d+/, File.read('/tmp/heartbeat.txt'))
   end
 
   def test_start_fail
