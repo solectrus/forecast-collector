@@ -101,12 +101,22 @@ ForecastConfiguration =
     def self.from_env(index, defaults)
       {
         latitude: ENV.fetch("FORECAST_#{index}_LATITUDE", defaults[:latitude]),
-        longitude: ENV.fetch("FORECAST_#{index}_LONGITUDE", defaults[:longitude]),
-        declination: ENV.fetch("FORECAST_#{index}_DECLINATION", defaults[:declination]),
+        longitude:
+          ENV.fetch("FORECAST_#{index}_LONGITUDE", defaults[:longitude]),
+        declination:
+          ENV.fetch("FORECAST_#{index}_DECLINATION", defaults[:declination]),
         azimuth: ENV.fetch("FORECAST_#{index}_AZIMUTH", defaults[:azimuth]),
         kwp: ENV.fetch("FORECAST_#{index}_KWP", defaults[:kwp]),
-        damping_morning: ENV.fetch("FORECAST_#{index}_DAMPING_MORNING", defaults[:damping_morning]),
-        damping_evening: ENV.fetch("FORECAST_#{index}_DAMPING_EVENING", defaults[:damping_evening]),
+        damping_morning:
+          ENV.fetch(
+            "FORECAST_#{index}_DAMPING_MORNING",
+            defaults[:damping_morning],
+          ),
+        damping_evening:
+          ENV.fetch(
+            "FORECAST_#{index}_DAMPING_EVENING",
+            defaults[:damping_evening],
+          ),
       }
     end
   end
