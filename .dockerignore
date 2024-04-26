@@ -1,8 +1,13 @@
+.dockerignore
+.DS_Store
+.env
+.env.*
 .git
 .github
 .gitignore
-.env.*
-.env
-test
-Rakefile
+.rubocop.yml
+.ruby-lsp
+coverage
 Dockerfile
+Rakefile
+test
