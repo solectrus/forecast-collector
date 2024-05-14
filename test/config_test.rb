@@ -79,4 +79,28 @@ class ConfigTest < Minitest::Test
       config.forecast_configurations,
     )
   end
+
+  def test_solcast_single_site
+    ClimateControl.modify SOLCAST_SITE: '111',
+                          SOLCAST_0_SITE: nil,
+                          SOLCAST_1_SITE: nil do
+      config = Config.from_env
+
+      assert_equal 1, config.solcast_configurations.length
+      assert_equal({ site: '111' }, config.solcast_configurations.first)
+    end
+  end
+
+  def test_solcast_multi_site
+    ClimateControl.modify SOLCAST_SITE: nil,
+                          FORECAST_CONFIGURATIONS: '2',
+                          SOLCAST_0_SITE: '111',
+                          SOLCAST_1_SITE: '222' do
+      config = Config.from_env
+
+      assert_equal 2, config.solcast_configurations.length
+      assert_equal({ site: '111' }, config.solcast_configurations[0])
+      assert_equal({ site: '222' }, config.solcast_configurations[1])
+    end
+  end
 end

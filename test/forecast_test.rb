@@ -5,7 +5,7 @@ require 'config'
 class ForecastTest < Minitest::Test
   def test_fetch_data_success
     config = Config.from_env
-    forecast = Forecast.new(config:)
+    forecast = ForecastSolar.new(config:)
 
     out, err =
       capture_io do
@@ -26,7 +26,7 @@ class ForecastTest < Minitest::Test
 
   def test_fetch_data_fail
     config = Config.from_env
-    forecast = Forecast.new(config:)
+    forecast = ForecastSolar.new(config:)
 
     out, err =
       capture_io do
@@ -56,7 +56,7 @@ class ForecastTest < Minitest::Test
         # Two planes with 4 and 5 kwp
         multi_plane_result =
           VCR.use_cassettes([{ name: 'forecast_solar_multiplane' }]) do
-            Forecast.new(
+            ForecastSolar.new(
               config:
                 Config.from_env(
                   forecast_configurations: [
@@ -70,7 +70,7 @@ class ForecastTest < Minitest::Test
         # Single plane with 9 kwp
         single_plane_result =
           VCR.use_cassettes([{ name: 'forecast_solar_singleplane' }]) do
-            Forecast.new(
+            ForecastSolar.new(
               config:
                 Config.from_env(
                   forecast_configurations: [base_plane.merge(kwp: '9')],
