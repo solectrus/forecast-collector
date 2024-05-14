@@ -19,7 +19,7 @@ class Loop
 
   def start(max_count)
     self.count = 0
-    forecast = make_forecast(config:)
+    forecast = make_forecast
     loop do
       self.count += 1
       now = DateTime.now
@@ -34,14 +34,6 @@ class Loop
     end
   end
 
-  def make_forecast(config:)
-    if config.forecast_provider == 'forecast.solar'
-      ForecastSolar.new(config:)
-    else
-      Solcast.new(config:)
-    end
-  end
-
   private
 
   attr_accessor :count
@@ -52,5 +44,14 @@ class Loop
     print '  Pushing forecast to InfluxDB ... '
     FluxWriter.push(config:, data:)
     puts 'OK'
+  end
+
+  def make_forecast
+    case config.forecast_provider
+    when 'forecast.solar'
+      ForecastSolar.new(config:)
+    when 'solcast'
+      Solcast.new(config:)
+    end
   end
 end
