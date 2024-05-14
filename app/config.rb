@@ -154,7 +154,7 @@ SolcastConfiguration =
   ) do
     def self.from_env(index, defaults)
       {
-        site: ENV.fetch("SOLCAST_#{index}_SITE", defaults[:site]),
+        site: ENV.fetch("SOLCAST_#{index}_SITE", defaults[:solcast_site]),
       }
     end
   end
