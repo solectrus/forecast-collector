@@ -12,9 +12,10 @@ class Forecast
     hashes = []
 
     len =
-      if config.forecast_provider == 'forecast.solar'
+      case config.forecast_provider
+      when 'forecast.solar'
         config.forecast_configurations.length
-      else
+      when 'solcast'
         config.solcast_configurations.length
       end
 

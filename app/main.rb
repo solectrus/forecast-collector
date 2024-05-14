@@ -17,7 +17,12 @@ puts "\n"
 config = Config.from_env
 
 puts "Using Ruby #{RUBY_VERSION} on platform #{RUBY_PLATFORM}"
-host = config.forecast_provider == 'forecast.solar' ? 'api.forecast.solar' : 'api.solcast.com.au'
+host = case config.forecast_provider
+       when 'forecast.solar'
+         'api.forecast.solar'
+       when 'solcast'
+         'api.solcast.com.au'
+       end
 
 puts "Pulling from #{host} every #{config.forecast_interval} seconds"
 puts "Pushing to InfluxDB at #{config.influx_url}, " \
