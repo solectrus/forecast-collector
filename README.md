@@ -13,7 +13,7 @@ Collect solar forecast data from https://forecast.solar or https://solcast.com.a
 
 2. Prepare an `.env` file (see `.env.example`) with your InfluxDB credentials and some details about your PV plant (Geo location, azimuth, declination etc.)
 
-   Find details about the underlying APIs can be found here:
+   Find details about the underlying APIs here:
    * [forecast.solar API documentation](https://doc.forecast.solar/api:estimate).
    * [solcast API documentation](https://docs.solcast.com.au/) in the Legacy/Hobbyist section
 
