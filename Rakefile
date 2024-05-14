@@ -2,7 +2,7 @@ require 'rubygems'
 require 'bundler'
 require 'rake/testtask'
 require 'dotenv'
-Dotenv.load('.env.test')
+Dotenv.load('.env.test.local', '.env.test')
 
 Rake::TestTask.new :test do |t|
   t.libs << 'test' << 'app'
