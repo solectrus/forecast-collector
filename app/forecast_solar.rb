@@ -45,12 +45,21 @@ class ForecastSolar < Forecast
       kwp: cfg[:kwp],
       damping_morning: cfg[:damping_morning],
       damping_evening: cfg[:damping_evening],
-    }
+      inverter: cfg[:inverter],
+      horizon: cfg[:horizon],
+    }.compact
   end
 
   def formatted_url(index)
-    raw_url.tap do |url|
+    result = raw_url.tap do |url|
       parameters(index).each { |key, value| url.sub!(":#{key}", value) }
     end
+
+    # Additional parameters (if present)
+    %i[inverter horizon].each do |key|
+      result += "&#{key}=#{parameters(index)[key]}" if parameters(index)[key]
+    end
+
+    result
   end
 end

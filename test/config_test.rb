@@ -74,6 +74,8 @@ class ConfigTest < Minitest::Test
           kwp: '9.24',
           damping_morning: '0',
           damping_evening: '0',
+          inverter: '8.5',
+          horizon: '0,30,60,30',
         },
       ],
       config.forecast_configurations,

@@ -89,6 +89,8 @@ Config =
         kwp: ENV.fetch('FORECAST_KWP', ''),
         damping_morning: ENV.fetch('FORECAST_DAMPING_MORNING', '0'),
         damping_evening: ENV.fetch('FORECAST_DAMPING_EVENING', '0'),
+        inverter: ENV.fetch('FORECAST_INVERTER', nil),
+        horizon: ENV.fetch('FORECAST_HORIZON', nil),
       }
     end
 
@@ -124,6 +126,8 @@ ForecastConfiguration =
     :kwp,
     :damping_morning,
     :damping_evening,
+    :inverter,
+    :horizon,
   ) do
     def self.from_env(index, defaults)
       {
@@ -144,6 +148,8 @@ ForecastConfiguration =
             "FORECAST_#{index}_DAMPING_EVENING",
             defaults[:damping_evening],
           ),
+        inverter: ENV.fetch("FORECAST_#{index}_INVERTER", defaults[:inverter]),
+        horizon: ENV.fetch("FORECAST_#{index}_HORIZON", defaults[:horizon]),
       }
     end
   end
