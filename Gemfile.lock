@@ -62,7 +62,7 @@ GEM
     strscan (3.1.0)
     unicode-display_width (2.5.0)
     vcr (6.2.0)
-    webmock (3.23.0)
+    webmock (3.23.1)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
