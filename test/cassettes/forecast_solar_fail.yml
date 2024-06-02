@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: get
-    uri: https://api.forecast.solar/estimate/<FORECAST_LATITUDE>/<FORECAST_LONGITUDE>/30/20/9.24?damping=0,0&time=seconds
+    uri: https://api.forecast.solar/estimate/<FORECAST_LATITUDE>/<FORECAST_LONGITUDE>/30/20/9.24?damping=0,0&horizon=0,30,60,30&inverter=8.5&time=seconds
     body:
       encoding: US-ASCII
       string: ''
@@ -23,7 +23,7 @@ http_interactions:
       Server:
       - nginx
       Date:
-      - Tue, 26 Sep 2023 09:48:10 GMT
+      - Tue, 21 May 2024 13:59:12 GMT
       Content-Type:
       - application/json; charset=utf-8
       Transfer-Encoding:
@@ -32,23 +32,29 @@ http_interactions:
       - keep-alive
       Keep-Alive:
       - timeout=60
-      Access-Control-Allow-Origin:
-      - "*"
-      X-Pid:
-      - 48UF9Is3
       X-Version:
-      - v6.12.2.1499
+      - v7.22.2
+      X-Build:
+      - 2049 (Thu, 25 Apr 2024 12:43:30 +0200)
+      X-Pid:
+      - 4el68f5y
+      X-Ratelimit-Zone:
+      - IP 46.253.185.215
       X-Ratelimit-Period:
       - '3600'
       X-Ratelimit-Limit:
       - '12'
       X-Ratelimit-Retry-At:
-      - '2023-09-26T11:51:32+02:00'
-      X-Ratelimit-Zone:
-      - IP 78.94.43.198
+      - '2024-05-21T16:56:09+02:00'
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Methods:
+      - OPTIONS,HEAD,GET,POST
+      Access-Control-Allow-Headers:
+      - Origin,Content-Type,Authorization,X-Requested-With,X-Delimiter,X-Separator,X-No-Cache
     body:
       encoding: UTF-8
-      string: '{"result":null,"message":{"code":429,"type":"error","text":"Rate limit
-        for API calls reached.","pid":"48UF9Is3","ratelimit":{"period":3600,"limit":12,"retry-at":"2023-09-26T11:51:32+02:00"}}}'
-  recorded_at: Tue, 26 Sep 2023 09:48:10 GMT
+      string: '{"result":"Rate limit for API calls reached.","message":{"code":429,"type":"error","text":"Rate
+        limit for API calls reached.","pid":"4el68f5y","ratelimit":{"zone":"IP 46.253.185.215","period":3600,"limit":12,"retry-at":"2024-05-21T16:56:09+02:00"}}}'
+  recorded_at: Tue, 21 May 2024 13:59:12 GMT
 recorded_with: VCR 6.2.0

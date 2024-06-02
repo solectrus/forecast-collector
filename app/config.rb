@@ -1,8 +1,11 @@
 Config =
   Struct.new(
+    :forecast_provider,
     :forecast_configurations,
     :forecast_solar_apikey,
     :forecast_interval,
+    :solcast_configurations,
+    :solcast_apikey,
     :influx_schema,
     :influx_host,
     :influx_port,
@@ -41,6 +44,7 @@ Config =
     def self.from_env(options = {})
       new(
         {}.merge(forecast_settings_from_env)
+          .merge(solcast_settings_from_env)
           .merge(influx_credentials_from_env)
           .merge(options),
       )
@@ -58,9 +62,18 @@ Config =
       }
     end
 
+    def self.solcast_settings_from_env
+      defaults = single_solcast_settings_from_env
+      {
+        solcast_configurations: all_solcast_settings_from_env(defaults),
+        solcast_apikey: ENV.fetch('SOLCAST_APIKEY', nil),
+      }
+    end
+
     def self.forecast_settings_from_env
       defaults = single_forecast_settings_from_env
       {
+        forecast_provider: ENV.fetch('FORECAST_PROVIDER', 'forecast.solar'),
         forecast_configurations: all_forecast_settings_from_env(defaults),
         forecast_interval: ENV.fetch('FORECAST_INTERVAL').to_i,
         forecast_solar_apikey: ENV.fetch('FORECAST_SOLAR_APIKEY', nil),
@@ -76,6 +89,14 @@ Config =
         kwp: ENV.fetch('FORECAST_KWP', ''),
         damping_morning: ENV.fetch('FORECAST_DAMPING_MORNING', '0'),
         damping_evening: ENV.fetch('FORECAST_DAMPING_EVENING', '0'),
+        inverter: ENV.fetch('FORECAST_INVERTER', nil),
+        horizon: ENV.fetch('FORECAST_HORIZON', nil),
+      }
+    end
+
+    def self.single_solcast_settings_from_env
+      {
+        solcast_site: ENV.fetch('SOLCAST_SITE', ''),
       }
     end
 
@@ -84,6 +105,14 @@ Config =
 
       (0...config_count).map do |index|
         ForecastConfiguration.from_env(index, defaults)
+      end
+    end
+
+    def self.all_solcast_settings_from_env(defaults)
+      config_count = ENV.fetch('FORECAST_CONFIGURATIONS', '1').to_i
+
+      (0...config_count).map do |index|
+        SolcastConfiguration.from_env(index, defaults)
       end
     end
   end
@@ -97,6 +126,8 @@ ForecastConfiguration =
     :kwp,
     :damping_morning,
     :damping_evening,
+    :inverter,
+    :horizon,
   ) do
     def self.from_env(index, defaults)
       {
@@ -117,6 +148,19 @@ ForecastConfiguration =
             "FORECAST_#{index}_DAMPING_EVENING",
             defaults[:damping_evening],
           ),
+        inverter: ENV.fetch("FORECAST_#{index}_INVERTER", defaults[:inverter]),
+        horizon: ENV.fetch("FORECAST_#{index}_HORIZON", defaults[:horizon]),
+      }
+    end
+  end
+
+SolcastConfiguration =
+  Struct.new(
+    :site,
+  ) do
+    def self.from_env(index, defaults)
+      {
+        site: ENV.fetch("SOLCAST_#{index}_SITE", defaults[:solcast_site]),
       }
     end
   end

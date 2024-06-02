@@ -3,6 +3,8 @@ require 'influxdb-client'
 
 require_relative 'flux_writer'
 require_relative 'forecast'
+require_relative 'forecast_solar'
+require_relative 'solcast'
 
 class Loop
   def initialize(config:)
@@ -17,14 +19,17 @@ class Loop
 
   def start(max_count)
     self.count = 0
-    forecast = Forecast.new(config:)
+    forecast = make_forecast
     loop do
       self.count += 1
-      puts "##{count} Fetching forecast"
+      now = DateTime.now
+      puts "##{count} Fetching forecast at #{now}"
       push_to_influx(forecast.fetch_data)
       break if max_count && count >= max_count
 
-      puts "  Sleeping for #{config.forecast_interval} seconds ..."
+      next_request = DateTime.now.to_time + config.forecast_interval
+      puts "  Sleeping for #{config.forecast_interval} seconds (until #{next_request}) ..."
+
       sleep config.forecast_interval
     end
   end
@@ -39,5 +44,14 @@ class Loop
     print '  Pushing forecast to InfluxDB ... '
     FluxWriter.push(config:, data:)
     puts 'OK'
+  end
+
+  def make_forecast
+    case config.forecast_provider
+    when 'forecast.solar'
+      ForecastSolar.new(config:)
+    when 'solcast'
+      Solcast.new(config:)
+    end
   end
 end
