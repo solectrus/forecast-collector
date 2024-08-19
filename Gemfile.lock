@@ -61,7 +61,8 @@ GEM
     simplecov_json_formatter (0.1.4)
     strscan (3.1.0)
     unicode-display_width (2.5.0)
-    vcr (6.2.0)
+    vcr (6.3.0)
+      base64
     webmock (3.23.1)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
