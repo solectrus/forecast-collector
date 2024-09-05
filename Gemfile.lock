@@ -17,9 +17,11 @@ GEM
     influxdb-client (3.1.0)
     json (2.7.2)
     language_server-protocol (3.17.0.3)
+    logger (1.6.1)
     minitest (5.25.1)
     minitest-silence (0.2.4)
       minitest (~> 5.12)
+    ostruct (0.6.0)
     parallel (1.26.3)
     parser (3.3.5.0)
       ast (~> 2.4.1)
@@ -74,8 +76,10 @@ DEPENDENCIES
   csv
   dotenv
   influxdb-client
+  logger
   minitest
   minitest-silence
+  ostruct
   rake
   rubocop
   rubocop-minitest
