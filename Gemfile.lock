@@ -15,7 +15,7 @@ GEM
     dotenv (3.1.4)
     hashdiff (1.1.1)
     influxdb-client (3.1.0)
-    json (2.7.3)
+    json (2.7.4)
     language_server-protocol (3.17.0.3)
     logger (1.6.1)
     minitest (5.25.1)
