@@ -12,12 +12,6 @@ gem 'csv'
 # Support for encoding and decoding binary data using a Base64 representation. (https://github.com/ruby/base64)
 gem 'base64'
 
-# Provides a simple logging utility for outputting messages. (https://github.com/ruby/logger)
-gem 'logger'
-
-# Class to build custom data structures, similar to a Hash. (https://github.com/ruby/ostruct)
-gem 'ostruct'
-
 group :development, :test do
   # minitest provides a complete suite of testing facilities supporting TDD, BDD, mocking, and benchmarking (https://github.com/minitest/minitest)
   gem 'minitest'
