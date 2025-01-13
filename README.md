@@ -30,4 +30,4 @@ https://github.com/solectrus/hosting
 
 ## License
 
-Copyright (c) 2020-2024 Georg Ledermann, released under the MIT License
+Copyright (c) 2020-2025 Georg Ledermann, released under the MIT License
