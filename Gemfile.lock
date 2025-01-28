@@ -17,7 +17,7 @@ GEM
     influxdb-client (3.2.0)
       csv
     json (2.9.1)
-    language_server-protocol (3.17.0.3)
+    language_server-protocol (3.17.0.4)
     logger (1.6.5)
     minitest (5.25.4)
     minitest-silence (0.2.4)
