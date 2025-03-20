@@ -3,7 +3,7 @@ GEM
   specs:
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
-    ast (2.4.2)
+    ast (2.4.3)
     base64 (0.2.0)
     bigdecimal (3.1.9)
     climate_control (1.2.0)
@@ -44,7 +44,7 @@ GEM
       rubocop-ast (>= 1.38.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 4.0)
-    rubocop-ast (1.39.0)
+    rubocop-ast (1.40.0)
       parser (>= 3.3.1.0)
     rubocop-minitest (0.37.1)
       lint_roller (~> 1.1)
