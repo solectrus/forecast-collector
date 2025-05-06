@@ -28,6 +28,10 @@ class FluxWriter
     )
   end
 
+  def ready?
+    influx_client.ping.status == 'ok'
+  end
+
   private
 
   def influx_measurement
