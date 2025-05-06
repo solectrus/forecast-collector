@@ -7,10 +7,6 @@ class FluxWriter
 
   attr_reader :config
 
-  def self.push(config:, data:)
-    new(config:).push(data)
-  end
-
   def push(data)
     return unless data
 

@@ -42,7 +42,7 @@ class Loop
     return unless data
 
     print '  Pushing forecast to InfluxDB ... '
-    FluxWriter.push(config:, data:)
+    flux_writer.push(data)
     puts 'OK'
   end
 
@@ -53,5 +53,9 @@ class Loop
     when 'solcast'
       Solcast.new(config:)
     end
+  end
+
+  def flux_writer
+    @flux_writer ||= FluxWriter.new(config:)
   end
 end
