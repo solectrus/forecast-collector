@@ -13,7 +13,7 @@ GEM
     csv (3.3.4)
     docile (1.4.1)
     dotenv (3.1.8)
-    hashdiff (1.1.2)
+    hashdiff (1.2.0)
     influxdb-client (3.2.0)
       csv
     json (2.12.0)
