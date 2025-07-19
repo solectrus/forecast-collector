@@ -17,9 +17,10 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     env:
-      CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       CI: true
 
     steps:
@@ -37,11 +38,15 @@ jobs:
       - name: Run tests
         run: bundle exec rake test
 
-      - name: Send test coverage to CodeClimate
-        uses: paambaati/codeclimate-action@v9.0.0
-        if: ${{ env.CC_TEST_REPORTER_ID }}
-        with:
-          coverageCommand: true
+      - name: Commit updated coverage badge
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add coverage/coverage_badge_total.svg
+          if ! git diff --staged --quiet; then
+            git commit -m "Update coverage badge [skip ci]"
+            git push
+          fi
 
   build:
     runs-on: ubuntu-latest

@@ -48,4 +48,7 @@ group :development, :test do
 
   # Code coverage for Ruby (https://github.com/simplecov-ruby/simplecov)
   gem 'simplecov'
+
+  # Small Badge generator for SimpleCov coverage tool for ruby (https://github.com/marcgrimme/simplecov-small-badge)
+  gem 'simplecov-small-badge', require: false
 end

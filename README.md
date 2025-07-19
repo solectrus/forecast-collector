@@ -1,7 +1,6 @@
 [![Continuous integration](https://github.com/solectrus/forecast-collector/actions/workflows/push.yml/badge.svg)](https://github.com/solectrus/forecast-collector/actions/workflows/push.yml)
-[![Maintainability](https://api.codeclimate.com/v1/badges/7c9a88a5ce7dacfa8781/maintainability)](https://codeclimate.com/github/solectrus/forecast-collector/maintainability)
+![Coverage](./coverage/coverage_badge_total.svg)
 [![wakatime](https://wakatime.com/badge/user/697af4f5-617a-446d-ba58-407e7f3e0243/project/40d80ef4-7f52-4e68-a361-ed42d887c5e2.svg)](https://wakatime.com/badge/user/697af4f5-617a-446d-ba58-407e7f3e0243/project/40d80ef4-7f52-4e68-a361-ed42d887c5e2)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/7c9a88a5ce7dacfa8781/test_coverage)](https://codeclimate.com/github/solectrus/forecast-collector/test_coverage)
 
 # Forecast collector
 

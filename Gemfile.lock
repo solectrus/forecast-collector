@@ -33,6 +33,8 @@ GEM
     rainbow (3.1.1)
     rake (13.3.0)
     regexp_parser (2.10.0)
+    repo-small-badge (0.2.10)
+      victor (~> 0.3.0)
     rexml (3.4.1)
     rubocop (1.78.0)
       json (~> 2.3)
@@ -65,12 +67,16 @@ GEM
       simplecov-html (~> 0.11)
       simplecov_json_formatter (~> 0.1)
     simplecov-html (0.13.2)
+    simplecov-small-badge (0.2.7)
+      repo-small-badge (~> 0.2.10)
+      simplecov (~> 0.18)
     simplecov_json_formatter (0.1.4)
     unicode-display_width (3.1.4)
       unicode-emoji (~> 4.0, >= 4.0.4)
     unicode-emoji (4.0.4)
     vcr (6.3.1)
       base64
+    victor (0.3.4)
     webmock (3.25.1)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
@@ -94,6 +100,7 @@ DEPENDENCIES
   rubocop-performance
   rubocop-rake
   simplecov
+  simplecov-small-badge
   vcr
   webmock
 
