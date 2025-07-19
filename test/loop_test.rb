@@ -56,7 +56,7 @@ class LoopTest < Minitest::Test
 
     out, err =
       capture_io do
-        VCR.use_cassette('influxdb_fail') { Loop.start(config:, max_wait: 1) }
+        Loop.start(config:, max_wait: 1, max_count: 1)
       end
 
     assert_match(/InfluxDB not ready/, out)
