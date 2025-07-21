@@ -1,10 +1,9 @@
 require 'simplecov'
-require 'simplecov_small_badge'
-
+require 'simplecov_json_formatter'
 SimpleCov.start do
-  SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
+  formatter SimpleCov::Formatter::MultiFormatter.new([
+    SimpleCov::Formatter::JSONFormatter,
     SimpleCov::Formatter::HTMLFormatter,
-    SimpleCovSmallBadge::Formatter,
   ])
 end
 

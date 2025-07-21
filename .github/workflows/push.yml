@@ -17,8 +17,6 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     env:
       CI: true
@@ -38,15 +36,10 @@ jobs:
       - name: Run tests
         run: bundle exec rake test
 
-      - name: Commit updated coverage badge
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add coverage/coverage_badge_total.svg
-          if ! git diff --staged --quiet; then
-            git commit -m "Update coverage badge [skip ci]"
-            git push
-          fi
+      - uses: qltysh/qlty-action/coverage@v1
+        with:
+          token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
+          files: coverage/.resultset.json
 
   build:
     runs-on: ubuntu-latest
