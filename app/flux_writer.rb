@@ -7,10 +7,6 @@ class FluxWriter
 
   attr_reader :config
 
-  def self.push(config:, data:)
-    new(config:).push(data)
-  end
-
   def push(data)
     return unless data
 
@@ -30,6 +26,10 @@ class FluxWriter
       bucket: config.influx_bucket,
       org: config.influx_org,
     )
+  end
+
+  def ready?
+    influx_client.ping.status == 'ok'
   end
 
   private

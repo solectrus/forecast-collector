@@ -13,11 +13,13 @@ class Loop
 
   attr_reader :config
 
-  def self.start(config:, max_count: nil)
-    new(config:).start(max_count)
+  def self.start(config:, max_count: nil, max_wait: 12)
+    new(config:).start(max_count:, max_wait:)
   end
 
-  def start(max_count)
+  def start(max_count: nil, max_wait: nil)
+    return unless influx_ready?(max_wait)
+
     self.count = 0
     forecast = make_forecast
     loop do
@@ -38,11 +40,31 @@ class Loop
 
   attr_accessor :count
 
+  def influx_ready?(max_wait)
+    print 'Wait until InfluxDB is ready ...'
+
+    count = 0
+    until (ready = flux_writer.ready?) || (max_wait && count >= max_wait)
+      print '.'
+      count += 1
+      sleep 5
+    end
+
+    if ready
+      puts ' OK'
+      puts
+      true
+    else
+      puts "\nInfluxDB not ready after #{count * 5} seconds - aborting."
+      false
+    end
+  end
+
   def push_to_influx(data)
     return unless data
 
     print '  Pushing forecast to InfluxDB ... '
-    FluxWriter.push(config:, data:)
+    flux_writer.push(data)
     puts 'OK'
   end
 
@@ -53,5 +75,9 @@ class Loop
     when 'solcast'
       Solcast.new(config:)
     end
+  end
+
+  def flux_writer
+    @flux_writer ||= FluxWriter.new(config:)
   end
 end

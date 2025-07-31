@@ -57,4 +57,36 @@ http_interactions:
       string: '{"result":"Rate limit for API calls reached.","message":{"code":429,"type":"error","text":"Rate
         limit for API calls reached.","pid":"4el68f5y","ratelimit":{"zone":"IP 46.253.185.215","period":3600,"limit":12,"retry-at":"2024-05-21T16:56:09+02:00"}}}'
   recorded_at: Tue, 21 May 2024 13:59:12 GMT
-recorded_with: VCR 6.2.0
+- request:
+    method: get
+    uri: http://<INFLUX_HOST>:<INFLUX_PORT>/ping
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - influxdb-client-ruby/3.2.0
+      Authorization:
+      - Token <INFLUX_TOKEN>
+  response:
+    status:
+      code: 204
+      message: No Content
+    headers:
+      Vary:
+      - Accept-Encoding
+      X-Influxdb-Build:
+      - OSS
+      X-Influxdb-Version:
+      - v2.7.11
+      Date:
+      - Tue, 06 May 2025 10:14:39 GMT
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Tue, 06 May 2025 10:14:39 GMT
+recorded_with: VCR 6.3.1
