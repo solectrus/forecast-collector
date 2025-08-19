@@ -24,6 +24,10 @@ LABEL maintainer="georg@ledermann.dev"
 # Add tzdata to get correct timezone
 RUN apk add --no-cache tzdata
 
+# Create non-root user
+RUN addgroup -g 1000 -S app && \
+    adduser -u 1000 -S app -G app
+
 ENV \
     # Decrease memory usage
     MALLOC_ARENA_MAX=2 \
@@ -43,6 +47,8 @@ ENV REVISION=${REVISION}
 WORKDIR /forecast-collector
 
 COPY --from=builder /usr/local/bundle/ /usr/local/bundle/
-COPY . /forecast-collector/
+COPY --chown=app:app . /forecast-collector/
+
+USER app
 
 ENTRYPOINT ["bundle", "exec", "app/main.rb"]
