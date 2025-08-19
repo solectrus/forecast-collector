@@ -1,6 +1,6 @@
-require_relative '../app/forecast_solar'
+require 'adapter/forecast_solar_adapter'
 
-describe ForecastSolar do
+describe ForecastSolarAdapter do
   let(:config) { Config.from_env }
   let(:forecast) { described_class.new(config: config) }
 
@@ -57,7 +57,7 @@ describe ForecastSolar do
         multi_plane_result = VCR.use_cassettes([{ name: 'forecast_solar_multiplane' }]) do
           described_class.new(
             config: Config.from_env(
-              forecast_configurations: [
+              forecast_solar_configurations: [
                 base_plane.merge(kwp: '4'),
                 base_plane.merge(kwp: '5'),
               ],
@@ -69,7 +69,7 @@ describe ForecastSolar do
         single_plane_result = VCR.use_cassettes([{ name: 'forecast_solar_singleplane' }]) do
           described_class.new(
             config: Config.from_env(
-              forecast_configurations: [base_plane.merge(kwp: '9')],
+              forecast_solar_configurations: [base_plane.merge(kwp: '9')],
             ),
           ).fetch_data
         end

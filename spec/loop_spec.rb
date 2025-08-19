@@ -1,4 +1,4 @@
-require_relative '../app/loop'
+require 'loop'
 
 describe Loop do
   describe '.start' do
