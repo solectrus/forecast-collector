@@ -17,6 +17,8 @@ class Config # rubocop:disable Metrics/ClassLength
               :forecast_interval,
               :forecast_solar_configurations,
               :forecast_solar_apikey,
+              :pvnode_configurations,
+              :pvnode_apikey,
               :solcast_configurations,
               :solcast_apikey
 
@@ -33,13 +35,12 @@ class Config # rubocop:disable Metrics/ClassLength
       when 'solcast'
         require 'adapter/solcast_adapter'
         SolcastAdapter.new(config: self)
+      when 'pvnode'
+        require 'adapter/pvnode_adapter'
+        PvnodeAdapter.new(config: self)
       else
         raise ArgumentError, "Unknown provider: #{forecast_provider}"
       end
-  end
-
-  def timezone
-    ENV.fetch('TZ', 'UTC')
   end
 
   def self.from_env(options = {})
@@ -47,6 +48,7 @@ class Config # rubocop:disable Metrics/ClassLength
       influx_credentials_from_env
         .merge(forecast_solar_settings_from_env)
         .merge(solcast_settings_from_env)
+        .merge(pvnode_settings_from_env)
         .merge(options),
     )
   end
@@ -89,7 +91,17 @@ class Config # rubocop:disable Metrics/ClassLength
       }
     end
 
+    def pvnode_settings_from_env
+      defaults = {
+        latitude: ENV.fetch('FORECAST_LATITUDE', ''),
+        longitude: ENV.fetch('FORECAST_LONGITUDE', ''),
+        declination: ENV.fetch('FORECAST_DECLINATION', ''),
+        azimuth: ENV.fetch('FORECAST_AZIMUTH', ''),
+        kwp: ENV.fetch('FORECAST_KWP', ''),
+      }
       {
+        pvnode_configurations: all_configurations_from_env('PVNODE', PvnodeConfiguration, defaults),
+        pvnode_apikey: ENV.fetch('PVNODE_APIKEY', nil),
       }
     end
 
@@ -161,5 +173,26 @@ class SolcastConfiguration
   def self.from_env(index, prefix, defaults)
     { site: ENV.fetch("#{prefix}_#{index}_SITE", defaults[:solcast_site]) }
   end
+end
+
+class PvnodeConfiguration
+  attr_reader :latitude, :longitude, :declination, :azimuth, :kwp
+
+  def initialize(options = {})
+    options.each { |key, value| instance_variable_set("@#{key}", value) }
+  end
+
+  def [](key)
+    public_send(key)
+  end
+
+  def self.from_env(index, prefix, defaults)
+    {
+      latitude: ENV.fetch("#{prefix}_#{index}_LATITUDE", defaults[:latitude]),
+      longitude: ENV.fetch("#{prefix}_#{index}_LONGITUDE", defaults[:longitude]),
+      declination: ENV.fetch("#{prefix}_#{index}_DECLINATION", defaults[:declination]),
+      azimuth: ENV.fetch("#{prefix}_#{index}_AZIMUTH", defaults[:azimuth]),
+      kwp: ENV.fetch("#{prefix}_#{index}_KWP", defaults[:kwp]),
+    }
   end
 end
