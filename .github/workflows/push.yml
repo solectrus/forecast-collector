@@ -34,7 +34,7 @@ jobs:
         run: bundle exec rubocop
 
       - name: Run tests
-        run: bundle exec rake test
+        run: bundle exec rspec
 
       - uses: qltysh/qlty-action/coverage@v2
         with:

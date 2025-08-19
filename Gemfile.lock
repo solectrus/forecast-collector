@@ -11,6 +11,7 @@ GEM
       bigdecimal
       rexml
     csv (3.3.5)
+    diff-lcs (1.6.2)
     docile (1.4.1)
     dotenv (3.1.8)
     hashdiff (1.2.0)
@@ -20,9 +21,6 @@ GEM
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
-    minitest (5.25.5)
-    minitest-silence (0.2.4)
-      minitest (~> 5.12)
     parallel (1.27.0)
     parser (3.3.9.0)
       ast (~> 2.4.1)
@@ -34,6 +32,19 @@ GEM
     rake (13.3.0)
     regexp_parser (2.11.2)
     rexml (3.4.1)
+    rspec (3.13.1)
+      rspec-core (~> 3.13.0)
+      rspec-expectations (~> 3.13.0)
+      rspec-mocks (~> 3.13.0)
+    rspec-core (3.13.5)
+      rspec-support (~> 3.13.0)
+    rspec-expectations (3.13.5)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-mocks (3.13.5)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-support (3.13.5)
     rubocop (1.79.2)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
@@ -48,10 +59,6 @@ GEM
     rubocop-ast (1.46.0)
       parser (>= 3.3.7.2)
       prism (~> 1.4)
-    rubocop-minitest (0.38.1)
-      lint_roller (~> 1.1)
-      rubocop (>= 1.75.0, < 2.0)
-      rubocop-ast (>= 1.38.0, < 2.0)
     rubocop-performance (1.25.0)
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
@@ -59,6 +66,9 @@ GEM
     rubocop-rake (0.7.1)
       lint_roller (~> 1.1)
       rubocop (>= 1.72.1)
+    rubocop-rspec (3.6.0)
+      lint_roller (~> 1.1)
+      rubocop (~> 1.72, >= 1.72.1)
     ruby-progressbar (1.13.0)
     simplecov (0.22.0)
       docile (~> 1.1)
@@ -86,13 +96,12 @@ DEPENDENCIES
   dotenv
   influxdb-client
   logger
-  minitest
-  minitest-silence
   rake
+  rspec
   rubocop
-  rubocop-minitest
   rubocop-performance
   rubocop-rake
+  rubocop-rspec
   simplecov
   vcr
   webmock
