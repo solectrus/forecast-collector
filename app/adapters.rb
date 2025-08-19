@@ -1,0 +1,4 @@
+require 'config'
+require 'adapter/base_adapter'
+require 'adapter/forecast_solar_adapter'
+require 'adapter/solcast_adapter'

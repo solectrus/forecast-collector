@@ -1,4 +1,4 @@
-require_relative '../app/config'
+require 'config'
 
 describe Config do
   let(:valid_options) do
@@ -90,8 +90,8 @@ describe Config do
       expect(config.influx_bucket).to eq('my-bucket')
       expect(config.influx_measurement).to eq('my-forecast')
 
-      expect(config.forecast_configurations.length).to eq(1)
-      expect(config.forecast_configurations).to eq([
+      expect(config.forecast_solar_configurations.length).to eq(1)
+      expect(config.forecast_solar_configurations).to eq([
         {
           latitude: '50.9215',
           longitude: '6.3627',
