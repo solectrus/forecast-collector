@@ -20,6 +20,7 @@ VCR.configure do |config|
     SOLCAST_1_SITE
     SOLCAST_SITE
     FORECAST_SOLAR_APIKEY
+    PVNODE_APIKEY
   ]
   sensitive_environment_variables.each do |key_name|
     config.filter_sensitive_data("<#{key_name}>") { ENV.fetch(key_name, nil) }
