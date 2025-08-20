@@ -8,10 +8,11 @@ class FluxWriter
   attr_reader :config
 
   def push(data)
-    return unless data
+    filtered_data = filter_past_data(data)
+    return if filtered_data.empty?
 
     points =
-      data.map do |key, value|
+      filtered_data.map do |key, value|
         InfluxDB2::Point.new(
           name: influx_measurement,
           time: key,
@@ -33,6 +34,13 @@ class FluxWriter
   end
 
   private
+
+  def filter_past_data(data)
+    return [] unless data
+
+    current_time = Time.now.to_i
+    data.select { |timestamp, _| timestamp > current_time }
+  end
 
   def influx_measurement
     config.influx_measurement
