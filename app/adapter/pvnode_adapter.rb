@@ -35,6 +35,7 @@ class PvnodeAdapter < BaseAdapter
       orientation: azimuth_to_orientation(cfg[:azimuth]),
       pv_power_kw: cfg[:kwp],
       required_data: 'pv_watts',
+      past_days: 0,
     )
     uri.to_s
   end
