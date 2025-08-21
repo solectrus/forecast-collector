@@ -1,15 +1,11 @@
 require 'net/http'
-require_relative 'config'
-require_relative 'forecast'
+require 'config'
+require 'adapter/base_adapter'
 
-class ForecastSolar < Forecast
+class ForecastSolarAdapter < BaseAdapter
   BASE_URL = 'https://api.forecast.solar'.freeze
 
-  def uri(index)
-    URI.parse(formatted_url(index))
-  end
-
-  def current(index)
+  def parse_forecast_data(response_data)
     # Change mapping:
     #   "result": {
     #     "watts": {
@@ -20,7 +16,11 @@ class ForecastSolar < Forecast
     #   =>
     #   { 1632979620 => 0, 1632980640 => 28, 1632981600 => 119, ... }
 
-    forecast_response(index).dig('result', 'watts').transform_keys(&:to_i)
+    response_data.dig('result', 'watts').transform_keys(&:to_i)
+  end
+
+  def provider_name
+    'Forecast.Solar'
   end
 
   private
@@ -36,7 +36,7 @@ class ForecastSolar < Forecast
   end
 
   def parameters(index)
-    cfg = config.forecast_configurations[index]
+    cfg = config.forecast_solar_configurations[index]
     {
       lat: cfg[:latitude],
       lon: cfg[:longitude],
@@ -61,5 +61,9 @@ class ForecastSolar < Forecast
     end
 
     result
+  end
+
+  def adapter_configuration_count
+    config.forecast_solar_configurations.length
   end
 end

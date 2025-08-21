@@ -15,7 +15,7 @@ Bundler.require
 require 'dotenv'
 Dotenv.load('.env.test.local', '.env.test')
 
-$LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+$LOAD_PATH.unshift(File.expand_path('../app', __dir__))
 Dir[File.join(File.dirname(__FILE__), 'support/**/*.rb')].each { |f| require f }
 
 require 'webmock/rspec'

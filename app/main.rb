@@ -1,8 +1,11 @@
 #!/usr/bin/env ruby
 
+# Add app directory to load path so we can use simple require statements
+$LOAD_PATH.unshift(__dir__)
+
 require 'dotenv/load'
-require_relative 'loop'
-require_relative 'config'
+require 'loop'
+require 'config'
 
 # Flush output immediately
 $stdout.sync = true
@@ -17,14 +20,8 @@ puts "\n"
 config = Config.from_env
 
 puts "Using Ruby #{RUBY_VERSION} on platform #{RUBY_PLATFORM}"
-host = case config.forecast_provider
-       when 'forecast.solar'
-         'api.forecast.solar'
-       when 'solcast'
-         'api.solcast.com.au'
-       end
 
-puts "Pulling from #{host} every #{config.forecast_interval} seconds"
+puts "Pulling from #{config.adapter.provider_name} every #{config.forecast_interval} seconds"
 puts "Pushing to InfluxDB at #{config.influx_url}, " \
        "bucket #{config.influx_bucket}, " \
        "measurement #{config.influx_measurement}"

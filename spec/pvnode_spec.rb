@@ -1,15 +1,15 @@
-require 'adapter/solcast_adapter'
+require 'adapter/pvnode_adapter'
 
-describe SolcastAdapter do
+describe PvnodeAdapter do
+  let(:config) { Config.from_env(forecast_provider: 'pvnode') }
+  let(:pvnode) { described_class.new(config: config) }
+
   describe '#fetch_data' do
-    let(:config) { Config.from_env(forecast_provider: 'solcast') }
-    let(:solcast) { described_class.new(config: config) }
-
     context 'when successful' do
-      it 'returns solcast data' do
+      it 'returns pvnode data' do
         stdout, stderr = capture_output do
-          VCR.use_cassette('solcast_success') do
-            data = solcast.fetch_data
+          VCR.use_cassette('pvnode_success') do
+            data = pvnode.fetch_data
 
             expect(data).to be_a(Hash)
             data.each do |key, value|
