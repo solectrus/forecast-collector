@@ -14,7 +14,7 @@ GEM
     diff-lcs (1.6.2)
     docile (1.4.1)
     dotenv (3.1.8)
-    hashdiff (1.2.0)
+    hashdiff (1.2.1)
     influxdb-client (3.2.0)
       csv
     json (2.13.2)
