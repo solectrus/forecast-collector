@@ -47,7 +47,7 @@ class PvnodeAdapter < BaseAdapter
   end
 
   def declination_to_slope(declination)
-    declination.to_i
+    declination.to_f.round(1)
   end
 
   def make_http_request(index)
