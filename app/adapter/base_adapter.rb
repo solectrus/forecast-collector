@@ -95,6 +95,12 @@ class BaseAdapter
     self.class.name.sub('Adapter', '')
   end
 
+  # Returns the next fetch time as a Time object
+  # Can be overridden by subclasses for custom scheduling
+  def next_fetch_time
+    Time.now + config.forecast_interval
+  end
+
   private
 
   # Returns the number of configurations for this adapter.

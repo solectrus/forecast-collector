@@ -25,10 +25,11 @@ class Loop
       push_to_influx(config.adapter.fetch_data)
       break if max_count && count >= max_count
 
-      next_request = DateTime.now.to_time + config.forecast_interval
-      puts "  Sleeping for #{config.forecast_interval} seconds (until #{next_request}) ..."
+      next_request = config.adapter.next_fetch_time
+      sleep_duration = (next_request - Time.now).ceil
+      puts "  Sleeping until #{next_request.localtime} ..."
 
-      sleep config.forecast_interval
+      sleep sleep_duration
     end
   end
 

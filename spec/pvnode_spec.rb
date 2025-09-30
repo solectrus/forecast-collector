@@ -24,4 +24,40 @@ describe PvnodeAdapter do
       end
     end
   end
+
+  describe '#next_fetch_time' do
+    subject { pvnode.next_fetch_time }
+
+    before { allow(Time).to receive(:now).and_return(now) }
+
+    context 'when next scheduled time is today at :05' do
+      let(:now) { Time.utc(2025, 9, 30, 3, 0, 0) }
+
+      it { is_expected.to eq(Time.utc(2025, 9, 30, 4, 5, 0)) }
+    end
+
+    context 'when next scheduled time is today at :35' do
+      let(:now) { Time.utc(2025, 9, 30, 4, 15, 0) }
+
+      it { is_expected.to eq(Time.utc(2025, 9, 30, 4, 35, 0)) }
+    end
+
+    context 'when all times passed today' do
+      let(:now) { Time.utc(2025, 9, 30, 23, 0, 0) }
+
+      it { is_expected.to eq(Time.utc(2025, 10, 1, 1, 5, 0)) }
+    end
+
+    context 'when crossing month boundary' do
+      let(:now) { Time.utc(2025, 1, 31, 23, 0, 0) }
+
+      it { is_expected.to eq(Time.utc(2025, 2, 1, 1, 5, 0)) }
+    end
+
+    context 'when crossing year boundary' do
+      let(:now) { Time.utc(2025, 12, 31, 23, 0, 0) }
+
+      it { is_expected.to eq(Time.utc(2026, 1, 1, 1, 5, 0)) }
+    end
+  end
 end

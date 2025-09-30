@@ -25,6 +25,37 @@ class PvnodeAdapter < BaseAdapter
     config.pvnode_configurations&.length || 0
   end
 
+  SAFETY_MARGIN_SECONDS = 300 # 5 minutes
+  private_constant :SAFETY_MARGIN_SECONDS
+
+  def next_fetch_time
+    # pvnode has a fixed schedule with 16 updates per day:
+    #   01:00, 01:30, 04:00, 04:30, 07:00, 07:30, 10:00, 10:30,
+    #   13:00, 13:30, 16:00, 16:30, 19:00, 19:30, 22:00, 22:30
+    # All times in UTC
+    scheduled_hours = [1, 4, 7, 10, 13, 16, 19, 22]
+    scheduled_minutes = [0, 30]
+
+    now = Time.now.utc
+
+    # Find the next scheduled time today
+    scheduled_hours.each do |hour|
+      scheduled_minutes.each do |minute|
+        scheduled_time = Time.utc(now.year, now.month, now.day, hour, minute, 0) + SAFETY_MARGIN_SECONDS
+        return scheduled_time if scheduled_time > now
+      end
+    end
+
+    # If no time found today, use the first time tomorrow
+    # Use Time arithmetic to handle month/year boundaries and leap years correctly
+    # We fetch 5 minutes later to ensure data is ready.
+    one_day_later = now + 86_400 # 24 * 60 * 60 seconds
+    Time.utc(
+      one_day_later.year, one_day_later.month, one_day_later.day,
+      scheduled_hours.first, scheduled_minutes.first, 0,
+    ) + SAFETY_MARGIN_SECONDS
+  end
+
   def formatted_url(index)
     uri = URI(BASE_URL)
     cfg = config.pvnode_configurations[index]
