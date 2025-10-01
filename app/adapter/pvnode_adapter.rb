@@ -67,6 +67,7 @@ class PvnodeAdapter < BaseAdapter
       pv_power_kw: cfg[:kwp],
       required_data: 'pv_watts',
       past_days: 0,
+      diffuse_radiation_model: 'perez',
     )
     uri.to_s
   end
