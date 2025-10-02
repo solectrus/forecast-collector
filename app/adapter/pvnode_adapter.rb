@@ -10,7 +10,7 @@ class PvnodeAdapter < BaseAdapter
 
     response_data['values']&.each do |value_point|
       timestamp = DateTime.parse(value_point['dtm']).to_time.to_i
-      watts = value_point['pv_watts'].to_i
+      watts = value_point['pv_watts'].round
       result[timestamp] = watts
     end
 
