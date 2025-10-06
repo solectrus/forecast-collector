@@ -9,9 +9,16 @@ class PvnodeAdapter < BaseAdapter
     result = {}
 
     response_data['values']&.each do |value_point|
+      # Extract three columns:
+      # - 'dtm' (datetime in ISO 8601 format)
+      # - 'pv_watts' (predicted power in watts)
+      # - 'pv_watts_clearsky' (clearsky power in watts)
+
       timestamp = DateTime.parse(value_point['dtm']).to_time.to_i
-      watts = value_point['pv_watts'].round
-      result[timestamp] = watts
+      result[timestamp] = {
+        watt: value_point['pv_watts'].round,
+        watt_clearsky: value_point['pv_watts_clearsky'].round,
+      }
     end
 
     result
@@ -68,6 +75,7 @@ class PvnodeAdapter < BaseAdapter
       required_data: 'pv_watts',
       past_days: 0,
       diffuse_radiation_model: 'perez',
+      clearsky_data: true,
     )
     uri.to_s
   end

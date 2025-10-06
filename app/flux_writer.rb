@@ -13,12 +13,18 @@ class FluxWriter
 
     points =
       filtered_data.map do |key, value|
+        # Support both simple values (e.g., 100) and hash values (e.g., { watt: 100, watt_clearsky: 120 })
+        fields =
+          if value.is_a?(Hash)
+            value
+          else
+            { watt: value }
+          end
+
         InfluxDB2::Point.new(
           name: influx_measurement,
           time: key,
-          fields: {
-            watt: value,
-          },
+          fields:,
         )
       end
 

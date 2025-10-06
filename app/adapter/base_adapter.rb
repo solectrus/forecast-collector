@@ -33,16 +33,40 @@ class BaseAdapter
   end
 
   def accumulate(hashes)
-    result = hashes[0]
-    (1...hashes.length).each do |index|
-      hashes[index].each do |k, v|
-        result[k] ||= 0
-        result[k] += v
-      end
-    end
+    valid_hashes = hashes.compact
+    return if valid_hashes.empty?
 
+    result = valid_hashes[0]
+    valid_hashes[1..].each do |hash|
+      hash.each { |timestamp, value| accumulate_value(result, timestamp, value) }
+    end
     result
   end
+
+  private
+
+  def accumulate_value(result, timestamp, value)
+    if value.is_a?(Hash)
+      accumulate_hash_value(result, timestamp, value)
+    else
+      accumulate_scalar_value(result, timestamp, value)
+    end
+  end
+
+  def accumulate_hash_value(result, timestamp, value)
+    result[timestamp] ||= {}
+    value.each do |field, field_value|
+      result[timestamp][field] ||= 0
+      result[timestamp][field] += field_value
+    end
+  end
+
+  def accumulate_scalar_value(result, timestamp, value)
+    result[timestamp] ||= 0
+    result[timestamp] += value
+  end
+
+  public
 
   def url(index)
     URI.parse(formatted_url(index))

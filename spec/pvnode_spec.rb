@@ -14,7 +14,11 @@ describe PvnodeAdapter do
             expect(data).to be_a(Hash)
             data.each do |key, value|
               expect(key).to be_an(Integer)
-              expect(value).to be_an(Integer)
+
+              expect(value).to be_a(Hash)
+              expect(value).to have_key(:watt)
+              expect(value[:watt]).to be_an(Integer)
+              expect(value[:watt_clearsky]).to be_an(Integer)
             end
           end
         end
