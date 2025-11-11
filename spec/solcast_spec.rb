@@ -1,6 +1,6 @@
-require_relative '../app/solcast'
+require 'adapter/solcast_adapter'
 
-describe Solcast do
+describe SolcastAdapter do
   describe '#fetch_data' do
     let(:config) { Config.from_env(forecast_provider: 'solcast') }
     let(:solcast) { described_class.new(config: config) }
