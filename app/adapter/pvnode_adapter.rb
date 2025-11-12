@@ -16,9 +16,9 @@ class PvnodeAdapter < BaseAdapter
 
       timestamp = DateTime.parse(value_point['dtm']).to_time.to_i
       result[timestamp] = {
-        watt: value_point['pv_watts'].round,
-        watt_clearsky: value_point['pv_watts_clearsky'].round,
-      }
+        watt: value_point['pv_watts']&.round,
+        watt_clearsky: value_point['pv_watts_clearsky']&.round,
+      }.compact
     end
 
     result
