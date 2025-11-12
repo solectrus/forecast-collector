@@ -146,4 +146,90 @@ describe Config do
       end
     end
   end
+
+  describe 'pvnode configurations' do
+    context 'with single plane' do
+      around do |example|
+        ClimateControl.modify(
+          FORECAST_LATITUDE: '50.0',
+          FORECAST_LONGITUDE: '6.0',
+          FORECAST_DECLINATION: '30',
+          FORECAST_AZIMUTH: '20',
+          FORECAST_KWP: '9.24',
+          FORECAST_CONFIGURATIONS: nil,
+        ) do
+          example.run
+        end
+      end
+
+      it 'returns single pvnode configuration' do
+        config = described_class.from_env
+        expect(config.pvnode_configurations.length).to eq(1)
+        expect(config.pvnode_configurations.first).to eq(
+          latitude: '50.0',
+          longitude: '6.0',
+          declination: '30',
+          azimuth: '20',
+          kwp: '9.24',
+        )
+      end
+    end
+
+    context 'with multiple planes' do
+      around do |example|
+        ClimateControl.modify(
+          FORECAST_LATITUDE: '52.009085',
+          FORECAST_LONGITUDE: '11.737578',
+          FORECAST_CONFIGURATIONS: '4',
+          FORECAST_0_DECLINATION: '53',
+          FORECAST_0_AZIMUTH: '135',
+          FORECAST_0_KWP: '6.375',
+          FORECAST_1_DECLINATION: '53',
+          FORECAST_1_AZIMUTH: '315',
+          FORECAST_1_KWP: '6.375',
+          FORECAST_2_DECLINATION: '90',
+          FORECAST_2_AZIMUTH: '225',
+          FORECAST_2_KWP: '1.305',
+          FORECAST_3_DECLINATION: '12.67',
+          FORECAST_3_AZIMUTH: '135',
+          FORECAST_3_KWP: '3.28',
+        ) do
+          example.run
+        end
+      end
+
+      it 'returns multiple pvnode configurations' do
+        config = described_class.from_env
+        expect(config.pvnode_configurations.length).to eq(4)
+        expect(config.pvnode_configurations[0]).to eq(
+          latitude: '52.009085',
+          longitude: '11.737578',
+          declination: '53',
+          azimuth: '135',
+          kwp: '6.375',
+        )
+        expect(config.pvnode_configurations[1]).to eq(
+          latitude: '52.009085',
+          longitude: '11.737578',
+          declination: '53',
+          azimuth: '315',
+          kwp: '6.375',
+        )
+        expect(config.pvnode_configurations[2]).to eq(
+          latitude: '52.009085',
+          longitude: '11.737578',
+          declination: '90',
+          azimuth: '225',
+          kwp: '1.305',
+        )
+        expect(config.pvnode_configurations[3]).to eq(
+          latitude: '52.009085',
+          longitude: '11.737578',
+          declination: '12.67',
+          azimuth: '135',
+          kwp: '3.28',
+        )
+      end
+    end
+  end
 end

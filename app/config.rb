@@ -100,7 +100,7 @@ class Config # rubocop:disable Metrics/ClassLength
         kwp: ENV.fetch('FORECAST_KWP', ''),
       }
       {
-        pvnode_configurations: all_configurations_from_env('PVNODE', PvnodeConfiguration, defaults),
+        pvnode_configurations: all_configurations_from_env('FORECAST', PvnodeConfiguration, defaults),
         pvnode_apikey: ENV.fetch('PVNODE_APIKEY', nil),
       }
     end
