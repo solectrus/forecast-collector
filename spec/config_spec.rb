@@ -175,6 +175,44 @@ describe Config do
       end
     end
 
+    context 'with extra parameters' do
+      around do |example|
+        ClimateControl.modify(
+          PVNODE_FORECAST_DAYS: '7',
+          PVNODE_DIFFUSE_RADIATION_MODEL: 'perez',
+          PVNODE_CLEARSKY_DATA: 'true',
+        ) do
+          example.run
+        end
+      end
+
+      it 'returns pvnode extra parameters' do
+        config = described_class.from_env(forecast_provider: 'pvnode')
+        expect(config.pvnode_forecast_days).to eq('7')
+        expect(config.pvnode_diffuse_radiation_model).to eq('perez')
+        expect(config.pvnode_clearsky_data).to eq('true')
+      end
+    end
+
+    context 'without extra parameters' do
+      around do |example|
+        ClimateControl.modify(
+          PVNODE_FORECAST_DAYS: nil,
+          PVNODE_DIFFUSE_RADIATION_MODEL: nil,
+          PVNODE_CLEARSKY_DATA: nil,
+        ) do
+          example.run
+        end
+      end
+
+      it 'returns nil for pvnode extra parameters' do
+        config = described_class.from_env(forecast_provider: 'pvnode')
+        expect(config.pvnode_forecast_days).to eq('1')
+        expect(config.pvnode_diffuse_radiation_model).to be_nil
+        expect(config.pvnode_clearsky_data).to be_nil
+      end
+    end
+
     context 'with multiple planes' do
       around do |example|
         ClimateControl.modify(

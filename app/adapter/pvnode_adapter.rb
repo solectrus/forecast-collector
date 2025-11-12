@@ -66,7 +66,8 @@ class PvnodeAdapter < BaseAdapter
   def formatted_url(index)
     uri = URI(BASE_URL)
     cfg = config.pvnode_configurations[index]
-    uri.query = URI.encode_www_form(
+
+    params = {
       latitude: cfg[:latitude],
       longitude: cfg[:longitude],
       slope: declination_to_slope(cfg[:declination]),
@@ -74,9 +75,12 @@ class PvnodeAdapter < BaseAdapter
       pv_power_kw: cfg[:kwp],
       required_data: 'pv_watts',
       past_days: 0,
-      diffuse_radiation_model: 'perez',
-      clearsky_data: true,
-    )
+      forecast_days: config.pvnode_forecast_days,
+      diffuse_radiation_model: config.pvnode_diffuse_radiation_model,
+      clearsky_data: config.pvnode_clearsky_data,
+    }.compact
+
+    uri.query = URI.encode_www_form(params)
     uri.to_s
   end
 

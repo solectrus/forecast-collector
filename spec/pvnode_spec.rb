@@ -2,7 +2,7 @@ require 'adapter/pvnode_adapter'
 
 describe PvnodeAdapter do
   let(:config) { Config.from_env(forecast_provider: 'pvnode') }
-  let(:pvnode) { described_class.new(config: config) }
+  let(:pvnode) { described_class.new(config:) }
 
   describe '#fetch_data' do
     context 'when successful' do
@@ -65,25 +65,65 @@ describe PvnodeAdapter do
     end
   end
 
-  describe 'parameter conversions' do
-    describe '#declination_to_slope' do
-      it 'converts declination to slope without rounding' do
-        adapter = described_class.new(config: config)
-
-        expect(adapter.send(:declination_to_slope, '30')).to eq(30.0)
-        expect(adapter.send(:declination_to_slope, '27.123')).to eq(27.123)
-        expect(adapter.send(:declination_to_slope, '12.67')).to eq(12.67)
-      end
+  describe '#formatted_url' do
+    subject(:params) do
+      url = pvnode.formatted_url(0)
+      URI.decode_www_form(URI.parse(url).query).to_h
     end
 
-    describe '#azimuth_to_orientation' do
-      it 'converts azimuth to orientation by adding 180 degrees' do
-        adapter = described_class.new(config: config)
+    it 'includes extra parameters when set in config' do
+      expect(params['forecast_days']).to eq('3')
+      expect(params['diffuse_radiation_model']).to eq('perez')
+      expect(params['clearsky_data']).to eq('true')
+    end
 
-        expect(adapter.send(:azimuth_to_orientation, '20')).to eq(200)
-        expect(adapter.send(:azimuth_to_orientation, '-87.5')).to eq(92.5)
-        expect(adapter.send(:azimuth_to_orientation, '92.5')).to eq(272.5)
-        expect(adapter.send(:azimuth_to_orientation, '135')).to eq(315)
+    it 'includes required parameters with correct values' do
+      expect(params['latitude']).to eq('50.9215')
+      expect(params['longitude']).to eq('6.3627')
+      expect(params['slope']).to eq('30.0')
+      expect(params['orientation']).to eq('200.0')
+      expect(params['pv_power_kw']).to eq('9.24')
+      expect(params['required_data']).to eq('pv_watts')
+      expect(params['past_days']).to eq('0')
+    end
+
+    it 'converts declination to slope' do
+      expect(params['slope']).to eq('30.0')
+    end
+
+    it 'converts azimuth to orientation by adding 180 degrees' do
+      expect(params['orientation']).to eq('200.0')
+    end
+
+    context 'when extra parameters are nil' do
+      let(:config) do
+        Config.new(
+          forecast_interval: 900,
+          influx_host: 'localhost',
+          influx_schema: 'http',
+          influx_port: '8086',
+          influx_token: 'test-token',
+          influx_org: 'test-org',
+          influx_bucket: 'test-bucket',
+          influx_measurement: 'test-measurement',
+          pvnode_apikey: 'test-key',
+          pvnode_configurations: [{
+            latitude: '50.0',
+            longitude: '6.0',
+            declination: '30',
+            azimuth: '20',
+            kwp: '9.24',
+          }],
+          pvnode_forecast_days: nil,
+          pvnode_diffuse_radiation_model: nil,
+          pvnode_clearsky_data: nil,
+        )
+      end
+
+      it 'omits nil parameters from URL' do
+        expect(params).not_to have_key('forecast_days')
+        expect(params).not_to have_key('diffuse_radiation_model')
+        expect(params).not_to have_key('clearsky_data')
       end
     end
   end

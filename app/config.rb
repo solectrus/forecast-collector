@@ -19,6 +19,9 @@ class Config # rubocop:disable Metrics/ClassLength
               :forecast_solar_apikey,
               :pvnode_configurations,
               :pvnode_apikey,
+              :pvnode_forecast_days,
+              :pvnode_diffuse_radiation_model,
+              :pvnode_clearsky_data,
               :solcast_configurations,
               :solcast_apikey
 
@@ -99,9 +102,13 @@ class Config # rubocop:disable Metrics/ClassLength
         azimuth: ENV.fetch('FORECAST_AZIMUTH', ''),
         kwp: ENV.fetch('FORECAST_KWP', ''),
       }
+
       {
         pvnode_configurations: all_configurations_from_env('FORECAST', PvnodeConfiguration, defaults),
         pvnode_apikey: ENV.fetch('PVNODE_APIKEY', nil),
+        pvnode_forecast_days: ENV.fetch('PVNODE_FORECAST_DAYS', '1'),
+        pvnode_diffuse_radiation_model: ENV.fetch('PVNODE_DIFFUSE_RADIATION_MODEL', nil),
+        pvnode_clearsky_data: ENV.fetch('PVNODE_CLEARSKY_DATA', nil),
       }
     end
 
