@@ -64,4 +64,27 @@ describe PvnodeAdapter do
       it { is_expected.to eq(Time.utc(2026, 1, 1, 1, 5, 0)) }
     end
   end
+
+  describe 'parameter conversions' do
+    describe '#declination_to_slope' do
+      it 'converts declination to slope without rounding' do
+        adapter = described_class.new(config: config)
+
+        expect(adapter.send(:declination_to_slope, '30')).to eq(30.0)
+        expect(adapter.send(:declination_to_slope, '27.123')).to eq(27.123)
+        expect(adapter.send(:declination_to_slope, '12.67')).to eq(12.67)
+      end
+    end
+
+    describe '#azimuth_to_orientation' do
+      it 'converts azimuth to orientation by adding 180 degrees' do
+        adapter = described_class.new(config: config)
+
+        expect(adapter.send(:azimuth_to_orientation, '20')).to eq(200)
+        expect(adapter.send(:azimuth_to_orientation, '-87.5')).to eq(92.5)
+        expect(adapter.send(:azimuth_to_orientation, '92.5')).to eq(272.5)
+        expect(adapter.send(:azimuth_to_orientation, '135')).to eq(315)
+      end
+    end
+  end
 end

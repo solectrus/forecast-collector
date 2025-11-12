@@ -83,11 +83,11 @@ class PvnodeAdapter < BaseAdapter
   private
 
   def azimuth_to_orientation(azimuth)
-    (azimuth.to_i + 180) % 360
+    (azimuth.to_f + 180) % 360
   end
 
   def declination_to_slope(declination)
-    declination.to_f.round(1)
+    declination.to_f
   end
 
   def make_http_request(index)
