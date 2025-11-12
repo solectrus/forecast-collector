@@ -25,7 +25,6 @@ class FluxWriter
           name: influx_measurement,
           time: key,
           fields:,
-          tags: { provider: config.adapter.provider_name },
         )
       end
 
