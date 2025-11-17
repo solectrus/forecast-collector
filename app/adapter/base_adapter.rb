@@ -56,12 +56,13 @@ class BaseAdapter
   def accumulate_hash_value(result, timestamp, value)
     result[timestamp] ||= {}
     value.each do |field, field_value|
-      # Temperature should not be summed - keep the value from the first configuration
-      if field == :temp
-        result[timestamp][field] ||= field_value
-      else
+      if field.to_s.include?('watt')
+        # watt or watt_clearsky - sum the values
         result[timestamp][field] ||= 0
         result[timestamp][field] += field_value
+      else
+        # Temperature, weather_code, etc. - keep the first value
+        result[timestamp][field] ||= field_value
       end
     end
   end

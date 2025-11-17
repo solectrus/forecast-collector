@@ -85,7 +85,7 @@ describe PvnodeAdapter do
       expect(params['slope']).to eq('30.0')
       expect(params['orientation']).to eq('200.0')
       expect(params['pv_power_kw']).to eq('9.24')
-      expect(params['required_data']).to eq('pv_watts,temp')
+      expect(params['required_data']).to eq('pv_watts,temp,weather_code')
       expect(params['past_days']).to eq('0')
     end
 

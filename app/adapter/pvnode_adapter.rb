@@ -20,6 +20,7 @@ class PvnodeAdapter < BaseAdapter
         watt: value_point['pv_watts']&.round,
         watt_clearsky: value_point['pv_watts_clearsky']&.round,
         temp: value_point['temp']&.round(1),
+        weather_code: value_point['weather_code'],
       }.compact
     end
 
@@ -75,7 +76,7 @@ class PvnodeAdapter < BaseAdapter
       slope: declination_to_slope(cfg[:declination]),
       orientation: azimuth_to_orientation(cfg[:azimuth]),
       pv_power_kw: cfg[:kwp],
-      required_data: 'pv_watts,temp',
+      required_data: 'pv_watts,temp,weather_code',
       past_days: 0,
       forecast_days: config.pvnode_forecast_days,
       diffuse_radiation_model: config.pvnode_diffuse_radiation_model,
