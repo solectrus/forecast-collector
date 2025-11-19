@@ -80,8 +80,8 @@ describe PvnodeAdapter do
     end
 
     it 'includes required parameters with correct values' do
-      expect(params['latitude']).to eq('50.9215')
-      expect(params['longitude']).to eq('6.3627')
+      expect(params['latitude']).to eq('50.92264')
+      expect(params['longitude']).to eq('6.407')
       expect(params['slope']).to eq('30.0')
       expect(params['orientation']).to eq('200.0')
       expect(params['pv_power_kw']).to eq('9.24')

@@ -93,8 +93,8 @@ describe Config do
       expect(config.forecast_solar_configurations.length).to eq(1)
       expect(config.forecast_solar_configurations).to eq([
         {
-          latitude: '50.9215',
-          longitude: '6.3627',
+          latitude: '50.92264',
+          longitude: '6.407',
           declination: '30',
           azimuth: '20',
           kwp: '9.24',
