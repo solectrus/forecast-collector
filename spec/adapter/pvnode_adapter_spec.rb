@@ -116,10 +116,10 @@ describe PvnodeAdapter do
             declination: '30',
             azimuth: '20',
             kwp: '9.24',
+            extra_params: nil,
           }],
           pvnode_forecast_days: nil,
           pvnode_clearsky_data: nil,
-          pvnode_extra_params: nil,
         )
       end
 

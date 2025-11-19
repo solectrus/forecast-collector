@@ -84,8 +84,8 @@ class PvnodeAdapter < BaseAdapter
 
     uri.query = URI.encode_www_form(params)
 
-    # Append extra parameters if provided
-    uri.query += "&#{config.pvnode_extra_params}" if config.pvnode_extra_params
+    # Append extra parameters if provided (per-plane configuration)
+    uri.query += "&#{cfg[:extra_params]}" if cfg[:extra_params]
 
     uri.to_s
   end

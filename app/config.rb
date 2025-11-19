@@ -21,7 +21,6 @@ class Config # rubocop:disable Metrics/ClassLength
               :pvnode_apikey,
               :pvnode_forecast_days,
               :pvnode_clearsky_data,
-              :pvnode_extra_params,
               :solcast_configurations,
               :solcast_apikey
 
@@ -101,14 +100,14 @@ class Config # rubocop:disable Metrics/ClassLength
         declination: ENV.fetch('FORECAST_DECLINATION', ''),
         azimuth: ENV.fetch('FORECAST_AZIMUTH', ''),
         kwp: ENV.fetch('FORECAST_KWP', ''),
+        extra_params: ENV.fetch('PVNODE_EXTRA_PARAMS', nil),
       }
 
       {
-        pvnode_configurations: all_configurations_from_env('FORECAST', PvnodeConfiguration, defaults),
+        pvnode_configurations: all_configurations_from_env('PVNODE', PvnodeConfiguration, defaults),
         pvnode_apikey: ENV.fetch('PVNODE_APIKEY', nil),
         pvnode_forecast_days: ENV.fetch('PVNODE_FORECAST_DAYS', '1'),
         pvnode_clearsky_data: ENV.fetch('PVNODE_CLEARSKY_DATA', nil),
-        pvnode_extra_params: ENV.fetch('PVNODE_EXTRA_PARAMS', nil),
       }
     end
 
@@ -183,23 +182,14 @@ class SolcastConfiguration
 end
 
 class PvnodeConfiguration
-  attr_reader :latitude, :longitude, :declination, :azimuth, :kwp
-
-  def initialize(options = {})
-    options.each { |key, value| instance_variable_set("@#{key}", value) }
-  end
-
-  def [](key)
-    public_send(key)
-  end
-
   def self.from_env(index, prefix, defaults)
     {
-      latitude: ENV.fetch("#{prefix}_#{index}_LATITUDE", defaults[:latitude]),
-      longitude: ENV.fetch("#{prefix}_#{index}_LONGITUDE", defaults[:longitude]),
-      declination: ENV.fetch("#{prefix}_#{index}_DECLINATION", defaults[:declination]),
-      azimuth: ENV.fetch("#{prefix}_#{index}_AZIMUTH", defaults[:azimuth]),
-      kwp: ENV.fetch("#{prefix}_#{index}_KWP", defaults[:kwp]),
+      latitude: ENV.fetch("FORECAST_#{index}_LATITUDE", defaults[:latitude]),
+      longitude: ENV.fetch("FORECAST_#{index}_LONGITUDE", defaults[:longitude]),
+      declination: ENV.fetch("FORECAST_#{index}_DECLINATION", defaults[:declination]),
+      azimuth: ENV.fetch("FORECAST_#{index}_AZIMUTH", defaults[:azimuth]),
+      kwp: ENV.fetch("FORECAST_#{index}_KWP", defaults[:kwp]),
+      extra_params: ENV.fetch("#{prefix}_#{index}_EXTRA_PARAMS", defaults[:extra_params]),
     }
   end
 end

@@ -157,6 +157,7 @@ describe Config do
           FORECAST_AZIMUTH: '20',
           FORECAST_KWP: '9.24',
           FORECAST_CONFIGURATIONS: nil,
+          PVNODE_EXTRA_PARAMS: nil,
         ) do
           example.run
         end
@@ -171,6 +172,7 @@ describe Config do
           declination: '30',
           azimuth: '20',
           kwp: '9.24',
+          extra_params: nil,
         )
       end
     end
@@ -186,11 +188,13 @@ describe Config do
         end
       end
 
-      it 'returns pvnode extra parameters' do
+      it 'returns pvnode extra parameters in configuration' do
         config = described_class.from_env(forecast_provider: 'pvnode')
         expect(config.pvnode_forecast_days).to eq('7')
         expect(config.pvnode_clearsky_data).to eq('true')
-        expect(config.pvnode_extra_params).to eq('diffuse_radiation_model=perez&snow_slide_coefficient=0.5')
+        expect(config.pvnode_configurations.first[:extra_params]).to eq(
+          'diffuse_radiation_model=perez&snow_slide_coefficient=0.5',
+        )
       end
     end
 
@@ -205,11 +209,11 @@ describe Config do
         end
       end
 
-      it 'returns nil for pvnode extra parameters' do
+      it 'returns nil for pvnode extra parameters in configuration' do
         config = described_class.from_env(forecast_provider: 'pvnode')
         expect(config.pvnode_forecast_days).to eq('1')
         expect(config.pvnode_clearsky_data).to be_nil
-        expect(config.pvnode_extra_params).to be_nil
+        expect(config.pvnode_configurations.first[:extra_params]).to be_nil
       end
     end
 
@@ -231,6 +235,7 @@ describe Config do
           FORECAST_3_DECLINATION: '12.67',
           FORECAST_3_AZIMUTH: '135',
           FORECAST_3_KWP: '3.28',
+          PVNODE_EXTRA_PARAMS: nil,
         ) do
           example.run
         end
@@ -245,6 +250,7 @@ describe Config do
           declination: '53',
           azimuth: '135',
           kwp: '6.375',
+          extra_params: nil,
         )
         expect(config.pvnode_configurations[1]).to eq(
           latitude: '52.009085',
@@ -252,6 +258,7 @@ describe Config do
           declination: '53',
           azimuth: '315',
           kwp: '6.375',
+          extra_params: nil,
         )
         expect(config.pvnode_configurations[2]).to eq(
           latitude: '52.009085',
@@ -259,6 +266,7 @@ describe Config do
           declination: '90',
           azimuth: '225',
           kwp: '1.305',
+          extra_params: nil,
         )
         expect(config.pvnode_configurations[3]).to eq(
           latitude: '52.009085',
@@ -266,6 +274,7 @@ describe Config do
           declination: '12.67',
           azimuth: '135',
           kwp: '3.28',
+          extra_params: nil,
         )
       end
     end
