@@ -20,8 +20,8 @@ class Config # rubocop:disable Metrics/ClassLength
               :pvnode_configurations,
               :pvnode_apikey,
               :pvnode_forecast_days,
-              :pvnode_diffuse_radiation_model,
               :pvnode_clearsky_data,
+              :pvnode_extra_params,
               :solcast_configurations,
               :solcast_apikey
 
@@ -107,8 +107,8 @@ class Config # rubocop:disable Metrics/ClassLength
         pvnode_configurations: all_configurations_from_env('FORECAST', PvnodeConfiguration, defaults),
         pvnode_apikey: ENV.fetch('PVNODE_APIKEY', nil),
         pvnode_forecast_days: ENV.fetch('PVNODE_FORECAST_DAYS', '1'),
-        pvnode_diffuse_radiation_model: ENV.fetch('PVNODE_DIFFUSE_RADIATION_MODEL', nil),
         pvnode_clearsky_data: ENV.fetch('PVNODE_CLEARSKY_DATA', nil),
+        pvnode_extra_params: ENV.fetch('PVNODE_EXTRA_PARAMS', nil),
       }
     end
 

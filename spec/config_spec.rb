@@ -179,8 +179,8 @@ describe Config do
       around do |example|
         ClimateControl.modify(
           PVNODE_FORECAST_DAYS: '7',
-          PVNODE_DIFFUSE_RADIATION_MODEL: 'perez',
           PVNODE_CLEARSKY_DATA: 'true',
+          PVNODE_EXTRA_PARAMS: 'diffuse_radiation_model=perez&snow_slide_coefficient=0.5',
         ) do
           example.run
         end
@@ -189,8 +189,8 @@ describe Config do
       it 'returns pvnode extra parameters' do
         config = described_class.from_env(forecast_provider: 'pvnode')
         expect(config.pvnode_forecast_days).to eq('7')
-        expect(config.pvnode_diffuse_radiation_model).to eq('perez')
         expect(config.pvnode_clearsky_data).to eq('true')
+        expect(config.pvnode_extra_params).to eq('diffuse_radiation_model=perez&snow_slide_coefficient=0.5')
       end
     end
 
@@ -198,8 +198,8 @@ describe Config do
       around do |example|
         ClimateControl.modify(
           PVNODE_FORECAST_DAYS: nil,
-          PVNODE_DIFFUSE_RADIATION_MODEL: nil,
           PVNODE_CLEARSKY_DATA: nil,
+          PVNODE_EXTRA_PARAMS: nil,
         ) do
           example.run
         end
@@ -208,8 +208,8 @@ describe Config do
       it 'returns nil for pvnode extra parameters' do
         config = described_class.from_env(forecast_provider: 'pvnode')
         expect(config.pvnode_forecast_days).to eq('1')
-        expect(config.pvnode_diffuse_radiation_model).to be_nil
         expect(config.pvnode_clearsky_data).to be_nil
+        expect(config.pvnode_extra_params).to be_nil
       end
     end
 

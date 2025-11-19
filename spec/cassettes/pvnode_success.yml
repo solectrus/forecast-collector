@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: get
-    uri: https://api.pvnode.com/v1/forecast/?clearsky_data=true&diffuse_radiation_model=perez&forecast_days=3&latitude=<FORECAST_LATITUDE>&longitude=<FORECAST_LONGITUDE>&orientation=200.0&past_days=0&pv_power_kw=9.24&required_data=pv_watts,temp,weather_code&slope=30.0
+    uri: https://api.pvnode.com/v1/forecast/?clearsky_data=true&diffuse_radiation_model=perez&forecast_days=3&latitude=<FORECAST_LATITUDE>&longitude=<FORECAST_LONGITUDE>&orientation=200.0&past_days=0&pv_power_kw=9.24&required_data=pv_watts,temp,weather_code&slope=30.0&snow_slide_coefficient=0.5
     body:
       encoding: US-ASCII
       string: ''
@@ -27,7 +27,7 @@ http_interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 19 Nov 2025 07:51:41 GMT
+      - Wed, 19 Nov 2025 09:57:44 GMT
       Server:
       - uvicorn
       Vary:
@@ -58,177 +58,177 @@ http_interactions:
         04:30:00","pv_watts":0.0,"temp":3.9,"weather_code":80,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
         04:45:00","pv_watts":0.0,"temp":3.8,"weather_code":80,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
         05:00:00","pv_watts":0.0,"temp":3.7,"weather_code":80,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        05:15:00","pv_watts":0.0,"temp":3.6,"weather_code":80,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        05:30:00","pv_watts":0.0,"temp":3.6,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        05:45:00","pv_watts":0.0,"temp":3.6,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        06:00:00","pv_watts":0.0,"temp":3.6,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        06:15:00","pv_watts":0.0,"temp":3.5,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        05:15:00","pv_watts":0.0,"temp":3.7,"weather_code":80,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        05:30:00","pv_watts":0.0,"temp":3.7,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        05:45:00","pv_watts":0.0,"temp":3.7,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        06:00:00","pv_watts":0.0,"temp":3.7,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        06:15:00","pv_watts":0.0,"temp":3.6,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
         06:30:00","pv_watts":0.0,"temp":3.5,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        06:45:00","pv_watts":0.0,"temp":3.5,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        07:00:00","pv_watts":0.0,"temp":3.5,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        06:45:00","pv_watts":0.0,"temp":3.4,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        07:00:00","pv_watts":0.0,"temp":3.4,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
         07:15:00","pv_watts":32.8,"temp":3.5,"weather_code":2,"spec_watts_clearsky":2.56,"pv_watts_clearsky":23.654400000000003},{"dtm":"2025-11-19
         07:30:00","pv_watts":59.11,"temp":3.6,"weather_code":3,"spec_watts_clearsky":18.49,"pv_watts_clearsky":170.8476},{"dtm":"2025-11-19
-        07:45:00","pv_watts":426.94,"temp":3.7,"weather_code":3,"spec_watts_clearsky":56.62,"pv_watts_clearsky":523.1688},{"dtm":"2025-11-19
+        07:45:00","pv_watts":426.94,"temp":3.7,"weather_code":3,"spec_watts_clearsky":56.61,"pv_watts_clearsky":523.0764},{"dtm":"2025-11-19
         08:00:00","pv_watts":803.26,"temp":3.8,"weather_code":3,"spec_watts_clearsky":106.56,"pv_watts_clearsky":984.6144},{"dtm":"2025-11-19
         08:15:00","pv_watts":1109.46,"temp":4.0,"weather_code":3,"spec_watts_clearsky":157.33,"pv_watts_clearsky":1453.7292000000002},{"dtm":"2025-11-19
         08:30:00","pv_watts":1619.76,"temp":4.3,"weather_code":3,"spec_watts_clearsky":209.23,"pv_watts_clearsky":1933.2852},{"dtm":"2025-11-19
-        08:45:00","pv_watts":1448.59,"temp":4.6,"weather_code":3,"spec_watts_clearsky":259.97,"pv_watts_clearsky":2402.1228},{"dtm":"2025-11-19
-        09:00:00","pv_watts":1432.62,"temp":4.9,"weather_code":3,"spec_watts_clearsky":308.22,"pv_watts_clearsky":2847.9528000000005},{"dtm":"2025-11-19
-        09:15:00","pv_watts":1530.4,"temp":5.0,"weather_code":3,"spec_watts_clearsky":353.75,"pv_watts_clearsky":3268.65},{"dtm":"2025-11-19
-        09:30:00","pv_watts":1526.64,"temp":5.1,"weather_code":61,"spec_watts_clearsky":396.02,"pv_watts_clearsky":3659.2248},{"dtm":"2025-11-19
-        09:45:00","pv_watts":844.77,"temp":5.2,"weather_code":61,"spec_watts_clearsky":434.79,"pv_watts_clearsky":4017.4596},{"dtm":"2025-11-19
-        10:00:00","pv_watts":831.93,"temp":5.4,"weather_code":61,"spec_watts_clearsky":469.58,"pv_watts_clearsky":4338.9192},{"dtm":"2025-11-19
-        10:15:00","pv_watts":966.27,"temp":5.2,"weather_code":61,"spec_watts_clearsky":501.05,"pv_watts_clearsky":4629.702},{"dtm":"2025-11-19
-        10:30:00","pv_watts":728.72,"temp":5.1,"weather_code":61,"spec_watts_clearsky":528.25,"pv_watts_clearsky":4881.03},{"dtm":"2025-11-19
-        10:45:00","pv_watts":320.39,"temp":4.9,"weather_code":61,"spec_watts_clearsky":551.19,"pv_watts_clearsky":5092.9956},{"dtm":"2025-11-19
-        11:00:00","pv_watts":305.55,"temp":4.8,"weather_code":61,"spec_watts_clearsky":569.69,"pv_watts_clearsky":5263.935600000001},{"dtm":"2025-11-19
-        11:15:00","pv_watts":350.9,"temp":4.8,"weather_code":61,"spec_watts_clearsky":583.86,"pv_watts_clearsky":5394.8664},{"dtm":"2025-11-19
-        11:30:00","pv_watts":305.57,"temp":4.8,"weather_code":61,"spec_watts_clearsky":593.76,"pv_watts_clearsky":5486.3424},{"dtm":"2025-11-19
-        11:45:00","pv_watts":240.85,"temp":4.8,"weather_code":61,"spec_watts_clearsky":598.7,"pv_watts_clearsky":5531.988},{"dtm":"2025-11-19
-        12:00:00","pv_watts":298.08,"temp":4.9,"weather_code":61,"spec_watts_clearsky":598.7,"pv_watts_clearsky":5531.988},{"dtm":"2025-11-19
-        12:15:00","pv_watts":452.55,"temp":4.9,"weather_code":61,"spec_watts_clearsky":594.09,"pv_watts_clearsky":5489.391600000001},{"dtm":"2025-11-19
-        12:30:00","pv_watts":973.88,"temp":5.0,"weather_code":61,"spec_watts_clearsky":584.19,"pv_watts_clearsky":5397.9156},{"dtm":"2025-11-19
-        12:45:00","pv_watts":522.13,"temp":5.1,"weather_code":61,"spec_watts_clearsky":569.21,"pv_watts_clearsky":5259.500400000001},{"dtm":"2025-11-19
-        13:00:00","pv_watts":558.75,"temp":5.2,"weather_code":61,"spec_watts_clearsky":549.19,"pv_watts_clearsky":5074.515600000001},{"dtm":"2025-11-19
-        13:15:00","pv_watts":588.3,"temp":5.1,"weather_code":61,"spec_watts_clearsky":523.78,"pv_watts_clearsky":4839.7272},{"dtm":"2025-11-19
-        13:30:00","pv_watts":555.67,"temp":5.1,"weather_code":61,"spec_watts_clearsky":492.84,"pv_watts_clearsky":4553.8416},{"dtm":"2025-11-19
-        13:45:00","pv_watts":381.63,"temp":5.0,"weather_code":61,"spec_watts_clearsky":456.66,"pv_watts_clearsky":4219.5384},{"dtm":"2025-11-19
-        14:00:00","pv_watts":312.02,"temp":5.0,"weather_code":61,"spec_watts_clearsky":414.63,"pv_watts_clearsky":3831.1812},{"dtm":"2025-11-19
-        14:15:00","pv_watts":396.86,"temp":4.9,"weather_code":61,"spec_watts_clearsky":366.87,"pv_watts_clearsky":3389.8788},{"dtm":"2025-11-19
-        14:30:00","pv_watts":224.98,"temp":4.8,"weather_code":61,"spec_watts_clearsky":312.91,"pv_watts_clearsky":2891.2884000000004},{"dtm":"2025-11-19
-        14:45:00","pv_watts":247.36,"temp":4.7,"weather_code":61,"spec_watts_clearsky":252.3,"pv_watts_clearsky":2331.252},{"dtm":"2025-11-19
-        15:00:00","pv_watts":99.19,"temp":4.6,"weather_code":61,"spec_watts_clearsky":185.33,"pv_watts_clearsky":1712.4492000000002},{"dtm":"2025-11-19
-        15:15:00","pv_watts":64.44,"temp":4.5,"weather_code":61,"spec_watts_clearsky":108.37,"pv_watts_clearsky":1001.3388000000001},{"dtm":"2025-11-19
-        15:30:00","pv_watts":26.01,"temp":4.4,"weather_code":3,"spec_watts_clearsky":39.36,"pv_watts_clearsky":363.6864},{"dtm":"2025-11-19
-        15:45:00","pv_watts":0.0,"temp":4.3,"weather_code":3,"spec_watts_clearsky":5.67,"pv_watts_clearsky":52.3908},{"dtm":"2025-11-19
-        16:00:00","pv_watts":0.0,"temp":4.3,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        16:15:00","pv_watts":0.0,"temp":4.2,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        16:30:00","pv_watts":0.0,"temp":4.2,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        16:45:00","pv_watts":0.0,"temp":4.2,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        17:00:00","pv_watts":0.0,"temp":4.2,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        17:15:00","pv_watts":0.0,"temp":4.2,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        17:30:00","pv_watts":0.0,"temp":4.2,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        17:45:00","pv_watts":0.0,"temp":4.2,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        18:00:00","pv_watts":0.0,"temp":4.3,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        18:15:00","pv_watts":0.0,"temp":4.2,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        08:45:00","pv_watts":1449.07,"temp":4.5,"weather_code":3,"spec_watts_clearsky":260.1,"pv_watts_clearsky":2403.324},{"dtm":"2025-11-19
+        09:00:00","pv_watts":1433.11,"temp":4.8,"weather_code":3,"spec_watts_clearsky":308.38,"pv_watts_clearsky":2849.4312},{"dtm":"2025-11-19
+        09:15:00","pv_watts":1995.36,"temp":4.9,"weather_code":3,"spec_watts_clearsky":353.99,"pv_watts_clearsky":3270.8676},{"dtm":"2025-11-19
+        09:30:00","pv_watts":1457.28,"temp":5.1,"weather_code":61,"spec_watts_clearsky":396.12,"pv_watts_clearsky":3660.1488},{"dtm":"2025-11-19
+        09:45:00","pv_watts":1269.15,"temp":5.2,"weather_code":61,"spec_watts_clearsky":434.95,"pv_watts_clearsky":4018.938},{"dtm":"2025-11-19
+        10:00:00","pv_watts":765.26,"temp":5.4,"weather_code":61,"spec_watts_clearsky":469.84,"pv_watts_clearsky":4341.3216},{"dtm":"2025-11-19
+        10:15:00","pv_watts":770.95,"temp":5.3,"weather_code":61,"spec_watts_clearsky":500.99,"pv_watts_clearsky":4629.1476},{"dtm":"2025-11-19
+        10:30:00","pv_watts":911.46,"temp":5.2,"weather_code":61,"spec_watts_clearsky":528.12,"pv_watts_clearsky":4879.8288},{"dtm":"2025-11-19
+        10:45:00","pv_watts":1361.38,"temp":5.1,"weather_code":61,"spec_watts_clearsky":550.7,"pv_watts_clearsky":5088.468000000001},{"dtm":"2025-11-19
+        11:00:00","pv_watts":1062.27,"temp":5.1,"weather_code":61,"spec_watts_clearsky":568.83,"pv_watts_clearsky":5255.989200000001},{"dtm":"2025-11-19
+        11:15:00","pv_watts":1218.68,"temp":4.9,"weather_code":61,"spec_watts_clearsky":583.51,"pv_watts_clearsky":5391.6324},{"dtm":"2025-11-19
+        11:30:00","pv_watts":1309.09,"temp":4.8,"weather_code":61,"spec_watts_clearsky":593.61,"pv_watts_clearsky":5484.9564},{"dtm":"2025-11-19
+        11:45:00","pv_watts":714.12,"temp":4.7,"weather_code":61,"spec_watts_clearsky":598.76,"pv_watts_clearsky":5532.5424},{"dtm":"2025-11-19
+        12:00:00","pv_watts":429.1,"temp":4.6,"weather_code":61,"spec_watts_clearsky":599.3,"pv_watts_clearsky":5537.532},{"dtm":"2025-11-19
+        12:15:00","pv_watts":621.08,"temp":4.7,"weather_code":61,"spec_watts_clearsky":594.33,"pv_watts_clearsky":5491.609200000001},{"dtm":"2025-11-19
+        12:30:00","pv_watts":531.59,"temp":4.8,"weather_code":61,"spec_watts_clearsky":584.4,"pv_watts_clearsky":5399.856},{"dtm":"2025-11-19
+        12:45:00","pv_watts":455.32,"temp":4.9,"weather_code":61,"spec_watts_clearsky":569.38,"pv_watts_clearsky":5261.0712},{"dtm":"2025-11-19
+        13:00:00","pv_watts":732.75,"temp":5.0,"weather_code":61,"spec_watts_clearsky":549.31,"pv_watts_clearsky":5075.6244},{"dtm":"2025-11-19
+        13:15:00","pv_watts":486.55,"temp":4.9,"weather_code":61,"spec_watts_clearsky":523.92,"pv_watts_clearsky":4841.020799999999},{"dtm":"2025-11-19
+        13:30:00","pv_watts":305.81,"temp":4.8,"weather_code":61,"spec_watts_clearsky":493.26,"pv_watts_clearsky":4557.7224},{"dtm":"2025-11-19
+        13:45:00","pv_watts":269.52,"temp":4.7,"weather_code":61,"spec_watts_clearsky":457.09,"pv_watts_clearsky":4223.5116},{"dtm":"2025-11-19
+        14:00:00","pv_watts":497.51,"temp":4.7,"weather_code":61,"spec_watts_clearsky":415.04,"pv_watts_clearsky":3834.9696000000004},{"dtm":"2025-11-19
+        14:15:00","pv_watts":436.18,"temp":4.6,"weather_code":61,"spec_watts_clearsky":367.21,"pv_watts_clearsky":3393.0204},{"dtm":"2025-11-19
+        14:30:00","pv_watts":191.32,"temp":4.6,"weather_code":61,"spec_watts_clearsky":313.02,"pv_watts_clearsky":2892.3048},{"dtm":"2025-11-19
+        14:45:00","pv_watts":406.8,"temp":4.5,"weather_code":61,"spec_watts_clearsky":252.38,"pv_watts_clearsky":2331.9912},{"dtm":"2025-11-19
+        15:00:00","pv_watts":108.16,"temp":4.5,"weather_code":61,"spec_watts_clearsky":185.27,"pv_watts_clearsky":1711.8948},{"dtm":"2025-11-19
+        15:15:00","pv_watts":42.14,"temp":4.4,"weather_code":61,"spec_watts_clearsky":108.32,"pv_watts_clearsky":1000.8768},{"dtm":"2025-11-19
+        15:30:00","pv_watts":20.72,"temp":4.3,"weather_code":3,"spec_watts_clearsky":39.33,"pv_watts_clearsky":363.4092},{"dtm":"2025-11-19
+        15:45:00","pv_watts":0.0,"temp":4.2,"weather_code":3,"spec_watts_clearsky":5.67,"pv_watts_clearsky":52.3908},{"dtm":"2025-11-19
+        16:00:00","pv_watts":0.0,"temp":4.2,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        16:15:00","pv_watts":0.0,"temp":4.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        16:30:00","pv_watts":0.0,"temp":4.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        16:45:00","pv_watts":0.0,"temp":4.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        17:00:00","pv_watts":0.0,"temp":4.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        17:15:00","pv_watts":0.0,"temp":4.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        17:30:00","pv_watts":0.0,"temp":4.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        17:45:00","pv_watts":0.0,"temp":4.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        18:00:00","pv_watts":0.0,"temp":4.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        18:15:00","pv_watts":0.0,"temp":4.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
         18:30:00","pv_watts":0.0,"temp":4.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        18:45:00","pv_watts":0.0,"temp":4.0,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        19:00:00","pv_watts":0.0,"temp":3.9,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        18:45:00","pv_watts":0.0,"temp":4.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        19:00:00","pv_watts":0.0,"temp":4.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
         19:15:00","pv_watts":0.0,"temp":3.7,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        19:30:00","pv_watts":0.0,"temp":3.6,"weather_code":80,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        19:45:00","pv_watts":0.0,"temp":3.4,"weather_code":80,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        20:00:00","pv_watts":0.0,"temp":3.3,"weather_code":80,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        20:15:00","pv_watts":0.0,"temp":3.3,"weather_code":80,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        20:30:00","pv_watts":0.0,"temp":3.4,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        20:45:00","pv_watts":0.0,"temp":3.4,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        21:00:00","pv_watts":0.0,"temp":3.5,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        21:15:00","pv_watts":0.0,"temp":3.5,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        21:30:00","pv_watts":0.0,"temp":3.5,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        21:45:00","pv_watts":0.0,"temp":3.5,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        22:00:00","pv_watts":0.0,"temp":3.6,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        22:15:00","pv_watts":0.0,"temp":3.5,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        22:30:00","pv_watts":0.0,"temp":3.4,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        22:45:00","pv_watts":0.0,"temp":3.3,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        19:30:00","pv_watts":0.0,"temp":3.3,"weather_code":80,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        19:45:00","pv_watts":0.0,"temp":2.9,"weather_code":80,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        20:00:00","pv_watts":0.0,"temp":2.6,"weather_code":80,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        20:15:00","pv_watts":0.0,"temp":2.0,"weather_code":80,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        20:30:00","pv_watts":0.0,"temp":1.5,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        20:45:00","pv_watts":0.0,"temp":0.9,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        21:00:00","pv_watts":0.0,"temp":0.4,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        21:15:00","pv_watts":0.0,"temp":0.8,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        21:30:00","pv_watts":0.0,"temp":1.3,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        21:45:00","pv_watts":0.0,"temp":1.8,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        22:00:00","pv_watts":0.0,"temp":2.3,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        22:15:00","pv_watts":0.0,"temp":2.5,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        22:30:00","pv_watts":0.0,"temp":2.7,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        22:45:00","pv_watts":0.0,"temp":2.9,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
         23:00:00","pv_watts":0.0,"temp":3.2,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
         23:15:00","pv_watts":0.0,"temp":3.1,"weather_code":61,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        23:30:00","pv_watts":0.0,"temp":3.0,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
-        23:45:00","pv_watts":0.0,"temp":2.9,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        00:00:00","pv_watts":0.0,"temp":2.9,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        00:15:00","pv_watts":0.0,"temp":2.8,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        00:30:00","pv_watts":0.0,"temp":2.8,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        00:45:00","pv_watts":0.0,"temp":2.7,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        01:00:00","pv_watts":0.0,"temp":2.7,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        01:15:00","pv_watts":0.0,"temp":2.6,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        01:30:00","pv_watts":0.0,"temp":2.5,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        01:45:00","pv_watts":0.0,"temp":2.4,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        02:00:00","pv_watts":0.0,"temp":2.3,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        02:15:00","pv_watts":0.0,"temp":2.2,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        02:30:00","pv_watts":0.0,"temp":2.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        02:45:00","pv_watts":0.0,"temp":2.0,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        03:00:00","pv_watts":0.0,"temp":2.0,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        03:15:00","pv_watts":0.0,"temp":1.9,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        03:30:00","pv_watts":0.0,"temp":1.8,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        03:45:00","pv_watts":0.0,"temp":1.7,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        04:00:00","pv_watts":0.0,"temp":1.6,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        04:15:00","pv_watts":0.0,"temp":1.5,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        04:30:00","pv_watts":0.0,"temp":1.4,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        04:45:00","pv_watts":0.0,"temp":1.3,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        05:00:00","pv_watts":0.0,"temp":1.2,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        05:15:00","pv_watts":0.0,"temp":1.0,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        05:30:00","pv_watts":0.0,"temp":0.9,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        05:45:00","pv_watts":0.0,"temp":0.7,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        06:00:00","pv_watts":0.0,"temp":0.6,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        06:15:00","pv_watts":0.0,"temp":0.6,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        06:30:00","pv_watts":0.0,"temp":0.6,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        06:45:00","pv_watts":0.0,"temp":0.6,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        07:00:00","pv_watts":0.0,"temp":0.7,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        07:15:00","pv_watts":20.72,"temp":0.9,"weather_code":2,"spec_watts_clearsky":2.04,"pv_watts_clearsky":18.849600000000002},{"dtm":"2025-11-20
-        07:30:00","pv_watts":182.15,"temp":1.1,"weather_code":3,"spec_watts_clearsky":16.21,"pv_watts_clearsky":149.78040000000001},{"dtm":"2025-11-20
-        07:45:00","pv_watts":360.41,"temp":1.3,"weather_code":3,"spec_watts_clearsky":52.4,"pv_watts_clearsky":484.176},{"dtm":"2025-11-20
-        08:00:00","pv_watts":576.31,"temp":1.6,"weather_code":3,"spec_watts_clearsky":102.9,"pv_watts_clearsky":950.796},{"dtm":"2025-11-20
-        08:15:00","pv_watts":726.29,"temp":1.8,"weather_code":3,"spec_watts_clearsky":153.76,"pv_watts_clearsky":1420.7423999999999},{"dtm":"2025-11-20
-        08:30:00","pv_watts":949.12,"temp":2.1,"weather_code":3,"spec_watts_clearsky":206.02,"pv_watts_clearsky":1903.6248},{"dtm":"2025-11-20
-        08:45:00","pv_watts":1306.53,"temp":2.4,"weather_code":3,"spec_watts_clearsky":257.16,"pv_watts_clearsky":2376.1584000000003},{"dtm":"2025-11-20
-        09:00:00","pv_watts":1401.88,"temp":2.7,"weather_code":3,"spec_watts_clearsky":305.88,"pv_watts_clearsky":2826.3312},{"dtm":"2025-11-20
-        09:15:00","pv_watts":2270.76,"temp":2.9,"weather_code":3,"spec_watts_clearsky":351.79,"pv_watts_clearsky":3250.5396},{"dtm":"2025-11-20
-        09:30:00","pv_watts":2359.08,"temp":3.1,"weather_code":3,"spec_watts_clearsky":394.44,"pv_watts_clearsky":3644.6256},{"dtm":"2025-11-20
-        09:45:00","pv_watts":2295.7,"temp":3.3,"weather_code":3,"spec_watts_clearsky":433.49,"pv_watts_clearsky":4005.4476},{"dtm":"2025-11-20
-        10:00:00","pv_watts":2335.93,"temp":3.6,"weather_code":3,"spec_watts_clearsky":468.56,"pv_watts_clearsky":4329.4944000000005},{"dtm":"2025-11-20
-        10:15:00","pv_watts":2347.34,"temp":3.6,"weather_code":3,"spec_watts_clearsky":500.13,"pv_watts_clearsky":4621.2012},{"dtm":"2025-11-20
-        10:30:00","pv_watts":2448.26,"temp":3.6,"weather_code":2,"spec_watts_clearsky":527.56,"pv_watts_clearsky":4874.654399999999},{"dtm":"2025-11-20
-        10:45:00","pv_watts":2244.18,"temp":3.6,"weather_code":2,"spec_watts_clearsky":550.68,"pv_watts_clearsky":5088.2832},{"dtm":"2025-11-20
-        11:00:00","pv_watts":1542.05,"temp":3.6,"weather_code":2,"spec_watts_clearsky":569.37,"pv_watts_clearsky":5260.9788},{"dtm":"2025-11-20
-        11:15:00","pv_watts":945.47,"temp":3.7,"weather_code":2,"spec_watts_clearsky":583.74,"pv_watts_clearsky":5393.7576},{"dtm":"2025-11-20
-        11:30:00","pv_watts":2429.69,"temp":3.8,"weather_code":2,"spec_watts_clearsky":593.19,"pv_watts_clearsky":5481.075600000001},{"dtm":"2025-11-20
-        11:45:00","pv_watts":2756.72,"temp":3.9,"weather_code":2,"spec_watts_clearsky":598.23,"pv_watts_clearsky":5527.6452},{"dtm":"2025-11-20
-        12:00:00","pv_watts":3500.63,"temp":4.0,"weather_code":2,"spec_watts_clearsky":598.15,"pv_watts_clearsky":5526.906},{"dtm":"2025-11-20
-        12:15:00","pv_watts":2711.98,"temp":3.9,"weather_code":2,"spec_watts_clearsky":593.22,"pv_watts_clearsky":5481.352800000001},{"dtm":"2025-11-20
-        12:30:00","pv_watts":2311.34,"temp":3.8,"weather_code":3,"spec_watts_clearsky":583.43,"pv_watts_clearsky":5390.8931999999995},{"dtm":"2025-11-20
-        12:45:00","pv_watts":2516.47,"temp":3.7,"weather_code":3,"spec_watts_clearsky":568.38,"pv_watts_clearsky":5251.8312},{"dtm":"2025-11-20
-        13:00:00","pv_watts":3065.7,"temp":3.6,"weather_code":3,"spec_watts_clearsky":548.35,"pv_watts_clearsky":5066.754},{"dtm":"2025-11-20
-        13:15:00","pv_watts":1598.89,"temp":3.6,"weather_code":3,"spec_watts_clearsky":522.39,"pv_watts_clearsky":4826.8836},{"dtm":"2025-11-20
-        13:30:00","pv_watts":1417.56,"temp":3.6,"weather_code":3,"spec_watts_clearsky":491.15,"pv_watts_clearsky":4538.226},{"dtm":"2025-11-20
-        13:45:00","pv_watts":662.21,"temp":3.6,"weather_code":3,"spec_watts_clearsky":454.39,"pv_watts_clearsky":4198.5636},{"dtm":"2025-11-20
-        14:00:00","pv_watts":1134.24,"temp":3.6,"weather_code":3,"spec_watts_clearsky":411.95,"pv_watts_clearsky":3806.418},{"dtm":"2025-11-20
-        14:15:00","pv_watts":936.74,"temp":3.5,"weather_code":3,"spec_watts_clearsky":363.89,"pv_watts_clearsky":3362.3436},{"dtm":"2025-11-20
-        14:30:00","pv_watts":981.59,"temp":3.5,"weather_code":2,"spec_watts_clearsky":309.2,"pv_watts_clearsky":2857.008},{"dtm":"2025-11-20
-        14:45:00","pv_watts":975.45,"temp":3.5,"weather_code":2,"spec_watts_clearsky":247.9,"pv_watts_clearsky":2290.596},{"dtm":"2025-11-20
-        15:00:00","pv_watts":115.61,"temp":3.5,"weather_code":2,"spec_watts_clearsky":180.16,"pv_watts_clearsky":1664.6784},{"dtm":"2025-11-20
-        15:15:00","pv_watts":42.21,"temp":3.3,"weather_code":2,"spec_watts_clearsky":102.71,"pv_watts_clearsky":949.0404},{"dtm":"2025-11-20
-        15:30:00","pv_watts":26.01,"temp":3.1,"weather_code":2,"spec_watts_clearsky":35.63,"pv_watts_clearsky":329.2212},{"dtm":"2025-11-20
-        15:45:00","pv_watts":0.0,"temp":2.9,"weather_code":2,"spec_watts_clearsky":4.56,"pv_watts_clearsky":42.1344},{"dtm":"2025-11-20
-        16:00:00","pv_watts":0.0,"temp":2.7,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        16:15:00","pv_watts":0.0,"temp":2.6,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        16:30:00","pv_watts":0.0,"temp":2.6,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        16:45:00","pv_watts":0.0,"temp":2.6,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        17:00:00","pv_watts":0.0,"temp":2.6,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        17:15:00","pv_watts":0.0,"temp":2.4,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        23:30:00","pv_watts":0.0,"temp":3.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-19
+        23:45:00","pv_watts":0.0,"temp":3.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        00:00:00","pv_watts":0.0,"temp":3.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        00:15:00","pv_watts":0.0,"temp":3.0,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        00:30:00","pv_watts":0.0,"temp":2.9,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        00:45:00","pv_watts":0.0,"temp":2.8,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        01:00:00","pv_watts":0.0,"temp":2.8,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        01:15:00","pv_watts":0.0,"temp":2.7,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        01:30:00","pv_watts":0.0,"temp":2.6,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        01:45:00","pv_watts":0.0,"temp":2.5,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        02:00:00","pv_watts":0.0,"temp":2.4,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        02:15:00","pv_watts":0.0,"temp":2.3,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        02:30:00","pv_watts":0.0,"temp":2.3,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        02:45:00","pv_watts":0.0,"temp":2.2,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        03:00:00","pv_watts":0.0,"temp":2.2,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        03:15:00","pv_watts":0.0,"temp":2.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        03:30:00","pv_watts":0.0,"temp":2.0,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        03:45:00","pv_watts":0.0,"temp":1.9,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        04:00:00","pv_watts":0.0,"temp":1.8,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        04:15:00","pv_watts":0.0,"temp":1.6,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        04:30:00","pv_watts":0.0,"temp":1.5,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        04:45:00","pv_watts":0.0,"temp":1.4,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        05:00:00","pv_watts":0.0,"temp":1.3,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        05:15:00","pv_watts":0.0,"temp":1.2,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        05:30:00","pv_watts":0.0,"temp":1.2,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        05:45:00","pv_watts":0.0,"temp":1.2,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        06:00:00","pv_watts":0.0,"temp":1.2,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        06:15:00","pv_watts":0.0,"temp":1.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        06:30:00","pv_watts":0.0,"temp":1.1,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        06:45:00","pv_watts":0.0,"temp":1.0,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        07:00:00","pv_watts":0.0,"temp":1.0,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        07:15:00","pv_watts":20.7,"temp":1.1,"weather_code":2,"spec_watts_clearsky":2.03,"pv_watts_clearsky":18.757199999999997},{"dtm":"2025-11-20
+        07:30:00","pv_watts":182.08,"temp":1.2,"weather_code":3,"spec_watts_clearsky":16.19,"pv_watts_clearsky":149.59560000000002},{"dtm":"2025-11-20
+        07:45:00","pv_watts":360.45,"temp":1.3,"weather_code":3,"spec_watts_clearsky":52.37,"pv_watts_clearsky":483.8988},{"dtm":"2025-11-20
+        08:00:00","pv_watts":576.9,"temp":1.4,"weather_code":3,"spec_watts_clearsky":102.92,"pv_watts_clearsky":950.9808},{"dtm":"2025-11-20
+        08:15:00","pv_watts":726.89,"temp":1.6,"weather_code":3,"spec_watts_clearsky":153.81,"pv_watts_clearsky":1421.2044},{"dtm":"2025-11-20
+        08:30:00","pv_watts":950.22,"temp":1.8,"weather_code":3,"spec_watts_clearsky":206.2,"pv_watts_clearsky":1905.288},{"dtm":"2025-11-20
+        08:45:00","pv_watts":1308.44,"temp":2.0,"weather_code":3,"spec_watts_clearsky":257.54,"pv_watts_clearsky":2379.6696},{"dtm":"2025-11-20
+        09:00:00","pv_watts":1403.9,"temp":2.3,"weather_code":3,"spec_watts_clearsky":306.34,"pv_watts_clearsky":2830.5816},{"dtm":"2025-11-20
+        09:15:00","pv_watts":2273.94,"temp":2.5,"weather_code":3,"spec_watts_clearsky":352.32,"pv_watts_clearsky":3255.4368},{"dtm":"2025-11-20
+        09:30:00","pv_watts":2361.65,"temp":2.8,"weather_code":3,"spec_watts_clearsky":394.83,"pv_watts_clearsky":3648.2291999999998},{"dtm":"2025-11-20
+        09:45:00","pv_watts":2298.2,"temp":3.0,"weather_code":3,"spec_watts_clearsky":433.92,"pv_watts_clearsky":4009.4208000000003},{"dtm":"2025-11-20
+        10:00:00","pv_watts":2338.48,"temp":3.3,"weather_code":3,"spec_watts_clearsky":469.01,"pv_watts_clearsky":4333.6524},{"dtm":"2025-11-20
+        10:15:00","pv_watts":2349.02,"temp":3.4,"weather_code":3,"spec_watts_clearsky":500.47,"pv_watts_clearsky":4624.3428},{"dtm":"2025-11-20
+        10:30:00","pv_watts":2449.13,"temp":3.5,"weather_code":2,"spec_watts_clearsky":527.75,"pv_watts_clearsky":4876.41},{"dtm":"2025-11-20
+        10:45:00","pv_watts":2244.14,"temp":3.6,"weather_code":2,"spec_watts_clearsky":550.71,"pv_watts_clearsky":5088.5604},{"dtm":"2025-11-20
+        11:00:00","pv_watts":1540.94,"temp":3.8,"weather_code":2,"spec_watts_clearsky":568.96,"pv_watts_clearsky":5257.1904},{"dtm":"2025-11-20
+        11:15:00","pv_watts":944.75,"temp":3.9,"weather_code":2,"spec_watts_clearsky":583.36,"pv_watts_clearsky":5390.2464},{"dtm":"2025-11-20
+        11:30:00","pv_watts":2427.87,"temp":4.0,"weather_code":2,"spec_watts_clearsky":592.84,"pv_watts_clearsky":5477.841600000001},{"dtm":"2025-11-20
+        11:45:00","pv_watts":2754.6,"temp":4.1,"weather_code":2,"spec_watts_clearsky":597.9,"pv_watts_clearsky":5524.596},{"dtm":"2025-11-20
+        12:00:00","pv_watts":3496.74,"temp":4.3,"weather_code":2,"spec_watts_clearsky":597.58,"pv_watts_clearsky":5521.6392000000005},{"dtm":"2025-11-20
+        12:15:00","pv_watts":2706.57,"temp":4.4,"weather_code":2,"spec_watts_clearsky":592.58,"pv_watts_clearsky":5475.439200000001},{"dtm":"2025-11-20
+        12:30:00","pv_watts":2304.83,"temp":4.5,"weather_code":3,"spec_watts_clearsky":582.74,"pv_watts_clearsky":5384.5176},{"dtm":"2025-11-20
+        12:45:00","pv_watts":2507.32,"temp":4.6,"weather_code":3,"spec_watts_clearsky":567.65,"pv_watts_clearsky":5245.086},{"dtm":"2025-11-20
+        13:00:00","pv_watts":3050.71,"temp":4.8,"weather_code":3,"spec_watts_clearsky":547.31,"pv_watts_clearsky":5057.144399999999},{"dtm":"2025-11-20
+        13:15:00","pv_watts":1591.87,"temp":4.7,"weather_code":3,"spec_watts_clearsky":521.61,"pv_watts_clearsky":4819.6764},{"dtm":"2025-11-20
+        13:30:00","pv_watts":1411.64,"temp":4.6,"weather_code":3,"spec_watts_clearsky":490.61,"pv_watts_clearsky":4533.2364},{"dtm":"2025-11-20
+        13:45:00","pv_watts":659.32,"temp":4.5,"weather_code":3,"spec_watts_clearsky":454.07,"pv_watts_clearsky":4195.6068000000005},{"dtm":"2025-11-20
+        14:00:00","pv_watts":1130.08,"temp":4.5,"weather_code":3,"spec_watts_clearsky":411.63,"pv_watts_clearsky":3803.4612},{"dtm":"2025-11-20
+        14:15:00","pv_watts":933.29,"temp":4.4,"weather_code":3,"spec_watts_clearsky":363.48,"pv_watts_clearsky":3358.5552000000002},{"dtm":"2025-11-20
+        14:30:00","pv_watts":978.14,"temp":4.3,"weather_code":2,"spec_watts_clearsky":308.9,"pv_watts_clearsky":2854.236},{"dtm":"2025-11-20
+        14:45:00","pv_watts":972.31,"temp":4.2,"weather_code":2,"spec_watts_clearsky":247.71,"pv_watts_clearsky":2288.8404},{"dtm":"2025-11-20
+        15:00:00","pv_watts":115.21,"temp":4.2,"weather_code":2,"spec_watts_clearsky":179.95,"pv_watts_clearsky":1662.7379999999998},{"dtm":"2025-11-20
+        15:15:00","pv_watts":42.09,"temp":3.9,"weather_code":2,"spec_watts_clearsky":102.58,"pv_watts_clearsky":947.8392},{"dtm":"2025-11-20
+        15:30:00","pv_watts":25.96,"temp":3.6,"weather_code":2,"spec_watts_clearsky":35.57,"pv_watts_clearsky":328.6668},{"dtm":"2025-11-20
+        15:45:00","pv_watts":0.0,"temp":3.3,"weather_code":2,"spec_watts_clearsky":4.55,"pv_watts_clearsky":42.042},{"dtm":"2025-11-20
+        16:00:00","pv_watts":0.0,"temp":3.0,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        16:15:00","pv_watts":0.0,"temp":2.8,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        16:30:00","pv_watts":0.0,"temp":2.7,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        16:45:00","pv_watts":0.0,"temp":2.5,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        17:00:00","pv_watts":0.0,"temp":2.4,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        17:15:00","pv_watts":0.0,"temp":2.3,"weather_code":2,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
         17:30:00","pv_watts":0.0,"temp":2.2,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        17:45:00","pv_watts":0.0,"temp":2.0,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        18:00:00","pv_watts":0.0,"temp":1.8,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        18:15:00","pv_watts":0.0,"temp":1.8,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        18:30:00","pv_watts":0.0,"temp":1.9,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        18:45:00","pv_watts":0.0,"temp":2.0,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        19:00:00","pv_watts":0.0,"temp":2.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        19:15:00","pv_watts":0.0,"temp":2.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        19:30:00","pv_watts":0.0,"temp":2.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        19:45:00","pv_watts":0.0,"temp":2.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        20:00:00","pv_watts":0.0,"temp":2.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        20:15:00","pv_watts":0.0,"temp":2.0,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        20:30:00","pv_watts":0.0,"temp":2.0,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        20:45:00","pv_watts":0.0,"temp":2.0,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        21:00:00","pv_watts":0.0,"temp":2.0,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        21:15:00","pv_watts":0.0,"temp":1.9,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        17:45:00","pv_watts":0.0,"temp":2.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        18:00:00","pv_watts":0.0,"temp":2.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        18:15:00","pv_watts":0.0,"temp":2.0,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        18:30:00","pv_watts":0.0,"temp":2.0,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        18:45:00","pv_watts":0.0,"temp":1.9,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        19:00:00","pv_watts":0.0,"temp":1.9,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        19:15:00","pv_watts":0.0,"temp":1.9,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        19:30:00","pv_watts":0.0,"temp":1.9,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        19:45:00","pv_watts":0.0,"temp":1.9,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        20:00:00","pv_watts":0.0,"temp":1.9,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        20:15:00","pv_watts":0.0,"temp":1.8,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        20:30:00","pv_watts":0.0,"temp":1.8,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        20:45:00","pv_watts":0.0,"temp":1.8,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        21:00:00","pv_watts":0.0,"temp":1.8,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        21:15:00","pv_watts":0.0,"temp":1.8,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
         21:30:00","pv_watts":0.0,"temp":1.8,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        21:45:00","pv_watts":0.0,"temp":1.7,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        22:00:00","pv_watts":0.0,"temp":1.7,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        22:15:00","pv_watts":0.0,"temp":1.7,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        22:30:00","pv_watts":0.0,"temp":1.7,"weather_code":85,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        22:45:00","pv_watts":0.0,"temp":1.7,"weather_code":85,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        23:00:00","pv_watts":0.0,"temp":1.7,"weather_code":85,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        23:15:00","pv_watts":0.0,"temp":1.8,"weather_code":85,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        23:30:00","pv_watts":0.0,"temp":1.9,"weather_code":85,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
-        23:45:00","pv_watts":0.0,"temp":2.0,"weather_code":85,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-21
+        21:45:00","pv_watts":0.0,"temp":1.8,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        22:00:00","pv_watts":0.0,"temp":1.9,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        22:15:00","pv_watts":0.0,"temp":1.9,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        22:30:00","pv_watts":0.0,"temp":1.9,"weather_code":85,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        22:45:00","pv_watts":0.0,"temp":1.9,"weather_code":85,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        23:00:00","pv_watts":0.0,"temp":2.0,"weather_code":85,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        23:15:00","pv_watts":0.0,"temp":2.0,"weather_code":85,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        23:30:00","pv_watts":0.0,"temp":2.0,"weather_code":85,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-20
+        23:45:00","pv_watts":0.0,"temp":2.1,"weather_code":85,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-21
         00:00:00","pv_watts":0.0,"temp":2.1,"weather_code":85,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-21
         00:15:00","pv_watts":0.0,"temp":2.1,"weather_code":85,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-21
         00:30:00","pv_watts":0.0,"temp":2.1,"weather_code":3,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-21
@@ -421,5 +421,5 @@ http_interactions:
         23:15:00","pv_watts":0.0,"temp":-3.9,"weather_code":0,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-22
         23:30:00","pv_watts":0.0,"temp":-4.0,"weather_code":0,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0},{"dtm":"2025-11-22
         23:45:00","pv_watts":0.0,"temp":-4.0,"weather_code":0,"spec_watts_clearsky":0.0,"pv_watts_clearsky":0.0}]}'
-  recorded_at: Wed, 19 Nov 2025 07:51:42 GMT
+  recorded_at: Wed, 19 Nov 2025 09:57:45 GMT
 recorded_with: VCR 6.3.1

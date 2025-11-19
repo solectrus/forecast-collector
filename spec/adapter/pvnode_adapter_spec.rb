@@ -75,8 +75,9 @@ describe PvnodeAdapter do
 
     it 'includes extra parameters when set in config' do
       expect(params['forecast_days']).to eq('3')
-      expect(params['diffuse_radiation_model']).to eq('perez')
       expect(params['clearsky_data']).to eq('true')
+      expect(params['diffuse_radiation_model']).to eq('perez')
+      expect(params['snow_slide_coefficient']).to eq('0.5')
     end
 
     it 'includes required parameters with correct values' do
@@ -117,14 +118,13 @@ describe PvnodeAdapter do
             kwp: '9.24',
           }],
           pvnode_forecast_days: nil,
-          pvnode_diffuse_radiation_model: nil,
           pvnode_clearsky_data: nil,
+          pvnode_extra_params: nil,
         )
       end
 
       it 'omits nil parameters from URL' do
         expect(params).not_to have_key('forecast_days')
-        expect(params).not_to have_key('diffuse_radiation_model')
         expect(params).not_to have_key('clearsky_data')
       end
     end

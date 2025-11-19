@@ -79,11 +79,14 @@ class PvnodeAdapter < BaseAdapter
       required_data: 'pv_watts,temp,weather_code',
       past_days: 0,
       forecast_days: config.pvnode_forecast_days,
-      diffuse_radiation_model: config.pvnode_diffuse_radiation_model,
       clearsky_data: config.pvnode_clearsky_data,
     }.compact
 
     uri.query = URI.encode_www_form(params)
+
+    # Append extra parameters if provided
+    uri.query += "&#{config.pvnode_extra_params}" if config.pvnode_extra_params
+
     uri.to_s
   end
 
