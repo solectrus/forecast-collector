@@ -73,8 +73,8 @@ class PvnodeAdapter < BaseAdapter
     params = {
       latitude: cfg[:latitude],
       longitude: cfg[:longitude],
-      slope: declination_to_slope(cfg[:declination]),
-      orientation: azimuth_to_orientation(cfg[:azimuth]),
+      slope: cfg[:declination],
+      orientation: cfg[:azimuth],
       pv_power_kw: cfg[:kwp],
       required_data: 'pv_watts,temp,weather_code',
       past_days: 0,
@@ -91,14 +91,6 @@ class PvnodeAdapter < BaseAdapter
   end
 
   private
-
-  def azimuth_to_orientation(azimuth)
-    (azimuth.to_f + 180) % 360
-  end
-
-  def declination_to_slope(declination)
-    declination.to_f
-  end
 
   def make_http_request(index)
     uri = URI(formatted_url(index))

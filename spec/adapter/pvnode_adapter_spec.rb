@@ -83,19 +83,11 @@ describe PvnodeAdapter do
     it 'includes required parameters with correct values' do
       expect(params['latitude']).to eq('50.92264')
       expect(params['longitude']).to eq('6.407')
-      expect(params['slope']).to eq('30.0')
-      expect(params['orientation']).to eq('200.0')
+      expect(params['slope']).to eq('30')
+      expect(params['orientation']).to eq('20')
       expect(params['pv_power_kw']).to eq('9.24')
       expect(params['required_data']).to eq('pv_watts,temp,weather_code')
       expect(params['past_days']).to eq('0')
-    end
-
-    it 'converts declination to slope' do
-      expect(params['slope']).to eq('30.0')
-    end
-
-    it 'converts azimuth to orientation by adding 180 degrees' do
-      expect(params['orientation']).to eq('200.0')
     end
 
     context 'when extra parameters are nil' do
