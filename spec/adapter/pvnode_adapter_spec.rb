@@ -151,7 +151,7 @@ describe PvnodeAdapter do
               extra_params: 'diffuse_radiation_model=perez',
             },
           ],
-          pvnode_forecast_days: '3',
+          pvnode_forecast_days: 3,
           pvnode_clearsky_data: 'true',
         )
       end
@@ -210,7 +210,7 @@ describe PvnodeAdapter do
               extra_params: 'snow_slide_coefficient=0.3',
             },
           ],
-          pvnode_forecast_days: '3',
+          pvnode_forecast_days: 3,
           pvnode_clearsky_data: 'true',
         )
       end
@@ -300,7 +300,7 @@ describe PvnodeAdapter do
               extra_params: 'snow_slide_coefficient=0.8',
             },
           ],
-          pvnode_forecast_days: '3',
+          pvnode_forecast_days: 3,
           pvnode_clearsky_data: 'true',
         )
       end
@@ -402,7 +402,7 @@ describe PvnodeAdapter do
               extra_params: nil,
             },
           ],
-          pvnode_forecast_days: '3',
+          pvnode_forecast_days: 3,
           pvnode_clearsky_data: 'true',
         )
       end
@@ -442,7 +442,7 @@ describe PvnodeAdapter do
           { latitude: '50.0', longitude: '6.0', declination: '45', azimuth: '-20', kwp: '4.24', extra_params: nil },
           { latitude: '50.0', longitude: '6.0', declination: '60', azimuth: '90', kwp: '3.0', extra_params: nil },
         ],
-        pvnode_forecast_days: '3',
+        pvnode_forecast_days: 3,
         pvnode_clearsky_data: 'true',
       )
       adapter = described_class.new(config:)

@@ -190,7 +190,7 @@ describe Config do
 
       it 'returns pvnode extra parameters in configuration' do
         config = described_class.from_env(forecast_provider: 'pvnode')
-        expect(config.pvnode_forecast_days).to eq('7')
+        expect(config.pvnode_forecast_days).to eq(7)
         expect(config.pvnode_clearsky_data).to eq('true')
         expect(config.pvnode_configurations.first[:extra_params]).to eq(
           'diffuse_radiation_model=perez&snow_slide_coefficient=0.5',
@@ -211,7 +211,7 @@ describe Config do
 
       it 'returns nil for pvnode extra parameters in configuration' do
         config = described_class.from_env(forecast_provider: 'pvnode')
-        expect(config.pvnode_forecast_days).to eq('1')
+        expect(config.pvnode_forecast_days).to eq(1)
         expect(config.pvnode_clearsky_data).to be_nil
         expect(config.pvnode_configurations.first[:extra_params]).to be_nil
       end

@@ -106,7 +106,7 @@ class Config # rubocop:disable Metrics/ClassLength
       {
         pvnode_configurations: all_configurations_from_env('PVNODE', PvnodeConfiguration, defaults),
         pvnode_apikey: ENV.fetch('PVNODE_APIKEY', nil),
-        pvnode_forecast_days: ENV.fetch('PVNODE_FORECAST_DAYS', '1'),
+        pvnode_forecast_days: ENV.fetch('PVNODE_FORECAST_DAYS', '1').to_i,
         pvnode_clearsky_data: ENV.fetch('PVNODE_CLEARSKY_DATA', nil),
       }
     end
