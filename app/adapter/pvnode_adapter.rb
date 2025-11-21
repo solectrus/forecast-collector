@@ -31,8 +31,11 @@ class PvnodeAdapter < BaseAdapter
     'pvnode'
   end
 
-  def adapter_configuration_count
-    config.pvnode_configurations&.length || 0
+  def adapter_requests_count
+    # Since pvnode supports up to 2 planes per request, we can batch them.
+    # However, we can only batch planes with identical extra_params, since
+    # extra_params apply to the entire request, not per plane.
+    batched_planes.length
   end
 
   SAFETY_MARGIN_SECONDS = 300 # 5 minutes
@@ -68,29 +71,66 @@ class PvnodeAdapter < BaseAdapter
 
   def formatted_url(index)
     uri = URI(BASE_URL)
-    cfg = config.pvnode_configurations[index]
 
+    # Get the batch of planes for this request index
+    planes_batch = batched_planes[index]
+    first_plane = planes_batch[0]
+    second_plane = planes_batch[1] # may be nil
+
+    params = build_params(first_plane, second_plane)
+    uri.query = URI.encode_www_form(params)
+
+    # Append extra parameters if provided (same for all planes in batch)
+    extra_params = first_plane[:extra_params]
+    uri.query += "&#{extra_params}" if extra_params
+
+    uri.to_s
+  end
+
+  private
+
+  # Groups planes into batches, where each batch contains up to 2 planes
+  # with identical extra_params. Returns an array of batches.
+  # Example: [[plane0, plane1], [plane2], [plane3, plane4]]
+  def batched_planes
+    @batched_planes ||= begin
+      # Group planes by their extra_params
+      grouped = config.pvnode_configurations.group_by { |plane| plane[:extra_params] }
+
+      # For each group, split into batches of max 2 planes
+      batches = []
+      grouped.each_value do |planes|
+        planes.each_slice(2) { |batch| batches << batch }
+      end
+
+      batches
+    end
+  end
+
+  def build_params(first_plane, second_plane)
     params = {
-      latitude: cfg[:latitude],
-      longitude: cfg[:longitude],
-      slope: cfg[:declination],
-      orientation: cfg[:azimuth],
-      pv_power_kw: cfg[:kwp],
+      latitude: first_plane[:latitude],
+      longitude: first_plane[:longitude],
+      slope: first_plane[:declination],
+      orientation: first_plane[:azimuth],
+      pv_power_kw: first_plane[:kwp],
       required_data: 'pv_watts,temp,weather_code',
       past_days: 0,
       forecast_days: config.pvnode_forecast_days,
       clearsky_data: config.pvnode_clearsky_data,
     }.compact
 
-    uri.query = URI.encode_www_form(params)
+    # Add second plane parameters if available
+    if second_plane
+      params.merge!({
+        second_array_slope: second_plane[:declination],
+        second_array_orientation: second_plane[:azimuth],
+        second_array_power_kw: second_plane[:kwp],
+      }.compact)
+    end
 
-    # Append extra parameters if provided (per-plane configuration)
-    uri.query += "&#{cfg[:extra_params]}" if cfg[:extra_params]
-
-    uri.to_s
+    params
   end
-
-  private
 
   def make_http_request(index)
     uri = URI(formatted_url(index))

@@ -59,7 +59,7 @@ class SolcastAdapter < BaseAdapter
     end
   end
 
-  def adapter_configuration_count
+  def adapter_requests_count
     config.solcast_configurations.length
   end
 end
