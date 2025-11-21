@@ -63,7 +63,7 @@ class ForecastSolarAdapter < BaseAdapter
     result
   end
 
-  def adapter_requests_count
+  def required_requests_count
     config.forecast_solar_configurations.length
   end
 end

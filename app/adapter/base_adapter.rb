@@ -6,7 +6,7 @@ require 'net/http'
 #
 # Subclasses must implement:
 # - #fetch(index) - fetches and parses data for a configuration
-# - #adapter_requests_count - returns number of API requests to make
+# - #required_requests_count - returns number of API requests needed
 # - #formatted_url(index) - returns complete API URL for a configuration
 class BaseAdapter
   def initialize(config:)
@@ -17,7 +17,7 @@ class BaseAdapter
 
   def fetch_data
     hashes = []
-    requests_count = adapter_requests_count
+    requests_count = required_requests_count
 
     (0...requests_count).each do |index|
       print "  #{index}: #{url(index)} ... "
@@ -133,12 +133,12 @@ class BaseAdapter
 
   private
 
-  # Returns the number of API requests for this adapter.
+  # Returns the number of API requests needed for this adapter.
   # Used to determine how many API calls to make.
   # Must return an Integer.
-  def adapter_requests_count
+  def required_requests_count
     # :nocov:
-    raise NotImplementedError, 'Subclass must implement #adapter_requests_count'
+    raise NotImplementedError, 'Subclass must implement #required_requests_count'
     # :nocov:
   end
 
