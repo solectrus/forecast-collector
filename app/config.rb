@@ -19,7 +19,7 @@ class Config # rubocop:disable Metrics/ClassLength
               :forecast_solar_apikey,
               :pvnode_configurations,
               :pvnode_apikey,
-              :pvnode_forecast_days,
+              :pvnode_paid,
               :pvnode_clearsky_data,
               :solcast_configurations,
               :solcast_apikey
@@ -106,8 +106,7 @@ class Config # rubocop:disable Metrics/ClassLength
       {
         pvnode_configurations: all_configurations_from_env('PVNODE', PvnodeConfiguration, defaults),
         pvnode_apikey: ENV.fetch('PVNODE_APIKEY', nil),
-        pvnode_forecast_days: ENV.fetch('PVNODE_FORECAST_DAYS', '1').to_i,
-        pvnode_clearsky_data: ENV.fetch('PVNODE_CLEARSKY_DATA', nil),
+        pvnode_paid: ENV.fetch('PVNODE_PAID', 'false').downcase == 'true',
       }
     end
 

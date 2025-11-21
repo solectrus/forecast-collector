@@ -2,7 +2,7 @@ require 'net/http'
 require 'config'
 require 'adapter/base_adapter'
 
-class PvnodeAdapter < BaseAdapter
+class PvnodeAdapter < BaseAdapter # rubocop:disable Metrics/ClassLength
   BASE_URL = 'https://api.pvnode.com/v1/forecast/'.freeze
 
   def parse_forecast_data(response_data)
@@ -31,6 +31,10 @@ class PvnodeAdapter < BaseAdapter
     'pvnode'
   end
 
+  def paid?
+    config.pvnode_paid == true
+  end
+
   def adapter_requests_count
     # Since pvnode supports up to 2 planes per request, we can batch them.
     # However, we can only batch planes with identical extra_params, since
@@ -38,10 +42,18 @@ class PvnodeAdapter < BaseAdapter
     batched_planes.length
   end
 
-  SAFETY_MARGIN_SECONDS = 300 # 5 minutes
+  SAFETY_MARGIN_SECONDS = 5 * 60 # 5 minutes
   private_constant :SAFETY_MARGIN_SECONDS
 
+  SECONDS_PER_DAY = 24 * 60 * 60 # 24 hours
+  private_constant :SECONDS_PER_DAY
+
   def next_fetch_time
+    unless paid?
+      # For free accounts, there is a rate limit of 40 requests per month (!)
+      return Time.now.utc + (SECONDS_PER_DAY * adapter_requests_count)
+    end
+
     # pvnode has a fixed schedule with 16 updates per day:
     #   01:00, 01:30, 04:00, 04:30, 07:00, 07:30, 10:00, 10:30,
     #   13:00, 13:30, 16:00, 16:30, 19:00, 19:30, 22:00, 22:30
@@ -62,7 +74,7 @@ class PvnodeAdapter < BaseAdapter
     # If no time found today, use the first time tomorrow
     # Use Time arithmetic to handle month/year boundaries and leap years correctly
     # We fetch 5 minutes later to ensure data is ready.
-    one_day_later = now + 86_400 # 24 * 60 * 60 seconds
+    one_day_later = now + SECONDS_PER_DAY
     Time.utc(
       one_day_later.year, one_day_later.month, one_day_later.day,
       scheduled_hours.first, scheduled_minutes.first, 0,
@@ -107,6 +119,22 @@ class PvnodeAdapter < BaseAdapter
     end
   end
 
+  def past_days
+    0
+  end
+
+  def forecast_days
+    paid? ? 7 : 1
+  end
+
+  def clearsky_data
+    'true'
+  end
+
+  def required_data
+    'pv_watts,temp,weather_code'
+  end
+
   def build_params(first_plane, second_plane)
     params = {
       latitude: first_plane[:latitude],
@@ -114,10 +142,10 @@ class PvnodeAdapter < BaseAdapter
       slope: first_plane[:declination],
       orientation: first_plane[:azimuth],
       pv_power_kw: first_plane[:kwp],
-      required_data: 'pv_watts,temp,weather_code',
-      past_days: 0,
-      forecast_days: config.pvnode_forecast_days,
-      clearsky_data: config.pvnode_clearsky_data,
+      required_data:,
+      clearsky_data:,
+      past_days:,
+      forecast_days:,
     }.compact
 
     # Add second plane parameters if available

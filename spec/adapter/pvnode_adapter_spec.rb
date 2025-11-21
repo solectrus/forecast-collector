@@ -1,8 +1,10 @@
 require 'adapter/pvnode_adapter'
 
 describe PvnodeAdapter do
-  let(:config) { Config.from_env(forecast_provider: 'pvnode') }
   let(:pvnode) { described_class.new(config:) }
+
+  let(:config) { Config.from_env(forecast_provider: 'pvnode', pvnode_paid:) }
+  let(:pvnode_paid) { true }
 
   describe '#fetch_data' do
     context 'when successful' do
@@ -74,7 +76,7 @@ describe PvnodeAdapter do
     end
 
     it 'includes extra parameters when set in config' do
-      expect(params['forecast_days']).to eq('3')
+      expect(params['forecast_days']).to eq('7')
       expect(params['clearsky_data']).to eq('true')
       expect(params['diffuse_radiation_model']).to eq('perez')
       expect(params['snow_slide_coefficient']).to eq('0.5')
@@ -88,37 +90,6 @@ describe PvnodeAdapter do
       expect(params['pv_power_kw']).to eq('9.24')
       expect(params['required_data']).to eq('pv_watts,temp,weather_code')
       expect(params['past_days']).to eq('0')
-    end
-
-    context 'when extra parameters are nil' do
-      let(:config) do
-        Config.new(
-          forecast_interval: 900,
-          influx_host: 'localhost',
-          influx_schema: 'http',
-          influx_port: '8086',
-          influx_token: 'test-token',
-          influx_org: 'test-org',
-          influx_bucket: 'test-bucket',
-          influx_measurement: 'test-measurement',
-          pvnode_apikey: 'test-key',
-          pvnode_configurations: [{
-            latitude: '50.0',
-            longitude: '6.0',
-            declination: '30',
-            azimuth: '20',
-            kwp: '9.24',
-            extra_params: nil,
-          }],
-          pvnode_forecast_days: nil,
-          pvnode_clearsky_data: nil,
-        )
-      end
-
-      it 'omits nil parameters from URL' do
-        expect(params).not_to have_key('forecast_days')
-        expect(params).not_to have_key('clearsky_data')
-      end
     end
 
     context 'with multiple planes with same extra_params' do
@@ -151,8 +122,6 @@ describe PvnodeAdapter do
               extra_params: 'diffuse_radiation_model=perez',
             },
           ],
-          pvnode_forecast_days: 3,
-          pvnode_clearsky_data: 'true',
         )
       end
 
@@ -210,8 +179,6 @@ describe PvnodeAdapter do
               extra_params: 'snow_slide_coefficient=0.3',
             },
           ],
-          pvnode_forecast_days: 3,
-          pvnode_clearsky_data: 'true',
         )
       end
 
@@ -300,8 +267,6 @@ describe PvnodeAdapter do
               extra_params: 'snow_slide_coefficient=0.8',
             },
           ],
-          pvnode_forecast_days: 3,
-          pvnode_clearsky_data: 'true',
         )
       end
 
@@ -402,8 +367,6 @@ describe PvnodeAdapter do
               extra_params: nil,
             },
           ],
-          pvnode_forecast_days: 3,
-          pvnode_clearsky_data: 'true',
         )
       end
 
@@ -442,8 +405,6 @@ describe PvnodeAdapter do
           { latitude: '50.0', longitude: '6.0', declination: '45', azimuth: '-20', kwp: '4.24', extra_params: nil },
           { latitude: '50.0', longitude: '6.0', declination: '60', azimuth: '90', kwp: '3.0', extra_params: nil },
         ],
-        pvnode_forecast_days: 3,
-        pvnode_clearsky_data: 'true',
       )
       adapter = described_class.new(config:)
 
