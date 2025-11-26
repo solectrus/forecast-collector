@@ -23,7 +23,7 @@ http_interactions:
       Server:
       - nginx
       Date:
-      - Tue, 21 May 2024 13:59:12 GMT
+      - Tue, 19 Aug 2025 07:29:23 GMT
       Content-Type:
       - application/json; charset=utf-8
       Transfer-Encoding:
@@ -33,19 +33,17 @@ http_interactions:
       Keep-Alive:
       - timeout=60
       X-Version:
-      - v7.22.2
-      X-Build:
-      - 2049 (Thu, 25 Apr 2024 12:43:30 +0200)
+      - v7.33.1.2451
       X-Pid:
-      - 4el68f5y
+      - i4xcS5Ep
       X-Ratelimit-Zone:
-      - IP 46.253.185.215
+      - IP 78.94.43.198
       X-Ratelimit-Period:
       - '3600'
       X-Ratelimit-Limit:
       - '12'
       X-Ratelimit-Retry-At:
-      - '2024-05-21T16:56:09+02:00'
+      - '2025-08-19T10:04:33+02:00'
       Access-Control-Allow-Origin:
       - "*"
       Access-Control-Allow-Methods:
@@ -55,8 +53,9 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"result":"Rate limit for API calls reached.","message":{"code":429,"type":"error","text":"Rate
-        limit for API calls reached.","pid":"4el68f5y","ratelimit":{"zone":"IP 46.253.185.215","period":3600,"limit":12,"retry-at":"2024-05-21T16:56:09+02:00"}}}'
-  recorded_at: Tue, 21 May 2024 13:59:12 GMT
+        limit for API calls reached.","pid":"i4xcS5Ep","info":[],"ratelimit":{"zone":"IP
+        78.94.43.198","period":3600,"limit":12,"retry-at":"2025-08-19T10:04:33+02:00"}}}'
+  recorded_at: Tue, 19 Aug 2025 07:29:23 GMT
 - request:
     method: get
     uri: http://<INFLUX_HOST>:<INFLUX_PORT>/ping
@@ -82,11 +81,11 @@ http_interactions:
       X-Influxdb-Build:
       - OSS
       X-Influxdb-Version:
-      - v2.7.11
+      - v2.7.12
       Date:
-      - Tue, 06 May 2025 10:14:39 GMT
+      - Tue, 19 Aug 2025 07:29:25 GMT
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Tue, 06 May 2025 10:14:39 GMT
+  recorded_at: Tue, 19 Aug 2025 07:29:25 GMT
 recorded_with: VCR 6.3.1

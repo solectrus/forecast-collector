@@ -1,0 +1,62 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.forecast.solar/estimate/<FORECAST_LATITUDE>/<FORECAST_LONGITUDE>/30/20/9.24?damping=0,0&horizon=0,30,60,30&inverter=8.5&time=seconds
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Forecast-Collector (+https://github.com/solectrus/forecast-collector)
+      Host:
+      - api.forecast.solar
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Tue, 19 Aug 2025 14:08:42 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Keep-Alive:
+      - timeout=60
+      X-Version:
+      - v7.33.1.2451
+      X-Pid:
+      - zv1MAf74
+      X-Ratelimit-Zone:
+      - IP 78.94.43.198
+      X-Ratelimit-Period:
+      - '3600'
+      X-Ratelimit-Limit:
+      - '12'
+      X-Ratelimit-Remaining:
+      - '10'
+      X-Process-Time:
+      - 138 ms
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Methods:
+      - OPTIONS,HEAD,GET,POST
+      Access-Control-Allow-Headers:
+      - Origin,Content-Type,Authorization,X-Requested-With,X-Delimiter,X-Separator,X-No-Cache
+    body:
+      encoding: ASCII-8BIT
+      string: '{"result":{"watts":{"1755577710":0,"1755579600":218,"1755583200":494,"1755586800":869,"1755590400":1662,"1755594000":2665,"1755597600":2659,"1755601200":1811,"1755604800":1672,"1755608400":1833,"1755612000":1930,"1755615600":1269,"1755619200":748,"1755622800":425,"1755626400":168,"1755629265":0,"1755664203":0,"1755666000":233,"1755669600":552,"1755673200":884,"1755676800":1212,"1755680400":1508,"1755684000":1664,"1755687600":1680,"1755691200":1728,"1755694800":1783,"1755698400":1557,"1755702000":1166,"1755705600":777,"1755709200":449,"1755712800":238,"1755715543":0},"watt_hours_period":{"1755577710":0,"1755579600":57,"1755583200":356,"1755586800":682,"1755590400":1266,"1755594000":2164,"1755597600":2662,"1755601200":2235,"1755604800":1742,"1755608400":1753,"1755612000":1882,"1755615600":1600,"1755619200":1009,"1755622800":587,"1755626400":297,"1755629265":67,"1755664203":0,"1755666000":58,"1755669600":393,"1755673200":718,"1755676800":1048,"1755680400":1360,"1755684000":1586,"1755687600":1672,"1755691200":1704,"1755694800":1756,"1755698400":1670,"1755702000":1362,"1755705600":972,"1755709200":613,"1755712800":344,"1755715543":91},"watt_hours":{"1755577710":0,"1755579600":57,"1755583200":413,"1755586800":1095,"1755590400":2361,"1755594000":4525,"1755597600":7187,"1755601200":9422,"1755604800":11164,"1755608400":12917,"1755612000":14799,"1755615600":16399,"1755619200":17408,"1755622800":17995,"1755626400":18292,"1755629265":18359,"1755664203":0,"1755666000":58,"1755669600":451,"1755673200":1169,"1755676800":2217,"1755680400":3577,"1755684000":5163,"1755687600":6835,"1755691200":8539,"1755694800":10295,"1755698400":11965,"1755702000":13327,"1755705600":14299,"1755709200":14912,"1755712800":15256,"1755715543":15347},"watt_hours_day":{"1755554400":18359,"1755640800":15347}},"message":{"code":0,"type":"success","text":"","pid":"zv1MAf74","info":{"latitude":<FORECAST_LATITUDE>,"longitude":<FORECAST_LONGITUDE>,"distance":0,"place":"Kart\u00e4userstra\u00dfe,
+        Lich-Steinstra\u00df, J\u00fclich, Kreis D\u00fcren, Nordrhein-Westfalen,
+        52428, Deutschland","timezone":"Europe/Berlin","time":"2025-08-19T16:08:42+02:00","time_utc":"2025-08-19T14:08:42+00:00"},"ratelimit":{"zone":"IP
+        78.94.43.198","period":3600,"limit":12,"remaining":10}}}'
+  recorded_at: Tue, 19 Aug 2025 14:08:42 GMT
+recorded_with: VCR 6.3.1

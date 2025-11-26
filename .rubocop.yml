@@ -1,5 +1,5 @@
 plugins:
-  - rubocop-minitest
+  - rubocop-rspec
   - rubocop-rake
   - rubocop-performance
 
@@ -37,5 +37,14 @@ Layout/LineEndStringConcatenationIndentation:
 Layout/FirstArrayElementIndentation:
   Enabled: false
 
-Minitest/MultipleAssertions:
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/SpecFilePathFormat:
+  Enabled: false
+
+Rake/Desc:
   Enabled: false

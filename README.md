@@ -5,19 +5,25 @@
 
 # Forecast collector
 
-Collect solar forecast data from https://forecast.solar or https://solcast.com and push it to InfluxDB.
+Collect solar forecast data from various providers and store them into an InfluxDB database. Supported providers are:
+
+- Forecast.Solar (https://forecast.solar)
+- Solcast (https://solcast.com)
+- Pvnode (https://pvnode.com)
 
 ## Usage
 
-1. Make sure your InfluxDB database is ready (not subject of this README)
+1. Depending on the provider you want to use, you need to sign up for their services and get an API key:
 
-2. Prepare an `.env` file (see `.env.example`) with your InfluxDB credentials and some details about your PV plant (Geo location, azimuth, declination etc.)
+   - [Forecast.Solar API documentation](https://doc.forecast.solar/api:estimate) (no API key required)
+   - [Solcast API documentation](https://docs.solcast.com.au/) in the Legacy/Hobbyist section (API key required)
+   - [Pvnode API documentation](https://pvnode.com/docs/) (API key required)
 
-   Find details about the underlying APIs here:
-   * [Forecast.Solar API documentation](https://doc.forecast.solar/api:estimate).
-   * [Solcast API documentation](https://docs.solcast.com.au/) in the Legacy/Hobbyist section
+2. Make sure your InfluxDB database is ready (not subject of this README)
 
-3. Run the Docker container on your Linux box:
+3. Prepare an `.env` file (see `.env.example`) with your InfluxDB credentials and the provider-specific settings, e.g., API key.
+
+4. Run the Docker container on your Linux box:
 
    ```bash
    docker run -it --rm \

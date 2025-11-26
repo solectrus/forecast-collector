@@ -1,7 +1,7 @@
 require 'vcr'
 
 VCR.configure do |config|
-  config.cassette_library_dir = 'test/cassettes'
+  config.cassette_library_dir = 'spec/cassettes'
   config.hook_into :webmock
 
   # Remove Cookie header
@@ -20,6 +20,7 @@ VCR.configure do |config|
     SOLCAST_1_SITE
     SOLCAST_SITE
     FORECAST_SOLAR_APIKEY
+    PVNODE_APIKEY
   ]
   sensitive_environment_variables.each do |key_name|
     config.filter_sensitive_data("<#{key_name}>") { ENV.fetch(key_name, nil) }
