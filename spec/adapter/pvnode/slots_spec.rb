@@ -15,13 +15,11 @@ describe Pvnode::Slots do
       let(:required_requests_count) { 1 }
       let(:now) { Time.utc(2025, 9, 30, 12, 0, 0) }
 
-      it 'uses day-based scheduling to stay under 40 req/month limit' do
+      it 'uses exactly 1 slot per day (skip_factor 16)' do
         # 40 req/month ÷ 30 days ÷ 1 request = 1.33 updates/day
-        # 16 / 1.33 = 12.03 → ceil = 13 skip_factor
-        # But: 16 / 13 = 1.23 → ceil = 2 slots/day (would exceed budget of 1.33)
-        # So: skip_factor *= 2 → 26 (> 16, triggers day-based scheduling)
-        # days_to_skip = ceil(26/16) = 2 days
-        expect(next_time).to eq(Time.utc(2025, 10, 2, 12, 0, 0))
+        # Since < 2, use skip_factor=16 → only slot 0 (01:05 UTC) each day
+        # At 12:00, slot 0 has passed → use slot 0 tomorrow
+        expect(next_time).to eq(Time.utc(2025, 10, 1, 1, 5, 0))
       end
     end
 
@@ -116,10 +114,12 @@ describe Pvnode::Slots do
       let(:required_requests_count) { 4 }
       let(:now) { Time.utc(2025, 9, 30, 3, 0, 0) }
 
-      it 'skips every other update (skip_factor = 2)' do
-        # 1000 requests/month ÷ 30 days ÷ 4 batches = 8.33 → 8 updates/day max
-        # 16 daily slots ÷ 8 = 2 (skip every other slot)
-        expect(next_time).to eq(Time.utc(2025, 9, 30, 4, 5, 0))
+      it 'uses skip_factor = 3 for 6 updates/day' do
+        # 1000 requests/month ÷ 30 days ÷ 4 batches = 8.33 → target 8 slots/day
+        # skip_factor = ceil(15/7) = 3 → uses slots 0,3,6,9,12,15 = 6 slots/day
+        # At 03:00, next slots are: index 2 (04:05), index 3 (04:35)
+        # Slot 2 % 3 = 2 → skip, Slot 3 % 3 = 0 → use it
+        expect(next_time).to eq(Time.utc(2025, 9, 30, 4, 35, 0))
       end
     end
 
