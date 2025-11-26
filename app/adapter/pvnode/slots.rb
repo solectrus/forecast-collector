@@ -148,24 +148,20 @@ module Pvnode
       # No optimization needed if we can afford all slots
       return 1 if max_slots_per_day >= 16
 
-      # Calculate how many slots to skip to match our budget
-      # Example: max_slots_per_day=8 → 16/8=2 → use every 2nd slot (8 updates/day)
-      # Example: max_slots_per_day=1.33 → 16/1.33=12.03 → ceil=13 (not enough, would use 2 slots/day)
-      #
-      # Special case: If result would still use 2+ slots per day but budget allows <2,
-      # we need to increase skip_factor to force day-based scheduling (skip_factor > 16)
-      skip_factor = (16.0 / max_slots_per_day).ceil
+      # For budgets that can't afford even 1 slot per day, use day-based scheduling
+      # skip_factor > 16 triggers day skipping in next_fetch_time
+      return (16.0 / max_slots_per_day).ceil if max_slots_per_day < 1
 
-      # Check if this skip_factor would still use too many slots per day
-      # slots_per_day = 16 / skip_factor (rounded up because of modulo logic)
-      # If slots_per_day > max_slots_per_day, we need a larger skip_factor
-      if skip_factor <= 16
-        slots_per_day = (16.0 / skip_factor).ceil
-        # If we'd use more slots than budget allows, force day-based scheduling
-        skip_factor *= 2 if slots_per_day > max_slots_per_day
-      end
+      # For very limited budgets (1-2 slots/day), use exactly 1 slot per day
+      # skip_factor=16 means only slot index 0 is used (1 update/day)
+      return 16 if max_slots_per_day < 2
 
-      skip_factor
+      # Calculate skip_factor to get at most max_slots_per_day slots
+      # With 16 slots (indices 0-15), using every nth slot gives: floor(15/n) + 1 slots
+      # To get at most k slots: floor(15/n) + 1 <= k → n >= 15/(k-1)
+      # We use floor(max_slots_per_day) as the target slot count
+      target_slots = max_slots_per_day.floor
+      (15.0 / (target_slots - 1)).ceil
     end
   end
 end
