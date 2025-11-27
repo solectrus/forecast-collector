@@ -36,6 +36,13 @@ describe Config do
         expect { described_class.new(invalid_options) }.to raise_error(Exception, /URL is invalid/)
       end
     end
+
+    context 'with pvnode provider' do
+      it 'does not require forecast_interval' do
+        pvnode_options = valid_options.merge(forecast_provider: 'pvnode', forecast_interval: nil)
+        expect { described_class.new(pvnode_options) }.not_to raise_error
+      end
+    end
   end
 
   describe 'forecast methods' do
