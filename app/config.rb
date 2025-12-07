@@ -3,7 +3,7 @@ class Config # rubocop:disable Metrics/ClassLength
     options.each { |key, value| instance_variable_set("@#{key}", value) }
 
     validate_url!(influx_url)
-    validate_interval!(forecast_interval)
+    validate_interval!(forecast_interval) unless forecast_provider == 'pvnode'
   end
 
   attr_reader :influx_schema,
@@ -125,7 +125,7 @@ class Config # rubocop:disable Metrics/ClassLength
       {
         forecast_provider: ENV.fetch('FORECAST_PROVIDER', 'forecast.solar'),
         forecast_solar_configurations: all_configurations_from_env('FORECAST', ForecastSolarConfiguration, defaults),
-        forecast_interval: ENV.fetch('FORECAST_INTERVAL').to_i,
+        forecast_interval: ENV.fetch('FORECAST_INTERVAL', nil)&.to_i,
         forecast_solar_apikey: ENV.fetch('FORECAST_SOLAR_APIKEY', nil),
       }
     end
