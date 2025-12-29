@@ -21,7 +21,6 @@ GEM
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
-    openssl (4.0.0)
     parallel (1.27.0)
     parser (3.3.10.0)
       ast (~> 2.4.1)
@@ -96,7 +95,6 @@ DEPENDENCIES
   dotenv
   influxdb-client
   logger
-  openssl
   rake
   rspec
   rubocop
@@ -108,4 +106,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-  4.0.2
+  4.0.3
