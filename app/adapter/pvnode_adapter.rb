@@ -20,6 +20,7 @@ class PvnodeAdapter < BaseAdapter
       result[timestamp] = {
         watt: value_point['pv_watts']&.round,
         watt_clearsky: value_point['pv_watts_clearsky']&.round,
+        watt_nosnow: value_point['pv_watts_nosnow']&.round,
         temp: value_point['temp']&.round(1),
         weather_code: value_point['weather_code'],
       }.compact
@@ -105,7 +106,7 @@ class PvnodeAdapter < BaseAdapter
   end
 
   def required_data
-    'pv_watts,temp,weather_code'
+    'pv_watts,pv_watts_nosnow,temp,weather_code'
   end
 
   def build_params(first_plane, second_plane)
