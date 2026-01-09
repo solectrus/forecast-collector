@@ -15,7 +15,7 @@ class Loop
   end
 
   def start(max_count: nil, max_wait: nil)
-    return unless influx_ready?(max_wait)
+    exit(1) unless influx_ready?(max_wait)
 
     self.count = 0
     loop do

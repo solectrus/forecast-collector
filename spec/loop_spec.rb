@@ -56,13 +56,23 @@ describe Loop do
     context 'when InfluxDB is not ready' do
       let(:config) { Config.from_env }
 
-      it 'handles InfluxDB connection failures' do
+      let(:flux_writer) do
+        instance_double(FluxWriter, ready?: false).tap do |flux_writer|
+          allow(FluxWriter).to receive(:new).with(config:).and_return(flux_writer)
+        end
+      end
+
+      it 'fails with exit code 1' do
+        exit_status = nil
         stdout, stderr = capture_output do
           described_class.start(config: config, max_wait: 1, max_count: 1)
+        rescue SystemExit => e
+          exit_status = e.status
         end
 
         expect(stderr).to be_empty
         expect(stdout).to match(/InfluxDB not ready/)
+        expect(exit_status).to eq(1)
       end
     end
   end
