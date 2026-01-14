@@ -2,7 +2,7 @@ require 'adapter/base_adapter'
 require 'config'
 
 describe BaseAdapter do
-  let(:config) { instance_double(Config) }
+  let(:config) { instance_double(Config, forecast_interval: 900) }
   let(:adapter) { described_class.new(config:) }
 
   describe '#accumulate' do
@@ -152,6 +152,12 @@ describe BaseAdapter do
 
         expect(result).to be_nil
       end
+    end
+  end
+
+  describe '#pull_interval_message' do
+    it 'returns the default interval message' do
+      expect(adapter.pull_interval_message).to eq('every 900 seconds')
     end
   end
 end

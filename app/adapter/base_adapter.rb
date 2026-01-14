@@ -131,6 +131,12 @@ class BaseAdapter
     Time.now + config.forecast_interval
   end
 
+  # Returns human-readable pull schedule for startup logging.
+  # Can be overridden by subclasses with custom scheduling.
+  def pull_interval_message
+    "every #{config.forecast_interval} seconds"
+  end
+
   private
 
   # Returns the number of API requests needed for this adapter.

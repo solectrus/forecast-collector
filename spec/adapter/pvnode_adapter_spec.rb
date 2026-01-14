@@ -246,6 +246,12 @@ describe PvnodeAdapter do
     end
   end
 
+  describe '#pull_interval_message' do
+    it 'returns the pvnode schedule message' do
+      expect(pvnode.pull_interval_message).to eq('on provider schedule (auto)')
+    end
+  end
+
   def build_config(pvnode_configurations, paid: true)
     Config.new(
       influx_host: 'localhost',

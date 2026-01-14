@@ -62,6 +62,10 @@ class PvnodeAdapter < BaseAdapter
     slots.next_fetch_time
   end
 
+  def pull_interval_message
+    'on provider schedule (auto)'
+  end
+
   private
 
   def slots
