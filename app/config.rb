@@ -1,3 +1,7 @@
+require_relative 'config/forecast_solar_configuration'
+require_relative 'config/solcast_configuration'
+require_relative 'config/pvnode_configuration'
+
 class Config # rubocop:disable Metrics/ClassLength
   def initialize(options = {})
     options.each { |key, value| instance_variable_set("@#{key}", value) }
@@ -134,61 +138,5 @@ class Config # rubocop:disable Metrics/ClassLength
       config_count = ENV.fetch('FORECAST_CONFIGURATIONS', '1').to_i
       (0...config_count).map { |index| klass.from_env(index, prefix, defaults) }
     end
-  end
-end
-
-class ForecastSolarConfiguration
-  attr_reader :latitude, :longitude, :declination, :azimuth, :kwp, :damping_morning, :damping_evening, :inverter,
-              :horizon
-
-  def initialize(options = {})
-    options.each { |key, value| instance_variable_set("@#{key}", value) }
-  end
-
-  def [](key)
-    public_send(key)
-  end
-
-  def self.from_env(index, prefix, defaults)
-    {
-      latitude: ENV.fetch("#{prefix}_#{index}_LATITUDE", defaults[:latitude]),
-      longitude: ENV.fetch("#{prefix}_#{index}_LONGITUDE", defaults[:longitude]),
-      declination: ENV.fetch("#{prefix}_#{index}_DECLINATION", defaults[:declination]),
-      azimuth: ENV.fetch("#{prefix}_#{index}_AZIMUTH", defaults[:azimuth]),
-      kwp: ENV.fetch("#{prefix}_#{index}_KWP", defaults[:kwp]),
-      damping_morning: ENV.fetch("#{prefix}_#{index}_DAMPING_MORNING", defaults[:damping_morning]),
-      damping_evening: ENV.fetch("#{prefix}_#{index}_DAMPING_EVENING", defaults[:damping_evening]),
-      inverter: ENV.fetch("#{prefix}_#{index}_INVERTER", defaults[:inverter]),
-      horizon: ENV.fetch("#{prefix}_#{index}_HORIZON", defaults[:horizon]),
-    }
-  end
-end
-
-class SolcastConfiguration
-  attr_reader :site
-
-  def initialize(options = {})
-    options.each { |key, value| instance_variable_set("@#{key}", value) }
-  end
-
-  def [](key)
-    public_send(key)
-  end
-
-  def self.from_env(index, prefix, defaults)
-    { site: ENV.fetch("#{prefix}_#{index}_SITE", defaults[:solcast_site]) }
-  end
-end
-
-class PvnodeConfiguration
-  def self.from_env(index, prefix, defaults)
-    {
-      latitude: ENV.fetch("FORECAST_#{index}_LATITUDE", defaults[:latitude]),
-      longitude: ENV.fetch("FORECAST_#{index}_LONGITUDE", defaults[:longitude]),
-      declination: ENV.fetch("FORECAST_#{index}_DECLINATION", defaults[:declination]),
-      azimuth: ENV.fetch("FORECAST_#{index}_AZIMUTH", defaults[:azimuth]),
-      kwp: ENV.fetch("FORECAST_#{index}_KWP", defaults[:kwp]),
-      extra_params: ENV.fetch("#{prefix}_#{index}_EXTRA_PARAMS", defaults[:extra_params]),
-    }
   end
 end
