@@ -2,9 +2,9 @@
 #
 # The pvnode API provides weather forecast data with different rate limits:
 # - Free accounts: 40 requests/month
-# - Paid accounts: 1000 requests/month
+# - Paid accounts: 1500 requests/month
 #
-# The API updates forecast data 16 times per day at fixed slots.
+# The API updates forecast data 24 times per day (hourly).
 # This class optimizes fetching by:
 # - Calculating which slots to use based on rate limit and required requests
 # - Skipping slots when necessary to stay within monthly quota
@@ -12,17 +12,12 @@
 
 module Pvnode
   class Slots
-    # pvnode updates forecast data 16 times per day at these fixed times (UTC):
-    #   01:00, 01:30, 04:00, 04:30, 07:00, 07:30, 10:00, 10:30,
-    #   13:00, 13:30, 16:00, 16:30, 19:00, 19:30, 22:00, 22:30
-    SCHEDULED_SLOTS = [
-      [1, 0], [1, 30], [4, 0], [4, 30], [7, 0], [7, 30], [10, 0], [10, 30],
-      [13, 0], [13, 30], [16, 0], [16, 30], [19, 0], [19, 30], [22, 0], [22, 30],
-    ].freeze
-
     # Rate limits enforced by pvnode API
-    MAX_REQUESTS_PER_MONTH_PAID = 1_000  # Paid subscription
+    MAX_REQUESTS_PER_MONTH_PAID = 1_500  # Paid subscription
     MAX_REQUESTS_PER_MONTH_FREE = 40     # Free tier
+
+    SLOTS_PER_DAY = 24
+    private_constant :SLOTS_PER_DAY
 
     # @param paid [Boolean] true for paid account, false for free account
     # @param required_requests_count [Integer] number of API requests needed per update
@@ -43,7 +38,7 @@ module Pvnode
     #
     # Strategy:
     # 1. Calculate skip_factor to determine which slots to use
-    # 2. If rate limit is very restrictive (skip_factor > 16), schedule days ahead
+    # 2. If rate limit is very restrictive (skip_factor > SLOTS_PER_DAY), schedule days ahead
     # 3. Otherwise, find next available slot today matching the skip pattern
     # 4. If no more slots today, use first slot tomorrow
     #
@@ -52,15 +47,14 @@ module Pvnode
       skip_factor = calculate_skip_factor
 
       # For very restrictive rate limits: skip entire days
-      # Example: Free account with 2 requests needs skip_factor=24 → skip 2 days
-      if skip_factor > 16
-        days_to_skip = (skip_factor / 16.0).ceil
+      if skip_factor > SLOTS_PER_DAY
+        days_to_skip = (skip_factor.to_f / SLOTS_PER_DAY).ceil
         return Time.now.utc + (SECONDS_PER_DAY * days_to_skip)
       end
 
       # For normal rate limits: find next matching slot
       now = Time.now.utc
-      next_slot = find_next_slot_today(now)
+      next_slot = find_next_slot_today(now, skip_factor)
       return next_slot if next_slot
 
       # No more slots today: use first slot tomorrow
@@ -72,9 +66,13 @@ module Pvnode
     SECONDS_PER_DAY = 24 * 60 * 60
     private_constant :SECONDS_PER_DAY
 
-    # Add 5 minutes to avoid scheduling exactly at slot time (API might not be ready yet)
-    SAFETY_MARGIN_SECONDS = 5 * 60
+    # pvnode data is ready at :40, fetch from :44 (4 min buffer)
+    SAFETY_MARGIN_SECONDS = 44 * 60
     private_constant :SAFETY_MARGIN_SECONDS
+
+    # Use 31 days (worst case) to never exceed monthly limits
+    DAYS_PER_MONTH = 31
+    private_constant :DAYS_PER_MONTH
 
     # Finds the next available slot today that matches the skip pattern
     #
@@ -84,84 +82,60 @@ module Pvnode
     # - skip_factor=12: use every 12th slot (indices 0,12)
     #
     # @param now [Time] current time
+    # @param skip_factor [Integer] which slots to use
     # @return [Time, nil] next matching slot time, or nil if no more slots today
-    def find_next_slot_today(now)
-      skip_factor = calculate_skip_factor
-      all_times = daily_slot_times(now)
-      future_times = all_times.select { |time| time + SAFETY_MARGIN_SECONDS > now }
+    def find_next_slot_today(now, skip_factor)
+      SLOTS_PER_DAY.times do |hour|
+        next unless (hour % skip_factor).zero?
 
-      future_times.each do |time|
-        slot_index = all_times.index(time)
-        return time + SAFETY_MARGIN_SECONDS if (slot_index % skip_factor).zero?
+        fetch_time = Time.utc(now.year, now.month, now.day, hour, 0, 0) + SAFETY_MARGIN_SECONDS
+        return fetch_time if fetch_time > now
       end
 
       nil
     end
 
-    # Converts SCHEDULED_SLOTS to absolute Time objects for a given day
-    def daily_slot_times(now)
-      SCHEDULED_SLOTS.map do |hour, minute|
-        Time.utc(now.year, now.month, now.day, hour, minute, 0)
-      end
-    end
-
     # Returns the first slot time for tomorrow (with safety margin)
     def first_slot_tomorrow(now)
       one_day_later = now + SECONDS_PER_DAY
-      first_hour, first_minute = SCHEDULED_SLOTS.first
 
       Time.utc(
         one_day_later.year, one_day_later.month, one_day_later.day,
-        first_hour, first_minute, 0,
+        0, 0, 0,
       ) + SAFETY_MARGIN_SECONDS
     end
 
     # Calculates the optimal skip factor to stay within monthly rate limit
     #
     # The skip_factor determines which slots to use:
-    # - skip_factor=1: use all 16 slots per day (no skipping)
-    # - skip_factor=2: use every 2nd slot (8 updates/day)
-    # - skip_factor=3: use every 3rd slot (5-6 updates/day)
-    # - skip_factor>16: triggers day-based scheduling in next_fetch_time
-    #
-    # Calculation logic:
-    # 1. Determine how many slots we can afford per day: max_requests_per_month / 30 / required_requests
-    # 2. If we can afford all 16 slots: return 1 (no optimization needed)
-    # 3. If we can only afford 1 or fewer slots per day: use day-based scheduling (skip_factor=32)
-    # 4. Otherwise: calculate how many slots to skip: 16 / max_slots_per_day (rounded up)
+    # - skip_factor=1: use all slots per day (no skipping)
+    # - skip_factor=2: use every 2nd slot
+    # - skip_factor>SLOTS_PER_DAY: triggers day-based scheduling in next_fetch_time
     #
     # @return [Integer] skip factor (1 = use all slots, >1 = skip slots)
     #
-    # @example Paid account scenarios (1000 req/month, 16 slots/day available)
-    #   1 request/update  → 1000/30/1 = 33 slots/day → skip_factor=1 (use all 16, well under limit)
-    #   3 requests/update → 1000/30/3 = 11 slots/day → skip_factor=2 (use 8 slots = 720 req/month)
-    #   5 requests/update → 1000/30/5 = 6 slots/day  → skip_factor=3 (use 5 slots = 750 req/month)
+    # @example Paid account scenarios (1500 req/month, 24 slots/day available)
+    #   1 request/update  → 1500/31/1 = 48 slots/day → skip_factor=1 (use all 24)
+    #   2 requests/update → 1500/31/2 = 24 slots/day → skip_factor=1 (use all 24)
+    #   3 requests/update → 1500/31/3 = 16 slots/day → skip_factor=2 (use 12 slots)
     #
-    # @example Free account scenarios (40 req/month, 16 slots/day available)
-    #   1 request/update  → 40/30/1 = 1.3 slots/day  → skip_factor=32 (use day-skip: 1x/day = 30 req/month)
-    #   2 requests/update → 40/30/2 = 0.6 slots/day  → skip_factor=32 (use day-skip: 1x/2days = 30 req/month)
+    # @example Free account scenarios (40 req/month, 24 slots/day available)
+    #   1 request/update  → 40/31/1 = 1.3 slots/day  → skip_factor=SLOTS_PER_DAY (1x/day)
+    #   2 requests/update → 40/31/2 = 0.6 slots/day  → day-skip (1x/2days)
     def calculate_skip_factor
-      # Calculate max slots per day to stay under monthly limit
-      # Use 31 days (worst case) to never exceed monthly limits
-      max_slots_per_day = max_requests_per_month / 31.0 / required_requests_count
+      max_slots_per_day = max_requests_per_month / DAYS_PER_MONTH.to_f / required_requests_count
 
-      # No optimization needed if we can afford all slots
-      return 1 if max_slots_per_day >= 16
+      return 1 if max_slots_per_day >= SLOTS_PER_DAY
 
       # For budgets that can't afford even 1 slot per day, use day-based scheduling
-      # skip_factor > 16 triggers day skipping in next_fetch_time
-      return (16.0 / max_slots_per_day).ceil if max_slots_per_day < 1
+      return (SLOTS_PER_DAY.to_f / max_slots_per_day).ceil if max_slots_per_day < 1
 
       # For very limited budgets (1-2 slots/day), use exactly 1 slot per day
-      # skip_factor=16 means only slot index 0 is used (1 update/day)
-      return 16 if max_slots_per_day < 2
+      return SLOTS_PER_DAY if max_slots_per_day < 2
 
       # Calculate skip_factor to get at most max_slots_per_day slots
-      # With 16 slots (indices 0-15), using every nth slot gives: floor(15/n) + 1 slots
-      # To get at most k slots: floor(15/n) + 1 <= k → n >= 15/(k-1)
-      # We use floor(max_slots_per_day) as the target slot count
       target_slots = max_slots_per_day.floor
-      (15.0 / (target_slots - 1)).ceil
+      ((SLOTS_PER_DAY - 1).to_f / (target_slots - 1)).ceil
     end
   end
 end
