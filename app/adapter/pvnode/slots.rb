@@ -142,8 +142,8 @@ module Pvnode
     #   2 requests/update → 40/30/2 = 0.6 slots/day  → skip_factor=32 (use day-skip: 1x/2days = 30 req/month)
     def calculate_skip_factor
       # Calculate max slots per day to stay under monthly limit
-      # Use 30 days as average month length, float division for precision
-      max_slots_per_day = max_requests_per_month / 30.0 / required_requests_count
+      # Use 31 days (worst case) to never exceed monthly limits
+      max_slots_per_day = max_requests_per_month / 31.0 / required_requests_count
 
       # No optimization needed if we can afford all slots
       return 1 if max_slots_per_day >= 16
