@@ -12,7 +12,7 @@ http_interactions:
       Accept:
       - "*/*"
       User-Agent:
-      - Ruby
+      - Forecast-Collector (+https://github.com/solectrus/forecast-collector)
       Host:
       - api.forecast.solar
   response:
@@ -23,7 +23,7 @@ http_interactions:
       Server:
       - nginx
       Date:
-      - Tue, 19 Aug 2025 07:29:23 GMT
+      - Wed, 18 Mar 2026 10:07:43 GMT
       Content-Type:
       - application/json; charset=utf-8
       Transfer-Encoding:
@@ -33,17 +33,15 @@ http_interactions:
       Keep-Alive:
       - timeout=60
       X-Version:
-      - v7.33.1.2451
+      - v7.36.0.2482
       X-Pid:
-      - i4xcS5Ep
-      X-Ratelimit-Zone:
-      - IP 78.94.43.198
+      - 3t5mM40p
       X-Ratelimit-Period:
       - '3600'
       X-Ratelimit-Limit:
       - '12'
       X-Ratelimit-Retry-At:
-      - '2025-08-19T10:04:33+02:00'
+      - '2026-03-18T12:00:38+01:00'
       Access-Control-Allow-Origin:
       - "*"
       Access-Control-Allow-Methods:
@@ -53,9 +51,9 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"result":"Rate limit for API calls reached.","message":{"code":429,"type":"error","text":"Rate
-        limit for API calls reached.","pid":"i4xcS5Ep","info":[],"ratelimit":{"zone":"IP
-        78.94.43.198","period":3600,"limit":12,"retry-at":"2025-08-19T10:04:33+02:00"}}}'
-  recorded_at: Tue, 19 Aug 2025 07:29:23 GMT
+        limit for API calls reached.","pid":"3t5mM40p","info":[],"ratelimit":{"zone":"IP
+        <FILTERED>","period":3600,"limit":12,"retry-at":"2026-03-18T12:00:38+01:00"}}}'
+  recorded_at: Wed, 18 Mar 2026 10:07:43 GMT
 - request:
     method: get
     uri: http://<INFLUX_HOST>:<INFLUX_PORT>/ping
@@ -81,11 +79,11 @@ http_interactions:
       X-Influxdb-Build:
       - OSS
       X-Influxdb-Version:
-      - v2.7.12
+      - v2.8.0
       Date:
-      - Tue, 19 Aug 2025 07:29:25 GMT
+      - Wed, 18 Mar 2026 10:07:45 GMT
     body:
       encoding: UTF-8
       string: ''
-  recorded_at: Tue, 19 Aug 2025 07:29:25 GMT
-recorded_with: VCR 6.3.1
+  recorded_at: Wed, 18 Mar 2026 10:07:45 GMT
+recorded_with: VCR 6.4.0

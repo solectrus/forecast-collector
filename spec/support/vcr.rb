@@ -4,8 +4,12 @@ VCR.configure do |config|
   config.cassette_library_dir = 'spec/cassettes'
   config.hook_into :webmock
 
-  # Remove Cookie header
-  config.before_record { |i| i.response.headers.delete('Set-Cookie') }
+  # Remove headers and body data that may contain sensitive information (e.g. IP addresses)
+  config.before_record do |i|
+    i.response.headers.delete('Set-Cookie')
+    i.response.headers.delete('X-Ratelimit-Zone')
+    i.response.body.gsub!(/IP \d+\.\d+\.\d+\.\d+/, 'IP <FILTERED>')
+  end
 
   sensitive_environment_variables = %w[
     INFLUX_HOST
