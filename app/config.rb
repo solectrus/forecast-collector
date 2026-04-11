@@ -24,6 +24,7 @@ class Config # rubocop:disable Metrics/ClassLength
               :pvnode_configurations,
               :pvnode_apikey,
               :pvnode_paid,
+              :pvnode_nowcast,
               :pvnode_clearsky_data,
               :solcast_configurations,
               :solcast_apikey
@@ -107,10 +108,12 @@ class Config # rubocop:disable Metrics/ClassLength
         extra_params: ENV.fetch('PVNODE_EXTRA_PARAMS', nil),
       }
 
+      plan = ENV.fetch('PVNODE_PAID', 'false').downcase
       {
         pvnode_configurations: all_configurations_from_env('PVNODE', PvnodeConfiguration, defaults),
         pvnode_apikey: ENV.fetch('PVNODE_APIKEY', nil),
-        pvnode_paid: ENV.fetch('PVNODE_PAID', 'false').downcase == 'true',
+        pvnode_paid: %w[true nowcast].include?(plan),
+        pvnode_nowcast: plan == 'nowcast',
       }
     end
 

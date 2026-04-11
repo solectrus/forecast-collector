@@ -13,25 +13,31 @@
 module Pvnode
   class Slots
     # Rate limits enforced by pvnode API
-    MAX_REQUESTS_PER_MONTH_PAID = 1_500  # Paid subscription
-    MAX_REQUESTS_PER_MONTH_FREE = 40     # Free tier
+    MAX_REQUESTS_PER_MONTH_NOWCAST = 3_000 # Nowcast subscription
+    MAX_REQUESTS_PER_MONTH_PAID    = 1_000 # Basic paid subscription
+    MAX_REQUESTS_PER_MONTH_FREE    = 40    # Free tier
 
     SLOTS_PER_DAY = 24
     private_constant :SLOTS_PER_DAY
 
     # @param paid [Boolean] true for paid account, false for free account
+    # @param nowcast [Boolean] true if the Nowcast subscription is in use
     # @param required_requests_count [Integer] number of API requests needed per update
     #   (e.g., 2 if we need to fetch data for 2 different plane configurations)
-    def initialize(paid:, required_requests_count:)
+    def initialize(paid:, required_requests_count:, nowcast: false)
       @paid = paid
+      @nowcast = nowcast
       @required_requests_count = required_requests_count
     end
 
-    attr_reader :paid, :required_requests_count
+    attr_reader :paid, :nowcast, :required_requests_count
 
-    # Returns the applicable monthly rate limit based on account type
+    # Returns the applicable monthly rate limit based on subscription
     def max_requests_per_month
-      paid ? MAX_REQUESTS_PER_MONTH_PAID : MAX_REQUESTS_PER_MONTH_FREE
+      return MAX_REQUESTS_PER_MONTH_NOWCAST if nowcast
+      return MAX_REQUESTS_PER_MONTH_PAID if paid
+
+      MAX_REQUESTS_PER_MONTH_FREE
     end
 
     # Returns the next optimal time to fetch data from pvnode API

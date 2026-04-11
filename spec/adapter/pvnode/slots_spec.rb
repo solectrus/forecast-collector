@@ -104,13 +104,14 @@ describe Pvnode::Slots do
       end
     end
 
-    context 'with paid account: 2 request batches (no rate limiting)' do
+    context 'with paid account: 2 request batches (rate limiting)' do
       let(:required_requests_count) { 2 }
       let(:now) { Time.utc(2025, 9, 30, 3, 0, 0) }
 
-      it 'uses all 24 updates per day (skip_factor = 1)' do
-        # 1500/31/2 = 24.19 ≥ 24 → no skipping needed
-        expect(next_time).to eq(Time.utc(2025, 9, 30, 3, 44, 0))
+      it 'uses skip_factor = 2 for 16 updates/day' do
+        # 1000/31/2 = 16.13 → skip_factor = ceil(23/15) = 2
+        # At 03:00, slot 3 is odd → skip, slot 4 (04:44) is even → use it
+        expect(next_time).to eq(Time.utc(2025, 9, 30, 4, 44, 0))
       end
     end
 
@@ -118,10 +119,10 @@ describe Pvnode::Slots do
       let(:required_requests_count) { 3 }
       let(:now) { Time.utc(2025, 9, 30, 3, 0, 0) }
 
-      it 'uses skip_factor = 2 for 12 updates/day' do
-        # 1500/31/3 = 16.13 → skip_factor = ceil(23/15) = 2
-        # At 03:00, index 3 is odd → skip, index 4 (04:44) is even → use it
-        expect(next_time).to eq(Time.utc(2025, 9, 30, 4, 44, 0))
+      it 'uses skip_factor = 3 for 10 updates/day' do
+        # 1000/31/3 = 10.75 → skip_factor = ceil(23/9) = 3
+        # At 03:00, slot 3 % 3 = 0 → use it
+        expect(next_time).to eq(Time.utc(2025, 9, 30, 3, 44, 0))
       end
     end
 
@@ -129,10 +130,10 @@ describe Pvnode::Slots do
       let(:required_requests_count) { 4 }
       let(:now) { Time.utc(2025, 9, 30, 3, 0, 0) }
 
-      it 'uses skip_factor = 3 for 8 updates/day' do
-        # 1500/31/4 = 12.1 → skip_factor = ceil(23/11) = 3
-        # At 03:00, index 3 % 3 = 0 → use it
-        expect(next_time).to eq(Time.utc(2025, 9, 30, 3, 44, 0))
+      it 'uses skip_factor = 4 for 8 updates/day' do
+        # 1000/31/4 = 8.06 → skip_factor = ceil(23/7) = 4
+        # At 03:00, slot 3 % 4 != 0 → skip, slot 4 (04:44) is valid
+        expect(next_time).to eq(Time.utc(2025, 9, 30, 4, 44, 0))
       end
     end
 
@@ -140,10 +141,10 @@ describe Pvnode::Slots do
       let(:required_requests_count) { 5 }
       let(:now) { Time.utc(2025, 9, 30, 3, 0, 0) }
 
-      it 'uses skip_factor = 3 to stay under limit' do
-        # 1500/31/5 = 9.68 → skip_factor = ceil(23/8) = 3
-        # At 03:00, index 3 % 3 = 0 → use it
-        expect(next_time).to eq(Time.utc(2025, 9, 30, 3, 44, 0))
+      it 'uses skip_factor = 5 to stay under limit' do
+        # 1000/31/5 = 6.45 → skip_factor = ceil(23/5) = 5
+        # At 03:00, slot 3 % 5 != 0 → skip, slot 5 (05:44) is valid
+        expect(next_time).to eq(Time.utc(2025, 9, 30, 5, 44, 0))
       end
     end
   end
@@ -152,12 +153,12 @@ describe Pvnode::Slots do
     # Verifies that no configuration ever exceeds the monthly limit,
     # even in worst case (31-day month)
     [
-      { paid: true, requests: 1, limit: 1500 },
-      { paid: true, requests: 2, limit: 1500 },
-      { paid: true, requests: 3, limit: 1500 },
-      { paid: true, requests: 4, limit: 1500 },
-      { paid: true, requests: 5, limit: 1500 },
-      { paid: true, requests: 6, limit: 1500 },
+      { paid: true, requests: 1, limit: 1000 },
+      { paid: true, requests: 2, limit: 1000 },
+      { paid: true, requests: 3, limit: 1000 },
+      { paid: true, requests: 4, limit: 1000 },
+      { paid: true, requests: 5, limit: 1000 },
+      { paid: true, requests: 6, limit: 1000 },
       { paid: false, requests: 1, limit: 40 },
       { paid: false, requests: 2, limit: 40 },
       { paid: false, requests: 3, limit: 40 },

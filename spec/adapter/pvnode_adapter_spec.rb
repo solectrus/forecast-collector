@@ -52,6 +52,20 @@ describe PvnodeAdapter do
       end
     end
 
+    context 'without nowcast' do
+      it 'does not include the nowcast parameter' do
+        expect(params).not_to have_key('nowcast')
+      end
+    end
+
+    context 'with nowcast enabled' do
+      let(:config) { Config.from_env(forecast_provider: 'pvnode', pvnode_paid: true, pvnode_nowcast: true) }
+
+      it 'includes nowcast=true' do
+        expect(params['nowcast']).to eq('true')
+      end
+    end
+
     it 'includes required parameters with correct values' do
       expect(params['latitude']).to eq('50.92264')
       expect(params['longitude']).to eq('6.407')
@@ -247,12 +261,46 @@ describe PvnodeAdapter do
   end
 
   describe '#pull_interval_message' do
-    it 'returns the pvnode schedule message' do
-      expect(pvnode.pull_interval_message).to eq('on provider schedule (auto)')
+    context 'without nowcast' do
+      it 'returns the auto schedule message' do
+        expect(pvnode.pull_interval_message).to eq('on provider schedule (auto)')
+      end
+    end
+
+    context 'with nowcast enabled' do
+      let(:config) { Config.from_env(forecast_provider: 'pvnode', pvnode_paid: true, pvnode_nowcast: true) }
+
+      it 'returns the nowcast message with the base 10 min interval' do
+        expect(pvnode.pull_interval_message).to eq(
+          'in Nowcast mode (every 10 min during daylight, slot-based at night)',
+        )
+      end
+    end
+
+    context 'with nowcast enabled and many planes (budget stretched)' do
+      let(:config) { build_config(pvnode_configurations, nowcast: true) }
+      let(:pvnode_configurations) do
+        [
+          { latitude: '50.0', longitude: '6.0', declination: '30', azimuth: '20', kwp: '5.0',
+            extra_params: 'diffuse_radiation_model=perez', },
+          { latitude: '50.0', longitude: '6.0', declination: '45', azimuth: '-20', kwp: '4.24',
+            extra_params: 'snow_slide_coefficient=0.5', },
+          { latitude: '50.0', longitude: '6.0', declination: '10', azimuth: '0', kwp: '3.0',
+            extra_params: 'diffuse_radiation_model=dirindex', },
+        ]
+      end
+
+      it 'reports a stretched interval to stay within budget' do
+        # 3 distinct extra_params → 3 requests per fetch
+        # 3000/31/3 = 32.26 < 72 → skip_factor = 3 → interval = 30 min
+        expect(pvnode.pull_interval_message).to eq(
+          'in Nowcast mode (every 30 min during daylight, slot-based at night)',
+        )
+      end
     end
   end
 
-  def build_config(pvnode_configurations, paid: true)
+  def build_config(pvnode_configurations, paid: true, nowcast: false)
     Config.new(
       influx_host: 'localhost',
       influx_schema: 'http',
@@ -264,6 +312,7 @@ describe PvnodeAdapter do
       forecast_interval: 900,
       pvnode_apikey: 'test-key',
       pvnode_paid: paid,
+      pvnode_nowcast: nowcast,
       pvnode_configurations:,
     )
   end

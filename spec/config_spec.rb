@@ -154,6 +154,38 @@ describe Config do
     end
   end
 
+  describe 'PVNODE_PAID parsing' do
+    {
+      'false' => { paid: false, nowcast: false },
+      'true' => { paid: true, nowcast: false },
+      'nowcast' => { paid: true, nowcast: true },
+    }.each do |value, expected|
+      context "when PVNODE_PAID=#{value}" do
+        around do |example|
+          ClimateControl.modify(PVNODE_PAID: value) { example.run }
+        end
+
+        it "sets paid=#{expected[:paid]} and nowcast=#{expected[:nowcast]}" do
+          config = described_class.from_env(forecast_provider: 'pvnode')
+          expect(config.pvnode_paid).to be(expected[:paid])
+          expect(config.pvnode_nowcast).to be(expected[:nowcast])
+        end
+      end
+    end
+
+    context 'when PVNODE_PAID is unset' do
+      around do |example|
+        ClimateControl.modify(PVNODE_PAID: nil) { example.run }
+      end
+
+      it 'defaults to paid=false and nowcast=false' do
+        config = described_class.from_env(forecast_provider: 'pvnode')
+        expect(config.pvnode_paid).to be false
+        expect(config.pvnode_nowcast).to be false
+      end
+    end
+  end
+
   describe 'pvnode configurations' do
     context 'with single plane' do
       around do |example|

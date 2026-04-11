@@ -2,8 +2,12 @@ require 'net/http'
 require 'config'
 require 'adapter/base_adapter'
 require 'adapter/pvnode/slots'
+require 'adapter/pvnode/nowcast'
+require 'adapter/pvnode/request_builder'
 
 class PvnodeAdapter < BaseAdapter
+  include Pvnode::RequestBuilder
+
   BASE_URL = 'https://api.pvnode.com/v1/forecast/'.freeze
 
   def parse_forecast_data(response_data)
@@ -58,12 +62,21 @@ class PvnodeAdapter < BaseAdapter
     uri.to_s
   end
 
+  def fetch_data
+    # Derive sunrise/sunset from clearsky data for Nowcast scheduling
+    super.tap { |data| nowcast&.update_daylight(data) }
+  end
+
   def next_fetch_time
-    slots.next_fetch_time
+    nowcast&.next_fetch_time || slots.next_fetch_time
   end
 
   def pull_interval_message
-    'on provider schedule (auto)'
+    if nowcast?
+      "in Nowcast mode (every #{nowcast.interval_minutes} min during daylight, slot-based at night)"
+    else
+      'on provider schedule (auto)'
+    end
   end
 
   private
@@ -71,30 +84,21 @@ class PvnodeAdapter < BaseAdapter
   def slots
     @slots ||= Pvnode::Slots.new(
       paid: paid?,
+      nowcast: nowcast?,
       required_requests_count:,
     )
   end
 
-  def paid?
-    config.pvnode_paid == true
+  def nowcast
+    @nowcast ||= Pvnode::Nowcast.new(slots:, required_requests_count:) if nowcast?
   end
 
-  # Groups planes into batches, where each batch contains up to 2 planes
-  # with identical extra_params. Returns an array of batches.
-  # Example: [[plane0, plane1], [plane2], [plane3, plane4]]
-  def batched_planes
-    @batched_planes ||= begin
-      # Group planes by their extra_params
-      grouped = config.pvnode_configurations.group_by { |plane| plane[:extra_params] }
+  def nowcast?
+    config.pvnode_nowcast == true
+  end
 
-      # For each group, split into batches of max 2 planes
-      batches = []
-      grouped.each_value do |planes|
-        planes.each_slice(2) { |batch| batches << batch }
-      end
-
-      batches
-    end
+  def paid?
+    config.pvnode_paid == true
   end
 
   def past_days
@@ -111,41 +115,5 @@ class PvnodeAdapter < BaseAdapter
 
   def required_data
     'pv_watts,pv_watts_nosnow,temp,weather_code'
-  end
-
-  def build_params(first_plane, second_plane)
-    params = {
-      latitude: first_plane[:latitude],
-      longitude: first_plane[:longitude],
-      slope: first_plane[:declination],
-      orientation: first_plane[:azimuth],
-      pv_power_kw: first_plane[:kwp],
-      required_data:,
-      clearsky_data:,
-      past_days:,
-      forecast_days:,
-    }.compact
-
-    # Add second plane parameters if available
-    if second_plane
-      params.merge!({
-        second_array_slope: second_plane[:declination],
-        second_array_orientation: second_plane[:azimuth],
-        second_array_power_kw: second_plane[:kwp],
-      }.compact)
-    end
-
-    params
-  end
-
-  def make_http_request(index)
-    uri = URI(formatted_url(index))
-    request = Net::HTTP::Get.new(uri)
-    request['Authorization'] = "Bearer #{config.pvnode_apikey}"
-    request['User-Agent'] = user_agent
-
-    Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
-      http.request(request)
-    end
   end
 end
