@@ -52,20 +52,6 @@ describe PvnodeAdapter do
       end
     end
 
-    context 'without nowcast' do
-      it 'does not include the nowcast parameter' do
-        expect(params).not_to have_key('nowcast')
-      end
-    end
-
-    context 'with nowcast enabled' do
-      let(:config) { Config.from_env(forecast_provider: 'pvnode', pvnode_paid: true, pvnode_nowcast: true) }
-
-      it 'includes nowcast=true' do
-        expect(params['nowcast']).to eq('true')
-      end
-    end
-
     it 'includes required parameters with correct values' do
       expect(params['latitude']).to eq('50.92264')
       expect(params['longitude']).to eq('6.407')

@@ -24,7 +24,6 @@ module Pvnode
         past_days:,
         forecast_days:,
       }.compact
-      params[:nowcast] = 'true' if nowcast?
 
       if second_plane
         params.merge!({
