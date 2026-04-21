@@ -1,8 +1,9 @@
 # Calculates optimal fetch times for pvnode API to respect rate limits
 #
 # The pvnode API provides weather forecast data with different rate limits:
-# - Free accounts: 40 requests/month
-# - Paid accounts: 1500 requests/month
+# - Free accounts:       40 requests/month
+# - Paid accounts:    1,000 requests/month
+# - Nowcast accounts: 3,000 requests/month
 #
 # The API updates forecast data 24 times per day (hourly).
 # This class optimizes fetching by:
@@ -120,10 +121,10 @@ module Pvnode
     #
     # @return [Integer] skip factor (1 = use all slots, >1 = skip slots)
     #
-    # @example Paid account scenarios (1500 req/month, 24 slots/day available)
-    #   1 request/update  → 1500/31/1 = 48 slots/day → skip_factor=1 (use all 24)
-    #   2 requests/update → 1500/31/2 = 24 slots/day → skip_factor=1 (use all 24)
-    #   3 requests/update → 1500/31/3 = 16 slots/day → skip_factor=2 (use 12 slots)
+    # @example Paid account scenarios (1000 req/month, 24 slots/day available)
+    #   1 request/update  → 1000/31/1 = 32.3 slots/day → skip_factor=1 (use all 24)
+    #   2 requests/update → 1000/31/2 = 16.1 slots/day → skip_factor=2 (use 12 slots)
+    #   3 requests/update → 1000/31/3 = 10.8 slots/day → skip_factor=3 (use 8 slots)
     #
     # @example Free account scenarios (40 req/month, 24 slots/day available)
     #   1 request/update  → 40/31/1 = 1.3 slots/day  → skip_factor=SLOTS_PER_DAY (1x/day)
