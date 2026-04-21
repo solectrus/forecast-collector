@@ -34,14 +34,19 @@ module Pvnode
     # Extracts sunrise and sunset times from fetched clearsky data.
     # Should be called after each successful fetch.
     #
+    # Keeps previously-derived values if the response contains no usable
+    # tomorrow clearsky data, to avoid flapping between daytime and fallback.
+    #
     # @param data [Hash] accumulated forecast data in format
     #   { timestamp => { watt_clearsky: Integer, ... }, ... }
     def update_daylight(data)
       return unless data
 
       first, last = tomorrow_clearsky_timestamps(data).minmax
-      self.sunrise = first && time_of_day_today(first)
-      self.sunset = last && time_of_day_today(last)
+      return unless first
+
+      self.sunrise = time_of_day_today(first)
+      self.sunset = time_of_day_today(last)
     end
 
     # Returns the next fetch time, aligned to the :04 offset of each

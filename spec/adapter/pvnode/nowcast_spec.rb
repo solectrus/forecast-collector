@@ -50,6 +50,18 @@ describe Pvnode::Nowcast do
 
       expect(nowcast.daytime?).to be false
     end
+
+    it 'keeps previous sunrise/sunset when a later response has no tomorrow data' do
+      allow(Time).to receive(:now).and_return(time_today('12:00'))
+
+      nowcast.update_daylight(build_clearsky_data('07:00' => 100, '19:00' => 50))
+      expect(nowcast).to be_daytime
+
+      # Simulate a follow-up fetch that returns no usable tomorrow clearsky data.
+      nowcast.update_daylight({})
+
+      expect(nowcast).to be_daytime
+    end
   end
 
   describe '#daytime?' do
