@@ -66,8 +66,7 @@ module Pvnode
     def daytime?
       return false unless sunrise && sunset
 
-      now = Time.now
-      now.between?(sunrise, sunset)
+      Time.now.utc.between?(sunrise, sunset)
     end
 
     # Effective interval in minutes between daytime fetches.
@@ -98,8 +97,8 @@ module Pvnode
     end
 
     def tomorrow_clearsky_timestamps(data)
-      tomorrow = Date.today + 1
-      tomorrow_start = Time.new(tomorrow.year, tomorrow.month, tomorrow.day).to_i
+      now = Time.now.utc
+      tomorrow_start = Time.utc(now.year, now.month, now.day).to_i + 86_400
       tomorrow_end = tomorrow_start + 86_400
 
       data.filter_map do |timestamp, values|
@@ -111,20 +110,19 @@ module Pvnode
     end
 
     def time_of_day_today(timestamp)
-      t = Time.at(timestamp)
-      today = Date.today
-      Time.new(today.year, today.month, today.day, t.hour, t.min, 0)
+      t = Time.at(timestamp).utc
+      now = Time.now.utc
+      Time.utc(now.year, now.month, now.day, t.hour, t.min, 0)
     end
 
     def next_aligned_time
-      now = Time.now
+      now = Time.now.utc
       step = interval_minutes
       minutes_since_midnight = (now.hour * 60) + now.min
       next_minute = ((minutes_since_midnight / step) * step) + FETCH_MINUTE_OFFSET
       next_minute += step if next_minute <= minutes_since_midnight
 
-      start_of_day = now - (minutes_since_midnight * 60) - now.sec
-      start_of_day + (next_minute * 60)
+      Time.utc(now.year, now.month, now.day) + (next_minute * 60)
     end
   end
 end

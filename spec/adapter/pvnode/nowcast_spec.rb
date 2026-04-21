@@ -242,19 +242,44 @@ describe Pvnode::Nowcast do
     end
   end
 
+  describe '#next_fetch_time across a DST transition' do
+    # Europe/Berlin spring-forward: 2026-03-29 02:00 local → 03:00 local.
+    # Simulate a server running in that zone at local noon that day.
+    around do |example|
+      ClimateControl.modify(TZ: 'Europe/Berlin') { example.run }
+    end
+
+    let(:now) { Time.utc(2026, 3, 29, 10, 0, 0) } # 12:00 local, 10:00 UTC
+
+    before do
+      allow(Time).to receive(:now).and_return(now)
+      # Sunrise/sunset derived from UTC clearsky timestamps
+      tomorrow = Time.utc(2026, 3, 30)
+      data = {
+        (tomorrow + (5 * 3600)).to_i => { watt_clearsky: 100 },
+        (tomorrow + (18 * 3600)).to_i => { watt_clearsky: 50 },
+      }
+      nowcast.update_daylight(data)
+    end
+
+    it 'aligns to the next :04 UTC regardless of local DST jump' do
+      expect(nowcast.next_fetch_time).to eq(Time.utc(2026, 3, 29, 10, 4, 0))
+    end
+  end
+
   private
 
   def time_today(hhmm)
     hour, minute = hhmm.split(':').map(&:to_i)
-    today = Date.today
-    Time.new(today.year, today.month, today.day, hour, minute, 0)
+    today = Time.now.utc
+    Time.utc(today.year, today.month, today.day, hour, minute, 0)
   end
 
   def build_clearsky_data(hour_values)
-    tomorrow = Date.today + 1
+    tomorrow = Time.now.utc + 86_400
     hour_values.each_with_object({}) do |(hhmm, watt), result|
       hour, minute = hhmm.split(':').map(&:to_i)
-      timestamp = Time.new(tomorrow.year, tomorrow.month, tomorrow.day, hour, minute, 0).to_i
+      timestamp = Time.utc(tomorrow.year, tomorrow.month, tomorrow.day, hour, minute, 0).to_i
       result[timestamp] = { watt: watt, watt_clearsky: watt, temp: 20.0 }
     end
   end
