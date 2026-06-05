@@ -26,7 +26,7 @@ describe PvnodeAdapter do
         end
 
         expect(stderr).to be_empty
-        expect(stdout).to match(/OK/)
+        expect(stdout).to include('OK')
       end
     end
   end

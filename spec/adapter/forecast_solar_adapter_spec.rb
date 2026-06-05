@@ -20,7 +20,7 @@ describe ForecastSolarAdapter do
         end
 
         expect(stderr).to be_empty
-        expect(stdout).to match(/OK/)
+        expect(stdout).to include('OK')
       end
     end
 
@@ -34,7 +34,7 @@ describe ForecastSolarAdapter do
         end
 
         expect(stderr).to be_empty
-        expect(stdout).to match(/Too Many Requests/)
+        expect(stdout).to include('Too Many Requests')
       end
     end
   end
@@ -82,7 +82,7 @@ describe ForecastSolarAdapter do
       end
 
       expect(stderr).to be_empty
-      expect(stdout).to match(/OK/)
+      expect(stdout).to include('OK')
     end
   end
 end

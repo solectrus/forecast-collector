@@ -15,8 +15,8 @@ describe Loop do
         end
 
         expect(stderr).to be_empty
-        expect(stdout).to match(/Fetching forecast/)
-        expect(stdout).to match(/Pushing forecast to InfluxDB/)
+        expect(stdout).to include('Fetching forecast')
+        expect(stdout).to include('Pushing forecast to InfluxDB')
       end
     end
 
@@ -33,8 +33,8 @@ describe Loop do
         end
 
         expect(stderr).to be_empty
-        expect(stdout).to match(/Fetching forecast/)
-        expect(stdout).to match(/Pushing forecast to InfluxDB/)
+        expect(stdout).to include('Fetching forecast')
+        expect(stdout).to include('Pushing forecast to InfluxDB')
       end
     end
 
@@ -49,7 +49,7 @@ describe Loop do
         end
 
         expect(stderr).to be_empty
-        expect(stdout).to match(/Too Many Requests/)
+        expect(stdout).to include('Too Many Requests')
       end
     end
 
@@ -71,7 +71,7 @@ describe Loop do
         end
 
         expect(stderr).to be_empty
-        expect(stdout).to match(/InfluxDB not ready/)
+        expect(stdout).to include('InfluxDB not ready')
         expect(exit_status).to eq(1)
       end
     end
