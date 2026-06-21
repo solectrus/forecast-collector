@@ -16,7 +16,7 @@ describe Pvnode::Slots do
       let(:now) { Time.utc(2025, 9, 30, 12, 0, 0) }
 
       it 'returns slot 0 tomorrow' do
-        expect(next_time).to eq(Time.utc(2025, 10, 1, 0, 44, 0))
+        expect(next_time).to eq(Time.utc(2025, 10, 1, 0, 47, 0))
       end
     end
 
@@ -26,7 +26,7 @@ describe Pvnode::Slots do
       let(:now) { Time.utc(2025, 9, 30, 0, 0, 0) }
 
       it 'returns slot 0 today' do
-        expect(next_time).to eq(Time.utc(2025, 9, 30, 0, 44, 0))
+        expect(next_time).to eq(Time.utc(2025, 9, 30, 0, 47, 0))
       end
     end
 
@@ -45,54 +45,54 @@ describe Pvnode::Slots do
     context 'with paid account: before first slot of the day' do
       let(:now) { Time.utc(2025, 9, 30, 0, 10, 0) }
 
-      it 'returns slot 0 today at 00:44' do
-        expect(next_time).to eq(Time.utc(2025, 9, 30, 0, 44, 0))
+      it 'returns slot 0 today at 00:47' do
+        expect(next_time).to eq(Time.utc(2025, 9, 30, 0, 47, 0))
       end
     end
 
-    context 'with paid account: next scheduled time is today at :44' do
+    context 'with paid account: next scheduled time is today at :47' do
       let(:now) { Time.utc(2025, 9, 30, 3, 0, 0) }
 
-      it { is_expected.to eq(Time.utc(2025, 9, 30, 3, 44, 0)) }
+      it { is_expected.to eq(Time.utc(2025, 9, 30, 3, 47, 0)) }
     end
 
     context 'with paid account: just after a slot' do
       let(:now) { Time.utc(2025, 9, 30, 4, 50, 0) }
 
-      it { is_expected.to eq(Time.utc(2025, 9, 30, 5, 44, 0)) }
+      it { is_expected.to eq(Time.utc(2025, 9, 30, 5, 47, 0)) }
     end
 
     context 'with paid account: exactly at slot time' do
-      let(:now) { Time.utc(2025, 9, 30, 3, 44, 0) }
+      let(:now) { Time.utc(2025, 9, 30, 3, 47, 0) }
 
-      # At exactly 03:44, slot 03:00+44min is no longer in the future
-      # → next slot is 04:44
-      it { is_expected.to eq(Time.utc(2025, 9, 30, 4, 44, 0)) }
+      # At exactly 03:47, slot 03:00+47min is no longer in the future
+      # → next slot is 04:47
+      it { is_expected.to eq(Time.utc(2025, 9, 30, 4, 47, 0)) }
     end
 
     context 'with paid account: one second before slot time' do
-      let(:now) { Time.utc(2025, 9, 30, 3, 43, 59) }
+      let(:now) { Time.utc(2025, 9, 30, 3, 46, 59) }
 
-      # 03:44 > 03:43:59 → slot 03:44 is still available
-      it { is_expected.to eq(Time.utc(2025, 9, 30, 3, 44, 0)) }
+      # 03:47 > 03:46:59 → slot 03:47 is still available
+      it { is_expected.to eq(Time.utc(2025, 9, 30, 3, 47, 0)) }
     end
 
     context 'with paid account: all times passed today' do
       let(:now) { Time.utc(2025, 9, 30, 23, 50, 0) }
 
-      it { is_expected.to eq(Time.utc(2025, 10, 1, 0, 44, 0)) }
+      it { is_expected.to eq(Time.utc(2025, 10, 1, 0, 47, 0)) }
     end
 
     context 'with paid account: crossing month boundary' do
       let(:now) { Time.utc(2025, 1, 31, 23, 50, 0) }
 
-      it { is_expected.to eq(Time.utc(2025, 2, 1, 0, 44, 0)) }
+      it { is_expected.to eq(Time.utc(2025, 2, 1, 0, 47, 0)) }
     end
 
     context 'with paid account: crossing year boundary' do
       let(:now) { Time.utc(2025, 12, 31, 23, 50, 0) }
 
-      it { is_expected.to eq(Time.utc(2026, 1, 1, 0, 44, 0)) }
+      it { is_expected.to eq(Time.utc(2026, 1, 1, 0, 47, 0)) }
     end
 
     context 'with paid account: 1 request batch (no rate limiting)' do
@@ -100,7 +100,7 @@ describe Pvnode::Slots do
       let(:now) { Time.utc(2025, 9, 30, 3, 0, 0) }
 
       it 'uses all 24 updates per day (skip_factor = 1)' do
-        expect(next_time).to eq(Time.utc(2025, 9, 30, 3, 44, 0))
+        expect(next_time).to eq(Time.utc(2025, 9, 30, 3, 47, 0))
       end
     end
 
@@ -110,8 +110,8 @@ describe Pvnode::Slots do
 
       it 'uses skip_factor = 2 for 16 updates/day' do
         # 1000/31/2 = 16.13 → skip_factor = ceil(23/15) = 2
-        # At 03:00, slot 3 is odd → skip, slot 4 (04:44) is even → use it
-        expect(next_time).to eq(Time.utc(2025, 9, 30, 4, 44, 0))
+        # At 03:00, slot 3 is odd → skip, slot 4 (04:47) is even → use it
+        expect(next_time).to eq(Time.utc(2025, 9, 30, 4, 47, 0))
       end
     end
 
@@ -122,7 +122,7 @@ describe Pvnode::Slots do
       it 'uses skip_factor = 3 for 10 updates/day' do
         # 1000/31/3 = 10.75 → skip_factor = ceil(23/9) = 3
         # At 03:00, slot 3 % 3 = 0 → use it
-        expect(next_time).to eq(Time.utc(2025, 9, 30, 3, 44, 0))
+        expect(next_time).to eq(Time.utc(2025, 9, 30, 3, 47, 0))
       end
     end
 
@@ -132,8 +132,8 @@ describe Pvnode::Slots do
 
       it 'uses skip_factor = 4 for 8 updates/day' do
         # 1000/31/4 = 8.06 → skip_factor = ceil(23/7) = 4
-        # At 03:00, slot 3 % 4 != 0 → skip, slot 4 (04:44) is valid
-        expect(next_time).to eq(Time.utc(2025, 9, 30, 4, 44, 0))
+        # At 03:00, slot 3 % 4 != 0 → skip, slot 4 (04:47) is valid
+        expect(next_time).to eq(Time.utc(2025, 9, 30, 4, 47, 0))
       end
     end
 
@@ -143,8 +143,8 @@ describe Pvnode::Slots do
 
       it 'uses skip_factor = 5 to stay under limit' do
         # 1000/31/5 = 6.45 → skip_factor = ceil(23/5) = 5
-        # At 03:00, slot 3 % 5 != 0 → skip, slot 5 (05:44) is valid
-        expect(next_time).to eq(Time.utc(2025, 9, 30, 5, 44, 0))
+        # At 03:00, slot 3 % 5 != 0 → skip, slot 5 (05:47) is valid
+        expect(next_time).to eq(Time.utc(2025, 9, 30, 5, 47, 0))
       end
     end
   end

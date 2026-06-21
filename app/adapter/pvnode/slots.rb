@@ -73,8 +73,8 @@ module Pvnode
     SECONDS_PER_DAY = 24 * 60 * 60
     private_constant :SECONDS_PER_DAY
 
-    # pvnode data is ready at :40, fetch from :44 (4 min buffer)
-    SAFETY_MARGIN_SECONDS = 44 * 60
+    # pvnode data is ready at ~:45, fetch from :47 (2 min buffer)
+    SAFETY_MARGIN_SECONDS = 47 * 60
     private_constant :SAFETY_MARGIN_SECONDS
 
     # Use 31 days (worst case) to never exceed monthly limits
