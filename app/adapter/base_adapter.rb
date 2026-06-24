@@ -107,7 +107,9 @@ class BaseAdapter
     when Net::HTTPOK
       JSON.parse(http_response.body)
     else
-      throw "Failure: #{http_response.code} #{http_response.message}"
+      # Raise a clear, self-contained error. It is caught and logged per request
+      # in #fetch_data, so a failing request never aborts the collector loop.
+      raise "HTTP #{http_response.code} #{http_response.message}"
     end
   end
 
