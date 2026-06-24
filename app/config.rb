@@ -22,6 +22,7 @@ class Config # rubocop:disable Metrics/ClassLength
               :forecast_solar_configurations,
               :forecast_solar_apikey,
               :pvnode_configurations,
+              :pvnode_site_id,
               :pvnode_apikey,
               :pvnode_paid,
               :pvnode_nowcast,
@@ -31,6 +32,10 @@ class Config # rubocop:disable Metrics/ClassLength
 
   def influx_url
     "#{influx_schema}://#{influx_host}:#{influx_port}"
+  end
+
+  def pvnode_site_id?
+    !pvnode_site_id.to_s.strip.empty?
   end
 
   def adapter
@@ -43,8 +48,14 @@ class Config # rubocop:disable Metrics/ClassLength
         require 'adapter/solcast_adapter'
         SolcastAdapter.new(config: self)
       when 'pvnode'
-        require 'adapter/pvnode_adapter'
-        PvnodeAdapter.new(config: self)
+        require 'adapter/pvnode_v1_adapter'
+        require 'adapter/pvnode_v2_adapter'
+
+        # Use the v2 (site-based) API when a site ID is configured, otherwise
+        # fall back to the v1 API. This lets existing installations keep working
+        # after an update until they opt into v2 by setting PVNODE_SITE_ID.
+        adapter_class = pvnode_site_id? ? PvnodeV2Adapter : PvnodeV1Adapter
+        adapter_class.new(config: self)
       else
         raise ArgumentError, "Unknown provider: #{forecast_provider}"
       end
@@ -111,6 +122,7 @@ class Config # rubocop:disable Metrics/ClassLength
       plan = ENV.fetch('PVNODE_PAID', 'false').downcase
       {
         pvnode_configurations: all_configurations_from_env('PVNODE', PvnodeConfiguration, defaults),
+        pvnode_site_id: ENV.fetch('PVNODE_SITE_ID', nil),
         pvnode_apikey: ENV.fetch('PVNODE_APIKEY', nil),
         pvnode_paid: %w[true nowcast].include?(plan),
         pvnode_nowcast: plan == 'nowcast',

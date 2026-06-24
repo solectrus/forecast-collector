@@ -1,8 +1,8 @@
 require 'adapter/pvnode/slots'
 
 describe Pvnode::Slots do
-  let(:slots) { described_class.new(paid:, required_requests_count:) }
-  let(:paid) { true }
+  let(:slots) { described_class.new(max_requests_per_month:, required_requests_count:) }
+  let(:max_requests_per_month) { 1_000 } # paid tier
   let(:required_requests_count) { 1 }
 
   describe '#next_fetch_time' do
@@ -11,7 +11,7 @@ describe Pvnode::Slots do
     before { allow(Time).to receive(:now).and_return(now) }
 
     context 'with free account (1 request) when slot 0 has passed' do
-      let(:paid) { false }
+      let(:max_requests_per_month) { 40 } # free tier
       let(:required_requests_count) { 1 }
       let(:now) { Time.utc(2025, 9, 30, 12, 0, 0) }
 
@@ -21,7 +21,7 @@ describe Pvnode::Slots do
     end
 
     context 'with free account (1 request) when slot 0 is still ahead' do
-      let(:paid) { false }
+      let(:max_requests_per_month) { 40 } # free tier
       let(:required_requests_count) { 1 }
       let(:now) { Time.utc(2025, 9, 30, 0, 0, 0) }
 
@@ -31,7 +31,7 @@ describe Pvnode::Slots do
     end
 
     context 'with free account (2 requests)' do
-      let(:paid) { false }
+      let(:max_requests_per_month) { 40 } # free tier
       let(:required_requests_count) { 2 }
       let(:now) { Time.utc(2025, 9, 30, 12, 0, 0) }
 
@@ -39,6 +39,28 @@ describe Pvnode::Slots do
         # 40/31/2 = 0.645 → skip_factor = ceil(24/0.645) = 38 (> 24)
         # days_to_skip = ceil(38/24) = 2
         expect(next_time).to eq(Time.utc(2025, 10, 2, 12, 0, 0))
+      end
+    end
+
+    # Once-daily tier (slots_per_day = 1, e.g. v2 Free): fetch only once a day
+    # instead of spending the larger request budget on redundant fetches.
+    context 'with a once-daily tier before its slot' do
+      let(:max_requests_per_month) { 250 }
+      let(:slots) { described_class.new(max_requests_per_month:, required_requests_count:, slots_per_day: 1) }
+      let(:now) { Time.utc(2025, 9, 30, 0, 0, 0) }
+
+      it 'fetches once at 00:47' do
+        expect(next_time).to eq(Time.utc(2025, 9, 30, 0, 47, 0))
+      end
+    end
+
+    context 'with a once-daily tier after its slot' do
+      let(:max_requests_per_month) { 250 }
+      let(:slots) { described_class.new(max_requests_per_month:, required_requests_count:, slots_per_day: 1) }
+      let(:now) { Time.utc(2025, 9, 30, 12, 0, 0) }
+
+      it 'waits until 00:47 the next day instead of refetching' do
+        expect(next_time).to eq(Time.utc(2025, 10, 1, 0, 47, 0))
       end
     end
 
@@ -165,7 +187,7 @@ describe Pvnode::Slots do
       { paid: false, requests: 4, limit: 40 },
     ].each do |scenario|
       context "with #{scenario[:paid] ? 'paid' : 'free'} account (#{scenario[:requests]} requests/update)" do
-        let(:paid) { scenario[:paid] }
+        let(:max_requests_per_month) { scenario[:limit] }
         let(:required_requests_count) { scenario[:requests] }
 
         it "stays within #{scenario[:limit]} requests/month" do

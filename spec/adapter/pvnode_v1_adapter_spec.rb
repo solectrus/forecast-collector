@@ -1,6 +1,6 @@
-require 'adapter/pvnode_adapter'
+require 'adapter/pvnode_v1_adapter'
 
-describe PvnodeAdapter do
+describe PvnodeV1Adapter do
   let(:pvnode) { described_class.new(config:) }
   let(:config) { Config.from_env(forecast_provider: 'pvnode', pvnode_paid:) }
   let(:pvnode_paid) { true }
@@ -9,7 +9,7 @@ describe PvnodeAdapter do
     context 'when successful' do
       it 'returns pvnode data' do
         stdout, stderr = capture_output do
-          VCR.use_cassette('pvnode_success') do
+          VCR.use_cassette('pvnode_v1_success') do
             data = pvnode.fetch_data
 
             expect(data).to be_a(Hash)
@@ -243,6 +243,30 @@ describe PvnodeAdapter do
 
       # 3 planes should result in 2 requests (3 / 2.0).ceil = 2
       expect(adapter.required_requests_count).to eq(2)
+    end
+  end
+
+  describe 'monthly rate limit' do
+    context 'with paid tier' do
+      it 'uses the v1 1000-request budget' do
+        expect(pvnode.send(:max_requests_per_month)).to eq(1_000)
+      end
+    end
+
+    context 'with free tier' do
+      let(:pvnode_paid) { false }
+
+      it 'uses the v1 40-request budget' do
+        expect(pvnode.send(:max_requests_per_month)).to eq(40)
+      end
+    end
+
+    context 'with nowcast tier' do
+      let(:config) { Config.from_env(forecast_provider: 'pvnode', pvnode_paid: true, pvnode_nowcast: true) }
+
+      it 'uses the v1 3000-request budget' do
+        expect(pvnode.send(:max_requests_per_month)).to eq(3_000)
+      end
     end
   end
 

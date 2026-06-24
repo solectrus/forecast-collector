@@ -5,10 +5,26 @@ require 'adapter/pvnode/slots'
 require 'adapter/pvnode/nowcast'
 require 'adapter/pvnode/request_builder'
 
-class PvnodeAdapter < BaseAdapter
+class PvnodeV1Adapter < BaseAdapter
   include Pvnode::RequestBuilder
 
   BASE_URL = 'https://api.pvnode.com/v1/forecast/'.freeze
+
+  # The slot scheduler fetches at most hourly; higher-frequency tiers rely on
+  # the Nowcast scheduler for sub-hourly updates.
+  MAX_SLOTS_PER_DAY = 24
+
+  # Subscription tiers (pvnode v1 API), selected via PVNODE_PAID:
+  #   free → free, true → light, nowcast → plus
+  # Only the monthly request budget is modelled: v1's per-tier update
+  # frequencies aren't documented, so every tier uses the hourly slot grid and
+  # the budget alone bounds how often the free tier actually fetches. (The
+  # nowcast tier's 10-min cadence is driven by the Nowcast scheduler, not here.)
+  TIERS = {
+    free: { requests_per_month: 40 },
+    light: { requests_per_month: 1_000 },
+    plus: { requests_per_month: 3_000 },
+  }.freeze
 
   def parse_forecast_data(response_data)
     result = {}
@@ -34,7 +50,7 @@ class PvnodeAdapter < BaseAdapter
   end
 
   def provider_name
-    'pvnode'
+    'pvnode (v1)'
   end
 
   def required_requests_count
@@ -83,14 +99,20 @@ class PvnodeAdapter < BaseAdapter
 
   def slots
     @slots ||= Pvnode::Slots.new(
-      paid: paid?,
-      nowcast: nowcast?,
+      max_requests_per_month:,
       required_requests_count:,
+      slots_per_day:,
     )
   end
 
   def nowcast
-    @nowcast ||= Pvnode::Nowcast.new(slots:, required_requests_count:) if nowcast?
+    return unless nowcast?
+
+    @nowcast ||= Pvnode::Nowcast.new(
+      slots:,
+      required_requests_count:,
+      max_requests_per_month:,
+    )
   end
 
   def nowcast?
@@ -99,6 +121,28 @@ class PvnodeAdapter < BaseAdapter
 
   def paid?
     config.pvnode_paid == true
+  end
+
+  # The active subscription tier. Reads the subclass's TIERS, so v1 and v2
+  # share the tier names (free/light/plus) but define their own values.
+  def tier
+    return self.class::TIERS.fetch(:plus) if nowcast?
+    return self.class::TIERS.fetch(:light) if paid?
+
+    self.class::TIERS.fetch(:free)
+  end
+
+  # Monthly request budget of the active subscription tier.
+  def max_requests_per_month
+    tier.fetch(:requests_per_month)
+  end
+
+  # How often the slot scheduler should fetch per day, capped at hourly: tiers
+  # that update less often (v2 Free: once daily) fetch correspondingly less,
+  # while sub-hourly nowcast updates are handled by the Nowcast scheduler. Tiers
+  # without a documented update frequency fall back to the hourly grid.
+  def slots_per_day
+    [tier.fetch(:updates_per_day, MAX_SLOTS_PER_DAY), MAX_SLOTS_PER_DAY].min
   end
 
   def past_days

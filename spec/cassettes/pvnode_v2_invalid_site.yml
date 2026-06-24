@@ -1,0 +1,41 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.pvnode.com/v2/forecast/site_doesnotexist0000000000?forecast_days=1&include=clearsky&include=default&include=weather&past_days=0
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Forecast-Collector (+https://github.com/solectrus/forecast-collector)
+      Host:
+      - api.pvnode.com
+      Authorization:
+      - Bearer <PVNODE_APIKEY>
+  response:
+    status:
+      code: 404
+      message: Not Found
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000
+      Content-Length:
+      - '28'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 24 Jun 2026 06:22:01 GMT
+      Server:
+      - uvicorn
+      Vary:
+      - Accept-Encoding
+    body:
+      encoding: UTF-8
+      string: '{"detail":"Site not found."}'
+  recorded_at: Wed, 24 Jun 2026 06:22:02 GMT
+recorded_with: VCR 6.4.0

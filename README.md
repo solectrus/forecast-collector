@@ -9,7 +9,7 @@ Collect solar forecast data from various providers and store them into an Influx
 
 - Forecast.Solar (https://forecast.solar)
 - Solcast (https://solcast.com)
-- Pvnode (https://pvnode.com)
+- Pvnode (https://pvnode.com) — API v1 and v2
 
 ## Usage
 

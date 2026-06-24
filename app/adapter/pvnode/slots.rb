@@ -1,9 +1,8 @@
 # Calculates optimal fetch times for pvnode API to respect rate limits
 #
-# The pvnode API provides weather forecast data with different rate limits:
-# - Free accounts:       40 requests/month
-# - Paid accounts:    1,000 requests/month
-# - Nowcast accounts: 3,000 requests/month
+# The monthly request budget depends on the subscription tier and differs
+# between the v1 and v2 APIs, so it is injected by the adapter rather than
+# hard-coded here.
 #
 # The API updates forecast data 24 times per day (hourly).
 # This class optimizes fetching by:
@@ -13,39 +12,30 @@
 
 module Pvnode
   class Slots
-    # Rate limits enforced by pvnode API
-    MAX_REQUESTS_PER_MONTH_NOWCAST = 3_000 # Nowcast subscription
-    MAX_REQUESTS_PER_MONTH_PAID    = 1_000 # Basic paid subscription
-    MAX_REQUESTS_PER_MONTH_FREE    = 40    # Free tier
+    DEFAULT_SLOTS_PER_DAY = 24
+    private_constant :DEFAULT_SLOTS_PER_DAY
 
-    SLOTS_PER_DAY = 24
-    private_constant :SLOTS_PER_DAY
-
-    # @param paid [Boolean] true for paid account, false for free account
-    # @param nowcast [Boolean] true if the Nowcast subscription is in use
+    # @param max_requests_per_month [Integer] monthly request budget of the
+    #   active subscription, provided by the adapter (the limits differ between
+    #   the pvnode v1 and v2 APIs)
     # @param required_requests_count [Integer] number of API requests needed per update
     #   (e.g., 2 if we need to fetch data for 2 different plane configurations)
-    def initialize(paid:, required_requests_count:, nowcast: false)
-      @paid = paid
-      @nowcast = nowcast
+    # @param slots_per_day [Integer] how many times per day the provider updates
+    #   the forecast (e.g. 1 for the v2 Free tier, 24 for hourly tiers); the
+    #   scheduler never fetches more often than the data actually changes
+    def initialize(max_requests_per_month:, required_requests_count:, slots_per_day: DEFAULT_SLOTS_PER_DAY)
+      @max_requests_per_month = max_requests_per_month
       @required_requests_count = required_requests_count
+      @slots_per_day = slots_per_day
     end
 
-    attr_reader :paid, :nowcast, :required_requests_count
-
-    # Returns the applicable monthly rate limit based on subscription
-    def max_requests_per_month
-      return MAX_REQUESTS_PER_MONTH_NOWCAST if nowcast
-      return MAX_REQUESTS_PER_MONTH_PAID if paid
-
-      MAX_REQUESTS_PER_MONTH_FREE
-    end
+    attr_reader :max_requests_per_month, :required_requests_count, :slots_per_day
 
     # Returns the next optimal time to fetch data from pvnode API
     #
     # Strategy:
     # 1. Calculate skip_factor to determine which slots to use
-    # 2. If rate limit is very restrictive (skip_factor > SLOTS_PER_DAY), schedule days ahead
+    # 2. If rate limit is very restrictive (skip_factor > slots_per_day), schedule days ahead
     # 3. Otherwise, find next available slot today matching the skip pattern
     # 4. If no more slots today, use first slot tomorrow
     #
@@ -54,8 +44,8 @@ module Pvnode
       skip_factor = calculate_skip_factor
 
       # For very restrictive rate limits: skip entire days
-      if skip_factor > SLOTS_PER_DAY
-        days_to_skip = (skip_factor.to_f / SLOTS_PER_DAY).ceil
+      if skip_factor > slots_per_day
+        days_to_skip = (skip_factor.to_f / slots_per_day).ceil
         return Time.now.utc + (SECONDS_PER_DAY * days_to_skip)
       end
 
@@ -92,7 +82,7 @@ module Pvnode
     # @param skip_factor [Integer] which slots to use
     # @return [Time, nil] next matching slot time, or nil if no more slots today
     def find_next_slot_today(now, skip_factor)
-      SLOTS_PER_DAY.times do |hour|
+      slots_per_day.times do |hour|
         next unless (hour % skip_factor).zero?
 
         fetch_time = Time.utc(now.year, now.month, now.day, hour, 0, 0) + SAFETY_MARGIN_SECONDS
@@ -117,7 +107,7 @@ module Pvnode
     # The skip_factor determines which slots to use:
     # - skip_factor=1: use all slots per day (no skipping)
     # - skip_factor=2: use every 2nd slot
-    # - skip_factor>SLOTS_PER_DAY: triggers day-based scheduling in next_fetch_time
+    # - skip_factor>slots_per_day: triggers day-based scheduling in next_fetch_time
     #
     # @return [Integer] skip factor (1 = use all slots, >1 = skip slots)
     #
@@ -127,22 +117,22 @@ module Pvnode
     #   3 requests/update → 1000/31/3 = 10.8 slots/day → skip_factor=3 (use 8 slots)
     #
     # @example Free account scenarios (40 req/month, 24 slots/day available)
-    #   1 request/update  → 40/31/1 = 1.3 slots/day  → skip_factor=SLOTS_PER_DAY (1x/day)
+    #   1 request/update  → 40/31/1 = 1.3 slots/day  → skip_factor=slots_per_day (1x/day)
     #   2 requests/update → 40/31/2 = 0.6 slots/day  → day-skip (1x/2days)
     def calculate_skip_factor
       max_slots_per_day = max_requests_per_month / DAYS_PER_MONTH.to_f / required_requests_count
 
-      return 1 if max_slots_per_day >= SLOTS_PER_DAY
+      return 1 if max_slots_per_day >= slots_per_day
 
       # For budgets that can't afford even 1 slot per day, use day-based scheduling
-      return (SLOTS_PER_DAY.to_f / max_slots_per_day).ceil if max_slots_per_day < 1
+      return (slots_per_day.to_f / max_slots_per_day).ceil if max_slots_per_day < 1
 
       # For very limited budgets (1-2 slots/day), use exactly 1 slot per day
-      return SLOTS_PER_DAY if max_slots_per_day < 2
+      return slots_per_day if max_slots_per_day < 2
 
       # Calculate skip_factor to get at most max_slots_per_day slots
       target_slots = max_slots_per_day.floor
-      ((SLOTS_PER_DAY - 1).to_f / (target_slots - 1)).ceil
+      ((slots_per_day - 1).to_f / (target_slots - 1)).ceil
     end
   end
 end

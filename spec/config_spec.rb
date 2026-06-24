@@ -310,4 +310,40 @@ describe Config do
       end
     end
   end
+
+  describe 'pvnode site id' do
+    it 'reads PVNODE_SITE_ID from the environment' do
+      ClimateControl.modify(PVNODE_SITE_ID: 'site_abc123') do
+        config = described_class.from_env(forecast_provider: 'pvnode')
+        expect(config.pvnode_site_id).to eq('site_abc123')
+      end
+    end
+  end
+
+  describe '#adapter for pvnode' do
+    require 'adapter/pvnode_v1_adapter'
+    require 'adapter/pvnode_v2_adapter'
+
+    context 'without a site id' do
+      around do |example|
+        ClimateControl.modify(PVNODE_SITE_ID: nil) { example.run }
+      end
+
+      it 'uses the v1 adapter' do
+        config = described_class.from_env(forecast_provider: 'pvnode')
+        expect(config.adapter).to be_an_instance_of(PvnodeV1Adapter)
+      end
+    end
+
+    context 'with a site id' do
+      around do |example|
+        ClimateControl.modify(PVNODE_SITE_ID: 'site_abc123') { example.run }
+      end
+
+      it 'uses the v2 adapter' do
+        config = described_class.from_env(forecast_provider: 'pvnode')
+        expect(config.adapter).to be_an_instance_of(PvnodeV2Adapter)
+      end
+    end
+  end
 end

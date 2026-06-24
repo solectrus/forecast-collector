@@ -1,4 +1,11 @@
 require 'vcr'
+require 'webmock'
+
+# pvnode's v2 API uses repeatable `include` query parameters. By default WebMock
+# collapses duplicate query keys to the last value, which would store a
+# misleading URI in cassettes (e.g. only `include=weather`). The flat_array
+# notation preserves every value; queries without duplicate keys are unaffected.
+WebMock::Config.instance.query_values_notation = :flat_array
 
 VCR.configure do |config|
   config.cassette_library_dir = 'spec/cassettes'
@@ -25,6 +32,7 @@ VCR.configure do |config|
     SOLCAST_SITE
     FORECAST_SOLAR_APIKEY
     PVNODE_APIKEY
+    PVNODE_SITE_ID
   ]
   sensitive_environment_variables.each do |key_name|
     config.filter_sensitive_data("<#{key_name}>") { ENV.fetch(key_name, nil) }

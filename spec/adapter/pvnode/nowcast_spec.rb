@@ -2,10 +2,11 @@ require 'adapter/pvnode/nowcast'
 require 'adapter/pvnode/slots'
 
 describe Pvnode::Nowcast do
-  let(:nowcast) { described_class.new(slots:, required_requests_count:) }
+  let(:nowcast) { described_class.new(slots:, required_requests_count:, max_requests_per_month:) }
   let(:required_requests_count) { 1 }
+  let(:max_requests_per_month) { 3_000 } # nowcast tier
   let(:slots) do
-    Pvnode::Slots.new(paid: true, nowcast: true, required_requests_count:)
+    Pvnode::Slots.new(max_requests_per_month:, required_requests_count:)
   end
 
   describe '#update_daylight' do

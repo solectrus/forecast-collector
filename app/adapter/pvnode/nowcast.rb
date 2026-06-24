@@ -26,9 +26,12 @@ module Pvnode
 
     # @param slots [Pvnode::Slots] fallback scheduler for nighttime
     # @param required_requests_count [Integer] number of API requests per fetch cycle
-    def initialize(slots:, required_requests_count:)
+    # @param max_requests_per_month [Integer] monthly request budget of the
+    #   active subscription, provided by the adapter
+    def initialize(slots:, required_requests_count:, max_requests_per_month:)
       @slots = slots
       @required_requests_count = required_requests_count
+      @max_requests_per_month = max_requests_per_month
     end
 
     # Extracts sunrise and sunset times from fetched clearsky data.
@@ -78,13 +81,13 @@ module Pvnode
 
     private
 
-    attr_reader :slots, :required_requests_count
+    attr_reader :slots, :required_requests_count, :max_requests_per_month
     attr_accessor :sunrise, :sunset
 
     def skip_factor
       @skip_factor ||= begin
         max_fetches_per_day =
-          Pvnode::Slots::MAX_REQUESTS_PER_MONTH_NOWCAST.to_f /
+          max_requests_per_month.to_f /
           DAYS_PER_MONTH /
           required_requests_count
 
