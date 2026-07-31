@@ -1,4 +1,5 @@
 require 'net/http'
+require 'app_version'
 
 # Base class for all forecast adapters.
 # Provides common functionality for fetching and accumulating forecast data
@@ -162,8 +163,7 @@ class BaseAdapter
 
   def user_agent
     app = 'Forecast-Collector'
-    version = ENV.fetch('VERSION', nil)
-    identifier = [app, version].compact.join('/')
+    identifier = [app, AppVersion.current].compact.join('/')
 
     "#{identifier} (+https://github.com/solectrus/forecast-collector)"
   end

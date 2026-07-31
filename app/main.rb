@@ -6,12 +6,13 @@ $LOAD_PATH.unshift(__dir__)
 require 'dotenv/load'
 require 'loop'
 require 'config'
+require 'app_version'
 
 # Flush output immediately
 $stdout.sync = true
 
 puts 'Forecast collector for SOLECTRUS, ' \
-       "Version #{ENV.fetch('VERSION', '<unknown>')}, " \
+       "Version #{AppVersion.current || '<unknown>'}, " \
        "built at #{ENV.fetch('BUILDTIME', '<unknown>')}"
 puts 'https://github.com/solectrus/forecast-collector'
 puts 'Copyright (c) 2020-2026 Georg Ledermann, released under the MIT License'
