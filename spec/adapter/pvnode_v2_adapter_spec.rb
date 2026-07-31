@@ -33,13 +33,18 @@ describe PvnodeV2Adapter do
       end
 
       it 'converts the site-local timestamps to the correct UTC epoch' do
-        VCR.use_cassette('pvnode_v2_success') do
-          data = pvnode.fetch_data
+        stdout, stderr = capture_output do
+          VCR.use_cassette('pvnode_v2_success') do
+            data = pvnode.fetch_data
 
-          # First slot is 2026-06-24T00:00:00 in Europe/Berlin (UTC+2 in June),
-          # i.e. 2026-06-23T22:00:00 UTC
-          expect(data.keys.min).to eq(Time.utc(2026, 6, 23, 22, 0, 0).to_i)
+            # First slot is 2026-06-24T00:00:00 in Europe/Berlin (UTC+2 in June),
+            # i.e. 2026-06-23T22:00:00 UTC
+            expect(data.keys.min).to eq(Time.utc(2026, 6, 23, 22, 0, 0).to_i)
+          end
         end
+
+        expect(stderr).to be_empty
+        expect(stdout).to include('OK')
       end
     end
 
