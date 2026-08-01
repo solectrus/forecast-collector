@@ -7,8 +7,8 @@ class Config # rubocop:disable Metrics/ClassLength
     options.each { |key, value| instance_variable_set("@#{key}", value) }
 
     validate_url!(influx_url)
-    validate_interval!(forecast_interval) unless forecast_provider == 'pvnode'
-    validate_request_limit!(pvnode_request_limit) if pvnode_request_limit
+    validate_positive_integer!(forecast_interval, 'Interval') unless forecast_provider == 'pvnode'
+    validate_positive_integer!(pvnode_request_limit, 'Request limit') if pvnode_request_limit
   end
 
   attr_reader :influx_schema,
@@ -75,16 +75,10 @@ class Config # rubocop:disable Metrics/ClassLength
 
   private
 
-  def validate_interval!(interval)
-    return if interval.is_a?(Integer) && interval.positive?
+  def validate_positive_integer!(value, name)
+    return if value.is_a?(Integer) && value.positive?
 
-    throw "Interval is invalid: #{interval}"
-  end
-
-  def validate_request_limit!(limit)
-    return if limit.is_a?(Integer) && limit.positive?
-
-    throw "Request limit is invalid: #{limit}"
+    throw "#{name} is invalid: #{value}"
   end
 
   def validate_url!(url)
@@ -134,14 +128,15 @@ class Config # rubocop:disable Metrics/ClassLength
         pvnode_apikey: ENV.fetch('PVNODE_APIKEY', nil),
         pvnode_paid: %w[true nowcast].include?(plan),
         pvnode_nowcast: plan == 'nowcast',
-        pvnode_request_limit: pvnode_request_limit_from_env,
+        # Self-imposed monthly request limit
+        pvnode_request_limit: optional_integer_from_env('PVNODE_REQUEST_LIMIT'),
       }
     end
 
-    # Self-imposed monthly request limit; blank means unset
-    def pvnode_request_limit_from_env
-      value = ENV.fetch('PVNODE_REQUEST_LIMIT', '')
-      value.strip.empty? ? nil : value.to_i
+    # Reads an optional integer setting; unset or blank means not configured.
+    def optional_integer_from_env(key)
+      value = ENV.fetch(key, '').strip
+      value.empty? ? nil : value.to_i
     end
 
     def forecast_solar_settings_from_env
@@ -159,7 +154,7 @@ class Config # rubocop:disable Metrics/ClassLength
       {
         forecast_provider: ENV.fetch('FORECAST_PROVIDER', 'forecast.solar'),
         forecast_solar_configurations: all_configurations_from_env('FORECAST', ForecastSolarConfiguration, defaults),
-        forecast_interval: ENV.fetch('FORECAST_INTERVAL', nil)&.to_i,
+        forecast_interval: optional_integer_from_env('FORECAST_INTERVAL'),
         forecast_solar_apikey: ENV.fetch('FORECAST_SOLAR_APIKEY', nil),
       }
     end
