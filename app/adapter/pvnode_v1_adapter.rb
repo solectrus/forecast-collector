@@ -88,6 +88,12 @@ class PvnodeV1Adapter < BaseAdapter
   end
 
   def pull_interval_message
+    [schedule_message, request_limit_message].compact.join(', ')
+  end
+
+  private
+
+  def schedule_message
     if nowcast?
       "in Nowcast mode (every #{nowcast.interval_minutes} min during daylight, slot-based at night)"
     else
@@ -95,7 +101,16 @@ class PvnodeV1Adapter < BaseAdapter
     end
   end
 
-  private
+  # A configured request limit is always reported, including when it exceeds the
+  # limit of the subscription tier and therefore has no effect.
+  def request_limit_message
+    limit = config.pvnode_request_limit
+    return unless limit
+    return "limited to #{limit} requests per month" if limit <= max_requests_per_month
+
+    "WARNING: PVNODE_REQUEST_LIMIT=#{limit} ignored, " \
+      "your plan allows only #{max_requests_per_month} requests per month"
+  end
 
   def slots
     @slots ||= Pvnode::Slots.new(
@@ -132,9 +147,11 @@ class PvnodeV1Adapter < BaseAdapter
     self.class::TIERS.fetch(:free)
   end
 
-  # Monthly request budget of the active subscription tier.
+  # Monthly request budget the scheduling is based on: the limit of the active
+  # subscription tier, unless PVNODE_REQUEST_LIMIT sets a lower one to leave
+  # requests for other consumers of the same pvnode account.
   def max_requests_per_month
-    tier.fetch(:requests_per_month)
+    [tier.fetch(:requests_per_month), config.pvnode_request_limit].compact.min
   end
 
   # How often the slot scheduler should fetch per day, capped at hourly: tiers

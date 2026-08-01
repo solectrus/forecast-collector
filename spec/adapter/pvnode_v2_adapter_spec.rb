@@ -219,4 +219,42 @@ describe PvnodeV2Adapter do
       end
     end
   end
+
+  describe 'self-imposed request limit (PVNODE_REQUEST_LIMIT)' do
+    let(:config) do
+      Config.from_env(forecast_provider: 'pvnode', pvnode_paid: true, pvnode_request_limit: 200)
+    end
+
+    it 'schedules within the configured limit instead of the tier limit' do
+      expect(pvnode.send(:max_requests_per_month)).to eq(200)
+    end
+
+    it 'reports the limit at startup' do
+      expect(pvnode.pull_interval_message).to eq(
+        'on provider schedule (auto), limited to 200 requests per month',
+      )
+    end
+
+    it 'fetches less often than the tier alone would allow' do
+      allow(Time).to receive(:now).and_return(Time.utc(2026, 6, 24, 12, 0, 0))
+
+      # 200/31 = 6.45 slots per day → skip_factor = 5 → slots at 0, 5, 10, 15, 20
+      # (without the limit, the Light tier would fetch hourly, i.e. at 12:47)
+      expect(pvnode.next_fetch_time).to eq(Time.utc(2026, 6, 24, 15, 47, 0))
+    end
+
+    context 'with a limit above the tier limit' do
+      let(:config) do
+        Config.from_env(forecast_provider: 'pvnode', pvnode_paid: true, pvnode_request_limit: 99_999)
+      end
+
+      it 'sticks to the tier limit and warns about it' do
+        expect(pvnode.send(:max_requests_per_month)).to eq(3_000)
+        expect(pvnode.pull_interval_message).to eq(
+          'on provider schedule (auto), WARNING: PVNODE_REQUEST_LIMIT=99999 ignored, ' \
+          'your plan allows only 3000 requests per month',
+        )
+      end
+    end
+  end
 end

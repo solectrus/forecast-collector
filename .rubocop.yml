@@ -16,6 +16,9 @@ Style/Documentation:
 Style/FrozenStringLiteralComment:
   Enabled: false
 
+Metrics/ClassLength:
+  Max: 120
+
 Metrics/MethodLength:
   Max: 40
 

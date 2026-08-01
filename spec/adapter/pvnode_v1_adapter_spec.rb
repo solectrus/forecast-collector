@@ -308,6 +308,38 @@ describe PvnodeV1Adapter do
         )
       end
     end
+
+    context 'with nowcast enabled and a self-imposed request limit' do
+      let(:config) do
+        Config.from_env(
+          forecast_provider: 'pvnode', pvnode_paid: true, pvnode_nowcast: true, pvnode_request_limit: 1_000,
+        )
+      end
+
+      it 'stretches the Nowcast interval to stay within the limit' do
+        # 1000/31/1 = 32.26 < 72 → skip_factor = 3 → interval = 30 min
+        expect(pvnode.pull_interval_message).to eq(
+          'in Nowcast mode (every 30 min during daylight, slot-based at night), ' \
+          'limited to 1000 requests per month',
+        )
+      end
+    end
+  end
+
+  describe 'self-imposed request limit (PVNODE_REQUEST_LIMIT)' do
+    let(:config) { Config.from_env(forecast_provider: 'pvnode', pvnode_paid: false, pvnode_request_limit: 20) }
+
+    it 'schedules within the configured limit instead of the tier limit' do
+      expect(pvnode.send(:max_requests_per_month)).to eq(20)
+    end
+
+    it 'skips entire days when the limit is very low' do
+      allow(Time).to receive(:now).and_return(Time.utc(2026, 6, 24, 12, 0, 0))
+
+      # 20/31 = 0.65 slots per day → one fetch every 2 days
+      # (the Free tier alone would fetch once a day)
+      expect(pvnode.next_fetch_time).to eq(Time.utc(2026, 6, 26, 12, 0, 0))
+    end
   end
 
   def build_config(pvnode_configurations, paid: true, nowcast: false)

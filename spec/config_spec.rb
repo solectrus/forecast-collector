@@ -42,6 +42,11 @@ describe Config do
         pvnode_options = valid_options.merge(forecast_provider: 'pvnode', forecast_interval: nil)
         expect { described_class.new(pvnode_options) }.not_to raise_error
       end
+
+      it 'raises an exception for an invalid request limit' do
+        pvnode_options = valid_options.merge(forecast_provider: 'pvnode', pvnode_request_limit: 0)
+        expect { described_class.new(pvnode_options) }.to raise_error(Exception, /Request limit is invalid/)
+      end
     end
   end
 
@@ -183,6 +188,26 @@ describe Config do
         expect(config.pvnode_paid).to be false
         expect(config.pvnode_nowcast).to be false
       end
+    end
+  end
+
+  describe 'PVNODE_REQUEST_LIMIT parsing' do
+    it 'reads the limit as an integer' do
+      ClimateControl.modify(PVNODE_REQUEST_LIMIT: '500') do
+        config = described_class.from_env(forecast_provider: 'pvnode')
+        expect(config.pvnode_request_limit).to eq(500)
+      end
+    end
+
+    it 'treats a blank value as not configured' do
+      ClimateControl.modify(PVNODE_REQUEST_LIMIT: '') do
+        config = described_class.from_env(forecast_provider: 'pvnode')
+        expect(config.pvnode_request_limit).to be_nil
+      end
+    end
+
+    it 'defaults to not configured' do
+      expect(described_class.from_env(forecast_provider: 'pvnode').pvnode_request_limit).to be_nil
     end
   end
 

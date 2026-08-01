@@ -8,6 +8,7 @@ class Config # rubocop:disable Metrics/ClassLength
 
     validate_url!(influx_url)
     validate_interval!(forecast_interval) unless forecast_provider == 'pvnode'
+    validate_request_limit!(pvnode_request_limit) if pvnode_request_limit
   end
 
   attr_reader :influx_schema,
@@ -26,6 +27,7 @@ class Config # rubocop:disable Metrics/ClassLength
               :pvnode_apikey,
               :pvnode_paid,
               :pvnode_nowcast,
+              :pvnode_request_limit,
               :pvnode_clearsky_data,
               :solcast_configurations,
               :solcast_apikey
@@ -79,6 +81,12 @@ class Config # rubocop:disable Metrics/ClassLength
     throw "Interval is invalid: #{interval}"
   end
 
+  def validate_request_limit!(limit)
+    return if limit.is_a?(Integer) && limit.positive?
+
+    throw "Request limit is invalid: #{limit}"
+  end
+
   def validate_url!(url)
     uri = URI.parse(url)
     return if uri.is_a?(URI::HTTP) && !uri.host.nil?
@@ -126,7 +134,14 @@ class Config # rubocop:disable Metrics/ClassLength
         pvnode_apikey: ENV.fetch('PVNODE_APIKEY', nil),
         pvnode_paid: %w[true nowcast].include?(plan),
         pvnode_nowcast: plan == 'nowcast',
+        pvnode_request_limit: pvnode_request_limit_from_env,
       }
+    end
+
+    # Self-imposed monthly request limit; blank means unset
+    def pvnode_request_limit_from_env
+      value = ENV.fetch('PVNODE_REQUEST_LIMIT', '')
+      value.strip.empty? ? nil : value.to_i
     end
 
     def forecast_solar_settings_from_env
