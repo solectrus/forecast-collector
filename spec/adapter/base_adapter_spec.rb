@@ -155,6 +155,28 @@ describe BaseAdapter do
     end
   end
 
+  describe '#provider_name' do
+    it 'derives the name from the class name' do
+      stub_const('DemoAdapter', Class.new(described_class))
+
+      expect(DemoAdapter.new(config:).provider_name).to eq('Demo')
+    end
+  end
+
+  describe 'the methods a subclass must implement' do
+    it 'refuses to count the requests' do
+      expect { adapter.fetch_data }.to raise_error(NotImplementedError, /required_requests_count/)
+    end
+
+    it 'refuses to build a URL' do
+      expect { adapter.url(0) }.to raise_error(NotImplementedError, /formatted_url/)
+    end
+
+    it 'refuses to parse a response' do
+      expect { adapter.parse_forecast_data({}) }.to raise_error(NotImplementedError, /parse_forecast_data/)
+    end
+  end
+
   describe '#pull_interval_message' do
     it 'returns the default interval message' do
       expect(adapter.pull_interval_message).to eq('every 900 seconds')

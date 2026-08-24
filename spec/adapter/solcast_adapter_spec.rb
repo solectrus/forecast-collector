@@ -24,4 +24,12 @@ describe SolcastAdapter do
       end
     end
   end
+
+  describe '#provider_name' do
+    let(:config) { Config.from_env(forecast_provider: 'solcast') }
+
+    it 'names the provider' do
+      expect(described_class.new(config:).provider_name).to eq('Solcast')
+    end
+  end
 end

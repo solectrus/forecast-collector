@@ -88,7 +88,7 @@ describe PvnodeV2Adapter do
     # See https://pvnode.com/docs/v2/integrations/build-your-own
     context 'when the plan does not include the forecast API' do
       before do
-        stub_request(:get, %r{https://api\.pvnode\.com/v2/forecast/}).to_return(
+        stub_request(:get, forecast_url).to_return(
           status: [403, 'Forbidden'],
           body: '{"detail":"Your plan does not include the Forecast API."}',
         )
@@ -120,7 +120,7 @@ describe PvnodeV2Adapter do
             body: '{"detail":"Your plan does not include the weather group."}',
           )
 
-        stub_request(:get, %r{https://api\.pvnode\.com/v2/forecast/})
+        stub_request(:get, forecast_url)
           .with { |request| !request.uri.to_s.include?('include=weather') }
           .to_return(
             status: 200,
@@ -150,7 +150,7 @@ describe PvnodeV2Adapter do
 
     context 'when the API fails temporarily' do
       before do
-        stub_request(:get, %r{https://api\.pvnode\.com/v2/forecast/}).to_return(
+        stub_request(:get, forecast_url).to_return(
           status: [503, 'Service Unavailable'],
           body: '{"detail":"Try again later."}',
         )
@@ -455,7 +455,7 @@ describe PvnodeV2Adapter do
 
       it 'drops the saved schedule when a response carries none' do
         state.save('2026-08-24T15:00:00Z')
-        stub_request(:get, %r{https://api\.pvnode\.com/v2/forecast/}).to_return(
+        stub_request(:get, forecast_url).to_return(
           status: 200,
           body: '{"values":[]}',
         )
@@ -464,6 +464,12 @@ describe PvnodeV2Adapter do
 
         expect(state.next_poll_at).to be_nil
       end
+    end
+  end
+
+  describe '#provider_name' do
+    it 'names the provider and the API version' do
+      expect(pvnode.provider_name).to eq('pvnode (v2)')
     end
   end
 end

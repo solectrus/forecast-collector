@@ -358,4 +358,52 @@ describe PvnodeV1Adapter do
       pvnode_configurations:,
     )
   end
+
+  describe '#provider_name' do
+    it 'names the provider and the API version' do
+      expect(pvnode.provider_name).to eq('pvnode (v1)')
+    end
+  end
+
+  describe '#parse_forecast_data' do
+    it 'returns nothing when the response carries no values' do
+      expect(pvnode.parse_forecast_data({})).to eq({})
+    end
+
+    it 'skips the fields the response leaves out' do
+      response_data = { 'values' => [{ 'dtm' => '2026-08-24T12:00:00Z', 'weather_code' => 3 }] }
+
+      expect(pvnode.parse_forecast_data(response_data)).to eq(
+        Time.utc(2026, 8, 24, 12).to_i => { weather_code: 3 },
+      )
+    end
+  end
+
+  describe 'Nowcast scheduling' do
+    let(:config) { Config.from_env(forecast_provider: 'pvnode', pvnode_paid: true, pvnode_nowcast: true) }
+
+    it 'derives the daylight window from the fetched clearsky data' do
+      # The cassette holds a forecast of 2026-03-18, so the collector runs on
+      # the day before it: the clearsky values of the cassette are "tomorrow".
+      allow(Time).to receive(:now).and_return(Time.utc(2026, 3, 17, 12, 0, 0))
+
+      capture_output { VCR.use_cassette('pvnode_v1_success') { pvnode.fetch_data } }
+
+      # Aligned to the :04 offset of the 10-minute Nowcast grid
+      expect(pvnode.next_fetch_time).to eq(Time.utc(2026, 3, 17, 12, 4, 0))
+    end
+  end
+
+  describe 'a request limit above the limit of the tier' do
+    let(:config) do
+      Config.from_env(forecast_provider: 'pvnode', pvnode_paid: false, pvnode_request_limit: 100)
+    end
+
+    it 'warns that the limit has no effect' do
+      expect(pvnode.pull_interval_message).to eq(
+        'on provider schedule (auto), WARNING: PVNODE_REQUEST_LIMIT=100 ignored, ' \
+        'your plan allows only 40 requests per month',
+      )
+    end
+  end
 end

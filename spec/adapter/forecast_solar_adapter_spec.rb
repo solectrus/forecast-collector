@@ -85,4 +85,10 @@ describe ForecastSolarAdapter do
       expect(stdout).to include('OK')
     end
   end
+
+  describe '#provider_name' do
+    it 'names the provider' do
+      expect(forecast.provider_name).to eq('Forecast.Solar')
+    end
+  end
 end

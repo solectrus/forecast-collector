@@ -427,4 +427,12 @@ describe Config do
       end
     end
   end
+
+  describe '#adapter with an unknown provider' do
+    it 'raises' do
+      config = described_class.from_env(forecast_provider: 'crystal ball')
+
+      expect { config.adapter }.to raise_error(ArgumentError, 'Unknown provider: crystal ball')
+    end
+  end
 end

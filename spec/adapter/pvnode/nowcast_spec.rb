@@ -52,6 +52,22 @@ describe Pvnode::Nowcast do
       expect(nowcast.daytime?).to be false
     end
 
+    it 'ignores clearsky values that are not from tomorrow' do
+      allow(Time).to receive(:now).and_return(time_today('12:00'))
+
+      data = build_clearsky_data('07:00' => 100, '18:00' => 50)
+      # past_days=0 still leaves today in the response, and a paid plan reaches
+      # several days ahead. Only tomorrow is complete, so the rest is dropped.
+      data[time_today('05:00').to_i] = { watt_clearsky: 100 }
+      data[(time_today('23:00') + (2 * 86_400)).to_i] = { watt_clearsky: 100 }
+
+      nowcast.update_daylight(data)
+
+      # Sunset is 18:00, not the 23:00 of the day after tomorrow
+      allow(Time).to receive(:now).and_return(time_today('22:00'))
+      expect(nowcast.daytime?).to be false
+    end
+
     it 'keeps previous sunrise/sunset when a later response has no tomorrow data' do
       allow(Time).to receive(:now).and_return(time_today('12:00'))
 
