@@ -1,0 +1,41 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.pvnode.com/v2/sites/
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Forecast-Collector (+https://github.com/solectrus/forecast-collector)
+      Host:
+      - api.pvnode.com
+      Authorization:
+      - Bearer invalid-api-key
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000
+      Content-Length:
+      - '28'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 27 Aug 2026 09:55:43 GMT
+      Server:
+      - uvicorn
+      Vary:
+      - Accept-Encoding
+    body:
+      encoding: UTF-8
+      string: '{"detail":"Invalid API key"}'
+  recorded_at: Thu, 27 Aug 2026 09:55:43 GMT
+recorded_with: VCR 6.4.0

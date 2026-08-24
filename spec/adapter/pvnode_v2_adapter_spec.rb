@@ -2,7 +2,7 @@ require 'config'
 require 'adapter/pvnode_v2_adapter'
 
 describe PvnodeV2Adapter do
-  let(:pvnode) { described_class.new(config:) }
+  let(:pvnode) { described_class.new(config:, site_id: config.pvnode_site_id) }
   let(:config) { Config.from_env(forecast_provider: 'pvnode') }
   let(:forecast_url) { %r{https://api\.pvnode\.com/v2/forecast/} }
 

@@ -17,6 +17,17 @@ require 'adapter/pvnode/timestamp'
 class PvnodeV2Adapter < BaseAdapter
   include Pvnode::Authorization
 
+  # @param site_id [String] the pvnode site to request. It comes from
+  #   PVNODE_SITE_ID or from the sites of the account, so the adapter takes it
+  #   as an argument instead of reading it from the configuration.
+  def initialize(config:, site_id:)
+    super(config:)
+
+    @site_id = site_id
+  end
+
+  attr_reader :site_id
+
   BASE_URL = 'https://api.pvnode.com/v2/forecast/'.freeze
 
   # Field groups to request (repeatable `include` parameter):
@@ -81,7 +92,7 @@ class PvnodeV2Adapter < BaseAdapter
   end
 
   def formatted_url(_index)
-    uri = URI("#{BASE_URL}#{config.pvnode_site_id}")
+    uri = URI("#{BASE_URL}#{site_id}")
 
     # Repeatable `include` parameter, one entry per field group. Built as an
     # array of pairs (not a Hash) so the duplicate `include` keys are

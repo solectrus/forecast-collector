@@ -349,25 +349,68 @@ describe Config do
     require 'adapter/pvnode_v1_adapter'
     require 'adapter/pvnode_v2_adapter'
 
-    context 'without a site id' do
-      around do |example|
-        ClimateControl.modify(PVNODE_SITE_ID: nil) { example.run }
-      end
-
-      it 'uses the v1 adapter' do
-        config = described_class.from_env(forecast_provider: 'pvnode')
-        expect(config.adapter).to be_an_instance_of(PvnodeV1Adapter)
-      end
-    end
-
     context 'with a site id' do
       around do |example|
         ClimateControl.modify(PVNODE_SITE_ID: 'site_abc123') { example.run }
       end
 
-      it 'uses the v2 adapter' do
+      it 'uses the v2 adapter without asking for the sites' do
         config = described_class.from_env(forecast_provider: 'pvnode')
+
         expect(config.adapter).to be_an_instance_of(PvnodeV2Adapter)
+        expect(a_request(:get, 'https://api.pvnode.com/v2/sites/')).not_to have_been_made
+      end
+
+      it 'notes that PVNODE_PAID has no effect' do
+        config = described_class.from_env(forecast_provider: 'pvnode', pvnode_paid: true)
+
+        stdout, = capture_output { config.adapter }
+        expect(stdout).to include('PVNODE_PAID has no effect')
+      end
+    end
+
+    context 'without a site id' do
+      around do |example|
+        ClimateControl.modify(PVNODE_SITE_ID: nil) { example.run }
+      end
+
+      let(:config) { described_class.from_env(forecast_provider: 'pvnode') }
+
+      it 'uses the v2 adapter with the only site of the account' do
+        VCR.use_cassette('pvnode_v2_sites_one') do
+          capture_output do
+            expect(config.adapter).to be_an_instance_of(PvnodeV2Adapter)
+            expect(config.adapter.site_id).to match(/\Asite_/)
+          end
+        end
+      end
+
+      it 'falls back to the v1 adapter when the account has no site' do
+        stdout, = capture_output do
+          VCR.use_cassette('pvnode_v2_sites_empty') do
+            expect(config.adapter).to be_an_instance_of(PvnodeV1Adapter)
+          end
+        end
+
+        expect(stdout).to include('shuts down on 2026-12-31')
+      end
+
+      it 'stops instead of guessing between several sites, and lists them' do
+        stdout, = capture_output do
+          VCR.use_cassette('pvnode_v2_sites_many') do
+            expect { config.adapter }.to raise_error(SystemExit)
+          end
+        end
+
+        expect(stdout).to include('has 2 active sites', 'W15-Test', 'Dummy 2')
+      end
+
+      it 'stops instead of falling back when the sites cannot be read' do
+        stub_request(:get, 'https://api.pvnode.com/v2/sites/').to_return(status: 500)
+
+        stdout, = capture_output { expect { config.adapter }.to raise_error(SystemExit) }
+
+        expect(stdout).to include('ERROR: Cannot read the pvnode sites of your account')
       end
     end
   end

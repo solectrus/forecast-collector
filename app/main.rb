@@ -22,7 +22,10 @@ config = Config.from_env
 
 puts "Using Ruby #{RUBY_VERSION} on platform #{RUBY_PLATFORM}"
 
-puts "Pulling from #{config.adapter.provider_name} #{config.adapter.pull_interval_message}"
+# Resolved before the message, so anything the adapter reports while it is
+# built (for example the pvnode site) is printed in order.
+adapter = config.adapter
+puts "Pulling from #{adapter.provider_name} #{adapter.pull_interval_message}"
 puts "Pushing to InfluxDB at #{config.influx_url}, " \
        "bucket #{config.influx_bucket}, " \
        "measurement #{config.influx_measurement}"

@@ -51,14 +51,7 @@ class Config # rubocop:disable Metrics/ClassLength
         require 'adapter/solcast_adapter'
         SolcastAdapter.new(config: self)
       when 'pvnode'
-        require 'adapter/pvnode_v1_adapter'
-        require 'adapter/pvnode_v2_adapter'
-
-        # Use the v2 (site-based) API when a site ID is configured, otherwise
-        # fall back to the v1 API. This lets existing installations keep working
-        # after an update until they opt into v2 by setting PVNODE_SITE_ID.
-        adapter_class = pvnode_site_id? ? PvnodeV2Adapter : PvnodeV1Adapter
-        adapter_class.new(config: self)
+        pvnode_adapter
       else
         raise ArgumentError, "Unknown provider: #{forecast_provider}"
       end
@@ -75,6 +68,58 @@ class Config # rubocop:disable Metrics/ClassLength
   end
 
   private
+
+  # Uses the v2 (site-based) API when a site is known, otherwise falls back to
+  # the v1 API. This lets existing installations keep working after an update
+  # until they move to v2.
+  def pvnode_adapter
+    require 'adapter/pvnode_v1_adapter'
+    require 'adapter/pvnode_v2_adapter'
+
+    site_id = pvnode_site_id? ? pvnode_site_id : discovered_pvnode_site_id
+    return pvnode_v1_adapter unless site_id
+
+    pvnode_v2_adapter(site_id)
+  end
+
+  def pvnode_v2_adapter(site_id)
+    if pvnode_paid
+      puts 'NOTE: PVNODE_PAID has no effect on the pvnode v2 API, ' \
+           'which reports the limits of your plan itself.'
+    end
+
+    PvnodeV2Adapter.new(config: self, site_id:)
+  end
+
+  # Only an account without any site reaches this point. Such an account
+  # belongs to a user of the v1 API, who configures the planes through the
+  # FORECAST_* settings.
+  def pvnode_v1_adapter
+    puts 'WARNING: Using the pvnode v1 API, which pvnode shuts down on 2026-12-31.'
+
+    PvnodeV1Adapter.new(config: self)
+  end
+
+  # Asks the pvnode API for the sites of the account, so a user with a single
+  # site only needs to set PVNODE_APIKEY.
+  def discovered_pvnode_site_id
+    require 'adapter/pvnode/site_discovery'
+
+    Pvnode::SiteDiscovery.new(apikey: pvnode_apikey).site_id
+  rescue Pvnode::SiteDiscovery::SelectionRequired => e
+    # The v1 API reads the FORECAST_* settings, which a user of the v2 API does
+    # not maintain. A fallback would therefore collect a forecast for a plant
+    # that does not exist, and report success while doing it. Stop instead.
+    puts "ERROR: #{e}"
+    exit 1
+  rescue Pvnode::SiteDiscovery::RequestFailed => e
+    # A failed request must not move the user to the v1 API either: after an
+    # error the collector knows nothing about the account. The container
+    # restarts and tries again.
+    puts "ERROR: Cannot read the pvnode sites of your account: #{e}"
+    puts 'Set PVNODE_SITE_ID to skip this step.'
+    exit 1
+  end
 
   def validate_positive_integer!(value, name)
     return if value.is_a?(Integer) && value.positive?

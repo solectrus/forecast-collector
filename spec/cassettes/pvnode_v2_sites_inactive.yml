@@ -1,0 +1,42 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.pvnode.com/v2/sites/
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Forecast-Collector (+https://github.com/solectrus/forecast-collector)
+      Host:
+      - api.pvnode.com
+      Authorization:
+      - Bearer <PVNODE_APIKEY>
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 27 Aug 2026 10:18:44 GMT
+      Server:
+      - uvicorn
+      Vary:
+      - Accept-Encoding
+      Content-Length:
+      - '1753'
+    body:
+      encoding: ASCII-8BIT
+      string: '[{"id":"site_f2ii52i2ezdgx3izqvpq","name":"W15-Test","latitude":50.0,"longitude":10.0,"elevation":100.0,"timezone":"Europe/Berlin","status":"active","config":{"modules":{"technology":"perc","temperature_coefficient":-0.35,"installation_year":null},"mounting":{"type":"open","height_above_ground":0.0},"inverter":{"clip_max_percent":120.0,"clip_min_percent":0.1},"losses":{"cable":0.015,"conversion":0.025,"albedo":0.15,"snow_slide":0.3,"diffuse_model":"perez"},"shading":{"use_terrain_horizon":true,"sky_obstruction":null},"tracking":{"type":"fixed","axis_azimuth":180.0,"axis_tilt":0.0,"max_angle":90.0,"backtracking":true}},"strings":[{"slope":29.1,"orientation":209.0,"power_kw":9.75,"gcr":0.0,"near_field_shading":null,"id":"str_8d68894e","calibration_active":true}],"created_at":"2026-06-25T13:08:07.445293Z","updated_at":"2026-08-27T10:13:49.609186Z","deleted_at":null},{"id":"site_bxu365gmzxbfnk523umu","name":"Dummy
+        2","latitude":51.0,"longitude":11.0,"elevation":200.0,"timezone":"Europe/Berlin","status":"inactive","config":{"modules":{"technology":"perc","temperature_coefficient":-0.35,"installation_year":null},"mounting":{"type":"open","height_above_ground":0.0},"inverter":{"clip_max_percent":120.0,"clip_min_percent":0.1},"losses":{"cable":0.015,"conversion":0.025,"albedo":0.15,"snow_slide":0.3,"diffuse_model":"perez"},"shading":{"use_terrain_horizon":true,"sky_obstruction":null},"tracking":{"type":"fixed","axis_azimuth":180.0,"axis_tilt":0.0,"max_angle":90.0,"backtracking":true}},"strings":[{"slope":30.0,"orientation":180.0,"power_kw":10.0,"gcr":null,"near_field_shading":null,"id":"str_ea87cf21","calibration_active":true}],"created_at":"2026-08-27T10:18:22.985687Z","updated_at":"2026-08-27T10:18:24.425956Z","deleted_at":null}]'
+  recorded_at: Thu, 27 Aug 2026 10:18:44 GMT
+recorded_with: VCR 6.4.0

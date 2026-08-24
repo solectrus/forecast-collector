@@ -1,0 +1,41 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.pvnode.com/v2/sites/
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Forecast-Collector (+https://github.com/solectrus/forecast-collector)
+      Host:
+      - api.pvnode.com
+      Authorization:
+      - Bearer <PVNODE_APIKEY>
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000
+      Content-Length:
+      - '894'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 27 Aug 2026 10:09:25 GMT
+      Server:
+      - uvicorn
+      Vary:
+      - Accept-Encoding
+    body:
+      encoding: UTF-8
+      string: '[{"id":"site_gzwbbp7ns2z4ebe7ntpw","name":"Dummy 1","latitude":50.92209,"longitude":6.3611,"elevation":87.49938201904297,"timezone":"Europe/Berlin","status":"active","config":{"modules":{"technology":"perc","temperature_coefficient":-0.35,"installation_year":null},"mounting":{"type":"open","height_above_ground":0.0},"inverter":{"clip_max_percent":120.0,"clip_min_percent":0.1},"losses":{"cable":0.015,"conversion":0.025,"albedo":0.15,"snow_slide":0.3,"diffuse_model":"perez"},"shading":{"use_terrain_horizon":true,"sky_obstruction":null},"tracking":{"type":"fixed","axis_azimuth":180.0,"axis_tilt":0.0,"max_angle":90.0,"backtracking":true}},"strings":[{"slope":30.0,"orientation":180.0,"power_kw":10.0,"gcr":null,"near_field_shading":null,"id":"str_2e1b9478","calibration_active":true}],"created_at":"2026-08-27T10:08:51.459039Z","updated_at":"2026-08-27T10:08:52.919697Z","deleted_at":null}]'
+  recorded_at: Thu, 27 Aug 2026 10:09:25 GMT
+recorded_with: VCR 6.4.0
