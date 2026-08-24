@@ -28,7 +28,6 @@ class Config # rubocop:disable Metrics/ClassLength
               :pvnode_paid,
               :pvnode_nowcast,
               :pvnode_request_limit,
-              :pvnode_clearsky_data,
               :solcast_configurations,
               :solcast_apikey
 
