@@ -32,14 +32,13 @@ describe PvnodeV2Adapter do
         expect(stdout).to include('OK')
       end
 
-      it 'converts the site-local timestamps to the correct UTC epoch' do
+      it 'returns timestamps as UTC epochs on full quarter hours' do
         stdout, stderr = capture_output do
           VCR.use_cassette('pvnode_v2_success') do
             data = pvnode.fetch_data
 
-            # First slot is 2026-06-24T00:00:00 in Europe/Berlin (UTC+2 in June),
-            # i.e. 2026-06-23T22:00:00 UTC
-            expect(data.keys.min).to eq(Time.utc(2026, 6, 23, 22, 0, 0).to_i)
+            expect(data.keys).to all(be_a(Integer))
+            expect(data.keys).to all(satisfy { |timestamp| (timestamp % 900).zero? })
           end
         end
 
@@ -70,50 +69,51 @@ describe PvnodeV2Adapter do
   end
 
   describe '#parse_forecast_data' do
-    def parse(timestamp, timezone: 'Europe/Berlin', **fields)
+    def parse(timestamp, **fields)
       pvnode.parse_forecast_data(
-        'timezone' => timezone,
+        'timezone' => 'UTC',
         'values' => [{ 'timestamp' => timestamp, 'pv_power' => 100 }.merge(fields)],
       )
     end
 
-    describe 'naive-local to UTC conversion' do
-      it 'applies the winter (standard time) offset' do
-        data = parse('2026-01-15T12:00:00') # CET, UTC+1
-        expect(data.keys.first).to eq(Time.utc(2026, 1, 15, 11, 0, 0).to_i)
+    it 'returns nothing when the response carries no values' do
+      expect(pvnode.parse_forecast_data({})).to eq({})
+    end
+
+    it 'skips the fields the response leaves out' do
+      response_data = { 'values' => [{ 'timestamp' => '2026-08-24T12:00:00Z', 'weather_code' => 3 }] }
+
+      expect(pvnode.parse_forecast_data(response_data)).to eq(
+        Time.utc(2026, 8, 24, 12).to_i => { weather_code: 3 },
+      )
+    end
+
+    describe 'timestamp handling' do
+      it 'converts a UTC timestamp to an epoch' do
+        data = parse('2026-07-15T12:00:00Z')
+        expect(data.keys.first).to eq(Time.utc(2026, 7, 15, 12, 0, 0).to_i)
       end
 
-      it 'applies the summer (DST) offset' do
-        data = parse('2026-07-15T12:00:00') # CEST, UTC+2
+      it 'honours a numeric offset' do
+        data = parse('2026-07-15T12:00:00+02:00')
         expect(data.keys.first).to eq(Time.utc(2026, 7, 15, 10, 0, 0).to_i)
       end
 
-      it 'resolves ambiguous fall-back times to the first (still-DST) occurrence' do
-        # On 2026-10-25, 02:30 occurs twice; the first is CEST (UTC+2)
-        data = parse('2026-10-25T02:30:00')
-        expect(data.keys.first).to eq(Time.utc(2026, 10, 25, 0, 30, 0).to_i)
-      end
-
-      it 'handles non-existent spring-forward times without raising' do
-        # On 2026-03-29, 02:30 is skipped by the clock change
-        data = parse('2026-03-29T02:30:00')
-        expect(data.keys.first).to eq(Time.utc(2026, 3, 29, 1, 30, 0).to_i)
-      end
-
-      it 'honours the timezone from the response, not a fixed one' do
-        data = parse('2026-01-15T12:00:00', timezone: 'America/New_York') # EST, UTC-5
-        expect(data.keys.first).to eq(Time.utc(2026, 1, 15, 17, 0, 0).to_i)
+      it 'rejects a timestamp without a timezone' do
+        # Such a timestamp would be read as machine-local time and silently
+        # store a wrong point in time.
+        expect { parse('2026-07-15T12:00:00') }.to raise_error(/Timestamp without timezone/)
       end
     end
 
     it 'omits fields that are absent in the response' do
-      data = parse('2026-07-15T12:00:00') # only pv_power present
+      data = parse('2026-07-15T12:00:00Z') # only pv_power present
       expect(data.values.first).to eq(watt: 100)
     end
 
     it 'rounds power to whole watts and weather metrics to one decimal' do
       data = parse(
-        '2026-07-15T12:00:00',
+        '2026-07-15T12:00:00Z',
         'pv_power' => 1234.6, 'temp' => 21.37, 'relative_humidity' => 38.96,
       )
       expect(data.values.first).to eq(watt: 1235, temp: 21.4, humidity: 39.0)
@@ -139,16 +139,12 @@ describe PvnodeV2Adapter do
       expect(query.assoc('past_days').last).to eq('0')
     end
 
-    it 'uses 1 forecast day for free accounts' do
-      expect(query.assoc('forecast_days').last).to eq('1')
+    it 'requests UTC timestamps' do
+      expect(query.assoc('timezone').last).to eq('utc')
     end
 
-    context 'with paid account' do
-      let(:pvnode_paid) { true }
-
-      it 'uses 7 forecast days' do
-        expect(query.assoc('forecast_days').last).to eq('7')
-      end
+    it 'sends no forecast horizon, so the plan of the user decides' do
+      expect(query.assoc('forecast_days')).to be_nil
     end
   end
 

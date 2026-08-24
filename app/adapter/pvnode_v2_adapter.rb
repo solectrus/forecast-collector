@@ -1,5 +1,4 @@
-require 'time'
-require 'tzinfo'
+require 'adapter/pvnode/timestamp'
 require 'adapter/pvnode_v1_adapter'
 
 # pvnode API v2 adapter.
@@ -20,6 +19,10 @@ class PvnodeV2Adapter < PvnodeV1Adapter
   # - weather:  temp (°C), relative_humidity (%), weather_code
   INCLUDE_GROUPS = %w[default clearsky weather].freeze
 
+  # The API returns naive site-local timestamps by default. Ask for UTC
+  # instead, so the collector does not need a timezone database.
+  TIMEZONE = 'utc'.freeze
+
   # Subscription tiers (pvnode v2 API), selected via PVNODE_PAID:
   #   free → free, true → light, nowcast → plus
   # Free updates once daily, Light hourly, Plus every 10 min (nowcast).
@@ -36,14 +39,10 @@ class PvnodeV2Adapter < PvnodeV1Adapter
   end
 
   def parse_forecast_data(response_data)
-    timezone = TZInfo::Timezone.get(response_data['timezone'])
-
     result = {}
 
     response_data['values']&.each do |value_point|
-      # pvnode returns naive local timestamps (no offset); the site timezone is
-      # provided once at the top level. Convert to a UTC epoch.
-      timestamp = local_to_epoch(value_point['timestamp'], timezone)
+      timestamp = Pvnode::Timestamp.parse(value_point['timestamp']).to_i
 
       result[timestamp] = {
         watt: value_point['pv_power']&.round,
@@ -66,40 +65,20 @@ class PvnodeV2Adapter < PvnodeV1Adapter
   def formatted_url(_index)
     uri = URI("#{BASE_URL}#{config.pvnode_site_id}")
 
-    # Repeatable `include` parameter, one entry per field group, plus the
-    # forecast/past day range. Built as an array of pairs (not a Hash) so the
-    # duplicate `include` keys are preserved.
+    # Repeatable `include` parameter, one entry per field group. Built as an
+    # array of pairs (not a Hash) so the duplicate `include` keys are
+    # preserved.
+    #
+    # `forecast_days` is not sent on purpose: without it the API returns the
+    # longest horizon the subscription allows. This keeps the collector free of
+    # any knowledge about the plan of the user.
     params = [
       *INCLUDE_GROUPS.map { |group| ['include', group] },
-      ['forecast_days', forecast_days],
-      ['past_days', past_days],
+      ['past_days', 0],
+      ['timezone', TIMEZONE],
     ]
 
     uri.query = URI.encode_www_form(params)
     uri.to_s
-  end
-
-  private
-
-  # Converts a naive local timestamp (e.g. "2026-06-24T12:00:00") in the given
-  # timezone to a UTC epoch.
-  #
-  # The wall-clock components are parsed as UTC (note the appended +0000) so the
-  # result never depends on the machine's local timezone — Time.strptime without
-  # a zone would apply ENV['TZ'], which differs e.g. between a developer's
-  # machine and the UTC-based CI runners.
-  def local_to_epoch(timestamp, timezone)
-    naive = Time.strptime("#{timestamp}+0000", '%Y-%m-%dT%H:%M:%S%z')
-    naive_local_to_utc(naive, timezone).to_i
-  end
-
-  # Resolves a naive local wall-clock time to UTC:
-  # - Ambiguous autumn fall-back times resolve to the first (still-DST) occurrence.
-  # - Non-existent spring-forward times (the clock skips an hour) are shifted past
-  #   the 1-hour gap, so the conversion never raises.
-  def naive_local_to_utc(naive, timezone)
-    timezone.local_to_utc(naive, &:first)
-  rescue TZInfo::PeriodNotFound
-    naive_local_to_utc(naive + 3600, timezone)
   end
 end
