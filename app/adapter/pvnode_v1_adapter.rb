@@ -2,9 +2,11 @@ require 'net/http'
 require 'config'
 require 'adapter/base_adapter'
 require 'adapter/pvnode/scheduling'
+require 'adapter/pvnode/authorization'
 require 'adapter/pvnode/request_builder'
 
 class PvnodeV1Adapter < BaseAdapter
+  include Pvnode::Authorization
   include Pvnode::Scheduling
   include Pvnode::RequestBuilder
 

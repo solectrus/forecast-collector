@@ -1,5 +1,8 @@
+require 'adapter/base_adapter'
+require 'adapter/pvnode/authorization'
+require 'adapter/pvnode/poll_schedule'
+require 'adapter/pvnode/request_limit'
 require 'adapter/pvnode/timestamp'
-require 'adapter/pvnode_v1_adapter'
 
 # pvnode API v2 adapter.
 #
@@ -7,10 +10,13 @@ require 'adapter/pvnode_v1_adapter'
 # site-based: the location and all PV strings are configured once on the pvnode
 # site and referenced by its ID. A single request returns the full forecast.
 #
-# Scheduling (slots/Nowcast), authentication and HTTP handling are inherited
-# unchanged from the v1 PvnodeV1Adapter; only the URL building and response
-# parsing differ.
-class PvnodeV2Adapter < PvnodeV1Adapter
+# The API also plans the schedule: it says with `next_poll_at` when the next
+# request is useful and reports the monthly quota in headers. The adapter
+# therefore needs no knowledge about the plan of the user, unlike the v1
+# adapter, which calculates its schedule from PVNODE_PAID.
+class PvnodeV2Adapter < BaseAdapter
+  include Pvnode::Authorization
+
   BASE_URL = 'https://api.pvnode.com/v2/forecast/'.freeze
 
   # Field groups to request (repeatable `include` parameter):
@@ -23,19 +29,31 @@ class PvnodeV2Adapter < PvnodeV1Adapter
   # instead, so the collector does not need a timezone database.
   TIMEZONE = 'utc'.freeze
 
-  # Subscription tiers (pvnode v2 API), selected via PVNODE_PAID:
-  #   free → free, true → light, nowcast → plus
-  # Free updates once daily, Light hourly, Plus every 10 min (nowcast).
-  # Enterprise is custom and not represented here; PVNODE_PAID=nowcast stays
-  # safely within any higher Enterprise allowance.
-  TIERS = {
-    free: { requests_per_month: 250, updates_per_day: 1 },
-    light: { requests_per_month: 3_000, updates_per_day: 24 },
-    plus: { requests_per_month: 3_000, updates_per_day: 144 },
-  }.freeze
-
   def provider_name
     'pvnode (v2)'
+  end
+
+  # Monthly quota reported by the last response, nil before the first request.
+  def request_limit
+    schedule.request_limit
+  end
+
+  def next_fetch_time
+    schedule.next_fetch_time
+  end
+
+  def pull_interval_message
+    schedule.message
+  end
+
+  def fetch_data
+    super.tap { report_request_limit }
+  end
+
+  # The schedule of the next request comes from the response body, so it is
+  # recorded here. This keeps #parse_forecast_data free of side effects.
+  def parse_json_response(http_response)
+    super.tap { |data| schedule.record_recommendation(data['next_poll_at']) }
   end
 
   def parse_forecast_data(response_data)
@@ -80,5 +98,46 @@ class PvnodeV2Adapter < PvnodeV1Adapter
 
     uri.query = URI.encode_www_form(params)
     uri.to_s
+  end
+
+  private
+
+  def schedule
+    @schedule ||= Pvnode::PollSchedule.new(request_limit_per_month: config.pvnode_request_limit)
+  end
+
+  # The attempt is recorded before the request, so a network error cannot cause
+  # a fast retry loop. The quota headers come with every response, including
+  # the 429 that reports an exhausted quota, so they are read before the status
+  # code is evaluated.
+  def make_http_request(index)
+    schedule.record_attempt
+
+    super.tap do |response|
+      schedule.record_request_limit(Pvnode::RequestLimit.from_response(response))
+    end
+  end
+
+  def report_request_limit
+    return unless request_limit
+
+    prefix = request_limit.exhausted? || request_limit.low? ? '  WARNING: ' : '  '
+    puts "#{prefix}pvnode quota: #{request_limit}"
+
+    report_ineffective_request_limit
+  end
+
+  # The self-imposed limit only has an effect below the limit of the plan. The
+  # real limit is known as soon as the first response arrives. A plan without a
+  # cap has no limit to compare, and the self-imposed one always has an effect.
+  def report_ineffective_request_limit
+    limit = config.pvnode_request_limit
+    return if @ineffective_limit_reported || limit.nil?
+    return unless request_limit.metered?
+    return if limit < request_limit.limit
+
+    @ineffective_limit_reported = true
+    puts "  WARNING: PVNODE_REQUEST_LIMIT=#{limit} has no effect, " \
+         "your plan allows #{request_limit.limit} requests per month"
   end
 end

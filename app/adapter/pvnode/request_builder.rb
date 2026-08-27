@@ -1,4 +1,6 @@
 module Pvnode
+  # Builds the plane parameters of the v1 API, which carries the PV geometry in
+  # the query string.
   module RequestBuilder
     private
 
@@ -34,11 +36,6 @@ module Pvnode
       end
 
       params
-    end
-
-    # Sends the pvnode API key with every request.
-    def request_headers
-      super.merge('Authorization' => "Bearer #{config.pvnode_apikey}")
     end
   end
 end

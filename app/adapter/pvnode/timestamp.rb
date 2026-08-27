@@ -17,5 +17,13 @@ module Pvnode
 
       Time.iso8601(value).utc
     end
+
+    # @return [Time, nil] nil for a timestamp the collector cannot read. A
+    #   timestamp is a recommendation, never data the collector needs.
+    def self.parse_or_nil(value)
+      parse(value)
+    rescue ArgumentError, TypeError
+      nil
+    end
   end
 end

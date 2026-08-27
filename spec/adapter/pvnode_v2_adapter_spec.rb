@@ -1,9 +1,10 @@
+require 'config'
 require 'adapter/pvnode_v2_adapter'
 
 describe PvnodeV2Adapter do
   let(:pvnode) { described_class.new(config:) }
-  let(:config) { Config.from_env(forecast_provider: 'pvnode', pvnode_paid:) }
-  let(:pvnode_paid) { false }
+  let(:config) { Config.from_env(forecast_provider: 'pvnode') }
+  let(:forecast_url) { %r{https://api\.pvnode\.com/v2/forecast/} }
 
   describe '#fetch_data' do
     context 'when successful' do
@@ -64,6 +65,115 @@ describe PvnodeV2Adapter do
         expect(data).to be_nil
         expect(stderr).to be_empty
         expect(stdout).to include('HTTP 404 Not Found')
+      end
+    end
+  end
+
+  describe 'request limit' do
+    it 'reports the remaining quota after a fetch' do
+      stdout, stderr = capture_output do
+        VCR.use_cassette('pvnode_v2_success') { pvnode.fetch_data }
+      end
+
+      expect(pvnode.request_limit).to have_attributes(limit: 15_000, remaining: 12_739)
+      expect(stdout).to include('pvnode quota:', 'requests left this month')
+      expect(stderr).to be_empty
+    end
+
+    context 'when the quota is exhausted' do
+      before do
+        stub_request(:get, forecast_url).to_return(
+          status: 429,
+          headers: {
+            'RequestLimit-Limit' => '250',
+            'RequestLimit-Used' => '250',
+            'RequestLimit-Remaining' => '0',
+            'RequestLimit-Reset' => '2026-09-01T00:00:00Z',
+          },
+        )
+      end
+
+      it 'warns about the exhausted quota without raising' do
+        data = nil
+
+        stdout, stderr = capture_output do
+          expect { data = pvnode.fetch_data }.not_to raise_error
+        end
+
+        expect(data).to be_nil
+        expect(stderr).to be_empty
+        expect(stdout).to include('HTTP 429')
+        expect(stdout).to include('WARNING: pvnode quota: 0 of 250 requests left this month')
+      end
+    end
+
+    context 'when few requests are left' do
+      before do
+        stub_request(:get, forecast_url).to_return(
+          status: 200,
+          body: '{"values":[]}',
+          headers: {
+            'RequestLimit-Limit' => '250',
+            'RequestLimit-Remaining' => '20',
+            'RequestLimit-Reset' => '2026-09-01T00:00:00Z',
+          },
+        )
+      end
+
+      it 'warns before the quota runs out' do
+        stdout, = capture_output { pvnode.fetch_data }
+
+        expect(stdout).to include('WARNING: pvnode quota: 20 of 250 requests left this month')
+      end
+    end
+
+    context 'with a self-imposed limit above the limit of the plan' do
+      let(:config) do
+        Config.from_env(forecast_provider: 'pvnode', pvnode_request_limit: 99_999)
+      end
+
+      it 'warns once, not after every fetch' do
+        stdout, = capture_output do
+          VCR.use_cassette('pvnode_v2_success') do
+            pvnode.fetch_data
+            pvnode.fetch_data
+          end
+        end
+
+        expect(stdout.scan('PVNODE_REQUEST_LIMIT=99999 has no effect').length).to eq(1)
+      end
+    end
+
+    # A plan without a cap sends the literal string instead of a number.
+    # See https://pvnode.com/docs/v2/integrations/build-your-own
+    context 'with an unmetered quota' do
+      let(:config) do
+        Config.from_env(forecast_provider: 'pvnode', pvnode_request_limit: 200)
+      end
+
+      before do
+        stub_request(:get, forecast_url).to_return(
+          status: 200,
+          body: '{"values":[]}',
+          headers: {
+            'RequestLimit-Limit' => 'unmetered',
+            'RequestLimit-Used' => '4231',
+            'RequestLimit-Remaining' => 'unmetered',
+            'RequestLimit-Reset' => '2026-09-01T00:00:00Z',
+          },
+        )
+      end
+
+      it 'reports the quota without numbers' do
+        stdout, = capture_output { pvnode.fetch_data }
+
+        expect(stdout).to include('pvnode quota: unmetered')
+      end
+
+      it 'keeps the self-imposed limit, which has no plan limit to exceed' do
+        stdout, = capture_output { pvnode.fetch_data }
+
+        expect(stdout).not_to include('has no effect')
       end
     end
   end
@@ -154,103 +264,42 @@ describe PvnodeV2Adapter do
     end
   end
 
-  describe 'monthly rate limit' do
-    it 'uses the v2 Free-tier budget by default' do
-      expect(pvnode.send(:max_requests_per_month)).to eq(250)
-    end
+  describe 'scheduling' do
+    it 'follows the recommendation of the API' do
+      allow(Time).to receive(:now).and_return(Time.utc(2026, 8, 24, 14, 47, 41))
 
-    context 'with paid (Light) tier' do
-      let(:pvnode_paid) { true }
+      capture_output { VCR.use_cassette('pvnode_v2_success') { pvnode.fetch_data } }
 
-      it 'uses the 3000-request budget' do
-        expect(pvnode.send(:max_requests_per_month)).to eq(3_000)
-      end
-    end
-
-    context 'with nowcast (Plus) tier' do
-      let(:config) { Config.from_env(forecast_provider: 'pvnode', pvnode_paid: true, pvnode_nowcast: true) }
-
-      it 'uses the 3000-request budget' do
-        expect(pvnode.send(:max_requests_per_month)).to eq(3_000)
-      end
-    end
-  end
-
-  describe 'fetch frequency (slots per day)' do
-    it 'fetches only once a day on Free (data updates once daily)' do
-      expect(pvnode.send(:slots_per_day)).to eq(1)
-    end
-
-    context 'with paid (Light) tier' do
-      let(:pvnode_paid) { true }
-
-      it 'fetches hourly' do
-        expect(pvnode.send(:slots_per_day)).to eq(24)
-      end
-    end
-
-    context 'with nowcast (Plus) tier' do
-      let(:config) { Config.from_env(forecast_provider: 'pvnode', pvnode_paid: true, pvnode_nowcast: true) }
-
-      it 'caps the slot scheduler at hourly (Nowcast handles the 10-min cadence)' do
-        expect(pvnode.send(:slots_per_day)).to eq(24)
-      end
+      # The recorded response recommends 2026-08-24T15:00:00Z, plus the offset
+      expect(pvnode.next_fetch_time).to eq(Time.utc(2026, 8, 24, 15, 0, 30))
     end
   end
 
   describe '#pull_interval_message' do
-    context 'without nowcast' do
-      it 'returns the auto schedule message' do
-        expect(pvnode.pull_interval_message).to eq('on provider schedule (auto)')
-      end
-    end
-
-    context 'with nowcast enabled' do
-      let(:config) { Config.from_env(forecast_provider: 'pvnode', pvnode_paid: true, pvnode_nowcast: true) }
-
-      it 'returns the nowcast message with the base 10 min interval' do
-        expect(pvnode.pull_interval_message).to eq(
-          'in Nowcast mode (every 10 min during daylight, slot-based at night)',
-        )
-      end
+    it 'announces the schedule of the API' do
+      expect(pvnode.pull_interval_message).to eq('when the API recommends it (next_poll_at)')
     end
   end
 
   describe 'self-imposed request limit (PVNODE_REQUEST_LIMIT)' do
     let(:config) do
-      Config.from_env(forecast_provider: 'pvnode', pvnode_paid: true, pvnode_request_limit: 200)
-    end
-
-    it 'schedules within the configured limit instead of the tier limit' do
-      expect(pvnode.send(:max_requests_per_month)).to eq(200)
+      Config.from_env(forecast_provider: 'pvnode', pvnode_request_limit: 200)
     end
 
     it 'reports the limit at startup' do
       expect(pvnode.pull_interval_message).to eq(
-        'on provider schedule (auto), limited to 200 requests per month',
+        'when the API recommends it (next_poll_at), limited to 200 requests per month',
       )
     end
 
-    it 'fetches less often than the tier alone would allow' do
-      allow(Time).to receive(:now).and_return(Time.utc(2026, 6, 24, 12, 0, 0))
+    it 'fetches less often than the API recommends' do
+      allow(Time).to receive(:now).and_return(Time.utc(2026, 8, 24, 14, 47, 41))
 
-      # 200/31 = 6.45 slots per day → skip_factor = 5 → slots at 0, 5, 10, 15, 20
-      # (without the limit, the Light tier would fetch hourly, i.e. at 12:47)
-      expect(pvnode.next_fetch_time).to eq(Time.utc(2026, 6, 24, 15, 47, 0))
-    end
+      capture_output { VCR.use_cassette('pvnode_v2_success') { pvnode.fetch_data } }
 
-    context 'with a limit above the tier limit' do
-      let(:config) do
-        Config.from_env(forecast_provider: 'pvnode', pvnode_paid: true, pvnode_request_limit: 99_999)
-      end
-
-      it 'sticks to the tier limit and warns about it' do
-        expect(pvnode.send(:max_requests_per_month)).to eq(3_000)
-        expect(pvnode.pull_interval_message).to eq(
-          'on provider schedule (auto), WARNING: PVNODE_REQUEST_LIMIT=99999 ignored, ' \
-          'your plan allows only 3000 requests per month',
-        )
-      end
+      # 200 requests spread over 31 days is one request every 3 hours and
+      # 43 minutes, which is later than the recommended 15:00:00Z
+      expect(pvnode.next_fetch_time).to eq(Time.utc(2026, 8, 24, 18, 30, 53))
     end
   end
 end
