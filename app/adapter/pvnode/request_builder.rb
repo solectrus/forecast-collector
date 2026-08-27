@@ -36,15 +36,9 @@ module Pvnode
       params
     end
 
-    def make_http_request(index)
-      uri = URI(formatted_url(index))
-      request = Net::HTTP::Get.new(uri)
-      request['Authorization'] = "Bearer #{config.pvnode_apikey}"
-      request['User-Agent'] = user_agent
-
-      Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
-        http.request(request)
-      end
+    # Sends the pvnode API key with every request.
+    def request_headers
+      super.merge('Authorization' => "Bearer #{config.pvnode_apikey}")
     end
   end
 end

@@ -1,5 +1,5 @@
 require 'net/http'
-require 'app_version'
+require 'user_agent'
 
 # Base class for all forecast adapters.
 # Provides common functionality for fetching and accumulating forecast data
@@ -93,12 +93,16 @@ class BaseAdapter
   # Can be overridden by subclasses for custom HTTP handling (e.g., authentication)
   def make_http_request(index)
     uri = url(index)
-    request = Net::HTTP::Get.new(uri)
-    request['User-Agent'] = user_agent
 
     Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
-      http.request(request)
+      http.request(Net::HTTP::Get.new(uri, request_headers))
     end
+  end
+
+  # Headers sent with every request.
+  # Can be overridden by subclasses that add their own, e.g. an API key.
+  def request_headers
+    { 'User-Agent' => UserAgent.current }
   end
 
   # Step 2: Parses the JSON response from HTTP response
@@ -153,12 +157,5 @@ class BaseAdapter
   # Example: "https://api.example.com/forecast?lat=51.13&lon=10.42&api_key=abc123"
   def formatted_url(index)
     raise NotImplementedError, 'Subclass must implement #formatted_url'
-  end
-
-  def user_agent
-    app = 'Forecast-Collector'
-    identifier = [app, AppVersion.current].compact.join('/')
-
-    "#{identifier} (+https://github.com/solectrus/forecast-collector)"
   end
 end
