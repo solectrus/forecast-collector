@@ -117,7 +117,7 @@ class Config # rubocop:disable Metrics/ClassLength
     # error the collector knows nothing about the account. The container
     # restarts and tries again.
     puts "ERROR: Cannot read the pvnode sites of your account: #{e}"
-    puts 'Set PVNODE_SITE_ID to skip this step.'
+    puts e.advice || 'Set PVNODE_SITE_ID to skip this step.'
     exit 1
   end
 

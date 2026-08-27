@@ -1,6 +1,7 @@
 require 'net/http'
 require 'json'
 require 'user_agent'
+require 'adapter/pvnode/response_error'
 
 module Pvnode
   # Finds the pvnode site to use when PVNODE_SITE_ID is not configured.
@@ -14,7 +15,18 @@ module Pvnode
     # Raised when the sites cannot be read at all. This is different from an
     # account without a site: after an error the collector knows nothing about
     # the account and must not guess.
-    class RequestFailed < StandardError; end
+    #
+    # A rejection of the API says what the user must do, a network fault does
+    # not. The caller reports the advice when there is one.
+    class RequestFailed < StandardError
+      def initialize(message, advice = nil)
+        super(message)
+
+        @advice = advice
+      end
+
+      attr_reader :advice
+    end
 
     # Raised when the account has sites, but none the collector can pick on its
     # own. Only the user can say which site to use, or which one to activate.
@@ -51,7 +63,8 @@ module Pvnode
     def fetch_sites
       response = perform_request
       unless response.is_a?(Net::HTTPOK)
-        raise RequestFailed, "HTTP #{response.code} #{response.message} - #{detail(response)}"
+        error = ResponseError.new(response)
+        raise RequestFailed.new(error.to_s, error.advice)
       end
 
       JSON.parse(response.body)
@@ -77,13 +90,6 @@ module Pvnode
       end
     rescue StandardError => e
       raise RequestFailed, "cannot connect to #{URL} - #{e.message}"
-    end
-
-    # The API explains a rejected request in the `detail` field.
-    def detail(response)
-      JSON.parse(response.body)['detail']
-    rescue StandardError
-      nil
     end
 
     def report_single_site(site)

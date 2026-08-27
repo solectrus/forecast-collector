@@ -69,7 +69,10 @@ describe Pvnode::SiteDiscovery do
 
       it 'raises, so the caller cannot mistake it for an account without a site' do
         VCR.use_cassette('pvnode_v2_sites_unauthorized') do
-          expect { discovery.site_id }.to raise_error(described_class::RequestFailed, /HTTP 401/)
+          expect { discovery.site_id }.to raise_error(described_class::RequestFailed) do |error|
+            expect(error.message).to include('HTTP 401')
+            expect(error.advice).to include('Set PVNODE_APIKEY')
+          end
         end
       end
     end
@@ -77,8 +80,11 @@ describe Pvnode::SiteDiscovery do
     context 'when the request cannot be sent' do
       before { stub_request(:get, 'https://api.pvnode.com/v2/sites/').to_timeout }
 
-      it 'raises' do
-        expect { discovery.site_id }.to raise_error(described_class::RequestFailed, /cannot connect/)
+      it 'raises without advice, because only the user knows the cause' do
+        expect { discovery.site_id }.to raise_error(described_class::RequestFailed) do |error|
+          expect(error.message).to include('cannot connect')
+          expect(error.advice).to be_nil
+        end
       end
     end
 

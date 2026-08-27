@@ -410,7 +410,20 @@ describe Config do
 
         stdout, = capture_output { expect { config.adapter }.to raise_error(SystemExit) }
 
-        expect(stdout).to include('ERROR: Cannot read the pvnode sites of your account')
+        expect(stdout).to include(
+          'ERROR: Cannot read the pvnode sites of your account',
+          'Set PVNODE_SITE_ID to skip this step.',
+        )
+      end
+
+      it 'says that the key is the problem, not the site id' do
+        stdout, = capture_output do
+          VCR.use_cassette('pvnode_v2_sites_unauthorized') do
+            expect { config.adapter }.to raise_error(SystemExit)
+          end
+        end
+
+        expect(stdout).to include('HTTP 401 Unauthorized', 'Set PVNODE_APIKEY to a valid key')
       end
     end
   end

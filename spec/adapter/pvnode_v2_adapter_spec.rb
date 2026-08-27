@@ -53,18 +53,134 @@ describe PvnodeV2Adapter do
         Config.from_env(forecast_provider: 'pvnode', pvnode_site_id: 'site_doesnotexist0000000000')
       end
 
-      it 'logs a clear error and returns nil without raising' do
+      it 'stops with the reason of the API and says what to do' do
+        stdout, stderr = capture_output do
+          VCR.use_cassette('pvnode_v2_invalid_site') do
+            expect { pvnode.fetch_data }.to raise_error(SystemExit)
+          end
+        end
+
+        expect(stderr).to be_empty
+        expect(stdout).to include(
+          'ERROR: HTTP 404 Not Found - Site not found.',
+          'Set PVNODE_SITE_ID to an existing site',
+        )
+      end
+    end
+
+    context 'when the API key is invalid' do
+      it 'stops with the reason of the API and says what to do' do
+        stdout, stderr = capture_output do
+          VCR.use_cassette('pvnode_v2_unauthorized') do
+            expect { pvnode.fetch_data }.to raise_error(SystemExit)
+          end
+        end
+
+        expect(stderr).to be_empty
+        expect(stdout).to include('ERROR: HTTP 401 Unauthorized', 'Set PVNODE_APIKEY to a valid key')
+      end
+    end
+
+    # The collector cannot record this state: it needs a plan without access to
+    # the forecast API, or a site that a downgrade switched off. The status and
+    # the `detail` field come from the pvnode integration guide.
+    # See https://pvnode.com/docs/v2/integrations/build-your-own
+    context 'when the plan does not include the forecast API' do
+      before do
+        stub_request(:get, %r{https://api\.pvnode\.com/v2/forecast/}).to_return(
+          status: [403, 'Forbidden'],
+          body: '{"detail":"Your plan does not include the Forecast API."}',
+        )
+      end
+
+      it 'stops with the reason of the API and says what to do' do
+        stdout, stderr = capture_output do
+          expect { pvnode.fetch_data }.to raise_error(SystemExit)
+        end
+
+        expect(stderr).to be_empty
+        expect(stdout).to include(
+          'ERROR: HTTP 403 Forbidden - Your plan does not include the Forecast API.',
+          'Check your plan and your sites',
+        )
+      end
+    end
+
+    # The plan of a user can lose a field group, for example after a downgrade.
+    # The collector cannot record this: no plan of ours withholds a group it
+    # asks for. The status and the `detail` field come from the pvnode
+    # integration guide.
+    # See https://pvnode.com/docs/v2/integrations/build-your-own
+    context 'when the plan does not include one field group' do
+      before do
+        stub_request(:get, %r{https://api\.pvnode\.com/v2/forecast/.*include=weather})
+          .to_return(
+            status: [403, 'Forbidden'],
+            body: '{"detail":"Your plan does not include the weather group."}',
+          )
+
+        stub_request(:get, %r{https://api\.pvnode\.com/v2/forecast/})
+          .with { |request| !request.uri.to_s.include?('include=weather') }
+          .to_return(
+            status: 200,
+            body: '{"values":[{"timestamp":"2026-08-24T15:00:00Z","pv_power":100}]}',
+          )
+      end
+
+      it 'drops the group and asks again, instead of stopping' do
         data = nil
 
         stdout, stderr = capture_output do
-          VCR.use_cassette('pvnode_v2_invalid_site') do
-            expect { data = pvnode.fetch_data }.not_to raise_error
-          end
+          expect { data = pvnode.fetch_data }.not_to raise_error
+        end
+
+        expect(stderr).to be_empty
+        expect(data.values.first).to eq(watt: 100)
+        expect(stdout).to include('does not include the `weather` data')
+      end
+
+      it 'leaves the group out of every later request' do
+        capture_output { pvnode.fetch_data }
+        capture_output { pvnode.fetch_data }
+
+        expect(a_request(:get, %r{/v2/forecast/.*include=weather})).to have_been_made.once
+      end
+    end
+
+    context 'when the API fails temporarily' do
+      before do
+        stub_request(:get, %r{https://api\.pvnode\.com/v2/forecast/}).to_return(
+          status: [503, 'Service Unavailable'],
+          body: '{"detail":"Try again later."}',
+        )
+      end
+
+      it 'reports the error and keeps running' do
+        data = nil
+
+        stdout, stderr = capture_output do
+          expect { data = pvnode.fetch_data }.not_to raise_error
         end
 
         expect(data).to be_nil
         expect(stderr).to be_empty
-        expect(stdout).to include('HTTP 404 Not Found')
+        expect(stdout).to include('HTTP 503 Service Unavailable - Try again later.')
+      end
+    end
+
+    context 'when the answer carries no JSON body' do
+      # A proxy can answer instead of the API. The message must then name the
+      # status alone, instead of an empty reason.
+      before do
+        stub_request(:get, forecast_url)
+          .to_return(status: [502, 'Bad Gateway'], body: '<html>Bad Gateway</html>')
+      end
+
+      it 'reports the status without a reason' do
+        stdout, = capture_output { pvnode.fetch_data }
+
+        expect(stdout).to include('Error HTTP 502 Bad Gateway')
+        expect(stdout).not_to include('Bad Gateway -')
       end
     end
   end

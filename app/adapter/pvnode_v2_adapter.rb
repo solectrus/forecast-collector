@@ -2,6 +2,7 @@ require 'adapter/base_adapter'
 require 'adapter/pvnode/authorization'
 require 'adapter/pvnode/poll_schedule'
 require 'adapter/pvnode/request_limit'
+require 'adapter/pvnode/response_error'
 require 'adapter/pvnode/timestamp'
 
 # pvnode API v2 adapter.
@@ -14,7 +15,9 @@ require 'adapter/pvnode/timestamp'
 # request is useful and reports the monthly quota in headers. The adapter
 # therefore needs no knowledge about the plan of the user, unlike the v1
 # adapter, which calculates its schedule from PVNODE_PAID.
-class PvnodeV2Adapter < BaseAdapter
+#
+# See https://pvnode.com/docs/v2/integrations/build-your-own
+class PvnodeV2Adapter < BaseAdapter # rubocop:disable Metrics/ClassLength
   include Pvnode::Authorization
 
   # @param site_id [String] the pvnode site to request. It comes from
@@ -30,15 +33,22 @@ class PvnodeV2Adapter < BaseAdapter
 
   BASE_URL = 'https://api.pvnode.com/v2/forecast/'.freeze
 
-  # Field groups to request (repeatable `include` parameter):
-  # - default:  pv_power (W)
-  # - clearsky: pv_power_clearsky (W)
-  # - weather:  temp (°C), relative_humidity (%), weather_code
-  INCLUDE_GROUPS = %w[default clearsky weather].freeze
-
   # The API returns naive site-local timestamps by default. Ask for UTC
   # instead, so the collector does not need a timezone database.
   TIMEZONE = 'utc'.freeze
+
+  # Field groups of a forecast request, sent as a repeatable `include`
+  # parameter. `default` carries pv_power (W), the reason for the request, so
+  # the collector never drops it. On top of it come pv_power_clearsky (W) from
+  # `clearsky` and temp (°C), relative_humidity (%) and weather_code from
+  # `weather`.
+  #
+  # None of them is bound to a plan today, but pvnode can move one to a higher
+  # plan at any time. The API then rejects the whole request with a 403 that
+  # names the group. The collector drops it and continues, instead of stopping
+  # for good.
+  BASE_GROUP = 'default'.freeze
+  OPTIONAL_GROUPS = %w[clearsky weather].freeze
 
   def provider_name
     'pvnode (v2)'
@@ -61,9 +71,22 @@ class PvnodeV2Adapter < BaseAdapter
     super.tap { report_request_limit }
   end
 
+  # A plan can lose a field group, for example after a downgrade. The API then
+  # rejects the whole request and names the group. The collector drops it and
+  # asks again, so a plan change costs no forecast.
+  def fetch(index)
+    super
+  rescue Pvnode::ResponseError::GroupRejected => e
+    drop_group(e.group)
+
+    retry
+  end
+
   # The schedule of the next request comes from the response body, so it is
   # recorded here. This keeps #parse_forecast_data free of side effects.
   def parse_json_response(http_response)
+    report_error(http_response) unless http_response.is_a?(Net::HTTPOK)
+
     super.tap { |data| schedule.record_recommendation(data['next_poll_at']) }
   end
 
@@ -102,7 +125,7 @@ class PvnodeV2Adapter < BaseAdapter
     # longest horizon the subscription allows. This keeps the collector free of
     # any knowledge about the plan of the user.
     params = [
-      *INCLUDE_GROUPS.map { |group| ['include', group] },
+      *include_groups.map { |group| ['include', group] },
       ['past_days', 0],
       ['timezone', TIMEZONE],
     ]
@@ -129,6 +152,24 @@ class PvnodeV2Adapter < BaseAdapter
     end
   end
 
+  # An error that only the user can fix stops the collector. Without this the
+  # collector repeats the same rejected request until somebody reads the log.
+  #
+  # Every other error stays with the request: the loop reports it, the forecast
+  # that is already in InfluxDB stays visible, and the schedule tries again.
+  def report_error(http_response)
+    error = Pvnode::ResponseError.new(http_response)
+
+    group = error.rejected_group(droppable_groups)
+    raise Pvnode::ResponseError::GroupRejected, group if group
+
+    raise error.to_s unless error.fatal?
+
+    puts "ERROR: #{error}"
+    puts error.advice
+    exit 1
+  end
+
   def report_request_limit
     return unless request_limit
 
@@ -150,5 +191,22 @@ class PvnodeV2Adapter < BaseAdapter
     @ineffective_limit_reported = true
     puts "  WARNING: PVNODE_REQUEST_LIMIT=#{limit} has no effect, " \
          "your plan allows #{request_limit.limit} requests per month"
+  end
+
+  # Groups of the running process. A group that the API rejected is gone, so
+  # the requests that follow leave it out.
+  def include_groups
+    @include_groups ||= [BASE_GROUP, *OPTIONAL_GROUPS]
+  end
+
+  def droppable_groups
+    include_groups - [BASE_GROUP]
+  end
+
+  def drop_group(group)
+    include_groups.delete(group)
+
+    puts "  NOTE: Your pvnode plan does not include the `#{group}` data. " \
+         'Collecting the other data.'
   end
 end
