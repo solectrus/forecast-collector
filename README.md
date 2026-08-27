@@ -9,7 +9,7 @@ Collect solar forecast data from various providers and store them into an Influx
 
 - Forecast.Solar (https://forecast.solar)
 - Solcast (https://solcast.com)
-- Pvnode (https://pvnode.com) — API v1 and v2
+- Pvnode (https://pvnode.com) — API v2, and API v1 until pvnode shuts it down on 2026-12-31
 
 ## Usage
 
@@ -18,6 +18,16 @@ Collect solar forecast data from various providers and store them into an Influx
    - [Forecast.Solar API documentation](https://doc.forecast.solar/api:estimate) (no API key required)
    - [Solcast API documentation](https://docs.solcast.com.au/) in the Legacy/Hobbyist section (API key required)
    - [Pvnode API documentation](https://pvnode.com/docs/) (API key required)
+
+   For pvnode, the API key is enough if your account has exactly one site. The
+   collector reads the sites of your account and follows the update schedule
+   that the pvnode API recommends. If the account has more than one site, the
+   collector lists them and asks you to set `PVNODE_SITE_ID`. It also reports
+   how many requests your plan has left this month.
+
+   The collector remembers when the next forecast is due, so a restart of the
+   container costs no request. If your API key or your site is wrong, the
+   collector stops and reports what you must change.
 
 2. Make sure your InfluxDB database is ready (not subject of this README)
 
