@@ -1,3 +1,5 @@
+require 'uri'
+
 require_relative 'config/forecast_solar_configuration'
 require_relative 'config/solcast_configuration'
 require_relative 'config/pvnode_configuration'

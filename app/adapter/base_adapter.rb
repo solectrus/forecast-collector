@@ -117,9 +117,7 @@ class BaseAdapter
   # Step 3: Extracts forecast data from parsed response into standard format.
   # Must be implemented by subclasses to handle their specific response structure.
   def parse_forecast_data(response_data)
-    # simplecov:disable
     raise NotImplementedError, 'Subclass must implement #parse_forecast_data'
-    # simplecov:enable
   end
 
   # Returns the display name of the provider
@@ -146,9 +144,7 @@ class BaseAdapter
   # Used to determine how many API calls to make.
   # Must return an Integer.
   def required_requests_count
-    # simplecov:disable
     raise NotImplementedError, 'Subclass must implement #required_requests_count'
-    # simplecov:enable
   end
 
   # Returns the complete URL for the API call for the given configuration index.
@@ -156,9 +152,7 @@ class BaseAdapter
   # Must return a String.
   # Example: "https://api.example.com/forecast?lat=51.13&lon=10.42&api_key=abc123"
   def formatted_url(index)
-    # simplecov:disable
     raise NotImplementedError, 'Subclass must implement #formatted_url'
-    # simplecov:enable
   end
 
   def user_agent

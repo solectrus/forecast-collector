@@ -1,15 +1,4 @@
 class ForecastSolarConfiguration
-  attr_reader :latitude, :longitude, :declination, :azimuth, :kwp, :damping_morning, :damping_evening, :inverter,
-              :horizon
-
-  def initialize(options = {})
-    options.each { |key, value| instance_variable_set("@#{key}", value) }
-  end
-
-  def [](key)
-    public_send(key)
-  end
-
   def self.from_env(index, prefix, defaults)
     {
       latitude: ENV.fetch("#{prefix}_#{index}_LATITUDE", defaults[:latitude]),
