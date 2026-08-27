@@ -136,6 +136,13 @@ class BaseAdapter
     Time.now + config.forecast_interval
   end
 
+  # Returns the time of the first fetch after the start.
+  # Can be overridden by subclasses that remember their schedule, so a restart
+  # does not repeat a request the provider already answered.
+  def first_fetch_time
+    Time.now
+  end
+
   # Returns human-readable pull schedule for startup logging.
   # Can be overridden by subclasses with custom scheduling.
   def pull_interval_message

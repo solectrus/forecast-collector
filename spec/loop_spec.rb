@@ -1,4 +1,6 @@
 require 'loop'
+require 'config'
+require 'adapter/pvnode/poll_state'
 
 describe Loop do
   describe '.start' do
@@ -50,6 +52,33 @@ describe Loop do
 
         expect(stderr).to be_empty
         expect(stdout).to include('Too Many Requests')
+      end
+    end
+
+    context 'with a saved pvnode schedule' do
+      let(:config) { Config.from_env(forecast_provider: 'pvnode') }
+
+      before do
+        Pvnode::PollState.new(site_id: config.pvnode_site_id)
+                         .save((Time.now + 300).utc.iso8601)
+      end
+
+      it 'waits for the saved slot before the first fetch' do
+        slept = nil
+        allow_any_instance_of(described_class).to receive(:sleep) { |_, duration| slept = duration } # rubocop:disable RSpec/AnyInstance
+
+        stdout, stderr = capture_output do
+          VCR.use_cassette('pvnode_v2_success') do
+            VCR.use_cassette('influxdb') do
+              described_class.start(config: config, max_count: 1, max_wait: 1)
+            end
+          end
+        end
+
+        expect(stderr).to be_empty
+        # 300 seconds to the saved slot, plus the offset of the schedule
+        expect(slept).to be_within(5).of(330)
+        expect(stdout).to include('Found a saved pvnode schedule', 'Sleeping until')
       end
     end
 

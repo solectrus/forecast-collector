@@ -1,5 +1,6 @@
 require 'config'
 require 'adapter/pvnode_v2_adapter'
+require 'adapter/pvnode/poll_state'
 
 describe PvnodeV2Adapter do
   let(:pvnode) { described_class.new(config:, site_id: config.pvnode_site_id) }
@@ -416,6 +417,53 @@ describe PvnodeV2Adapter do
       # 200 requests spread over 31 days is one request every 3 hours and
       # 43 minutes, which is later than the recommended 15:00:00Z
       expect(pvnode.next_fetch_time).to eq(Time.utc(2026, 8, 24, 18, 30, 53))
+    end
+  end
+
+  describe '#first_fetch_time' do
+    it 'fetches at once without a saved schedule' do
+      expect(pvnode.first_fetch_time).to be_within(1).of(Time.now)
+    end
+
+    context 'with a saved schedule' do
+      let(:state) { Pvnode::PollState.new(site_id: config.pvnode_site_id) }
+
+      it 'waits for the saved slot, so a restart costs no request' do
+        allow(Time).to receive(:now).and_return(Time.utc(2026, 8, 24, 14, 47, 41))
+        state.save('2026-08-24T15:00:00Z')
+
+        stdout, = capture_output do
+          expect(pvnode.first_fetch_time).to eq(Time.utc(2026, 8, 24, 15, 0, 30))
+        end
+
+        expect(stdout).to include('Found a saved pvnode schedule')
+      end
+
+      it 'fetches at once when the saved slot has passed' do
+        allow(Time).to receive(:now).and_return(Time.utc(2026, 8, 24, 14, 47, 41))
+        state.save('2026-08-24T14:00:00Z')
+
+        expect(pvnode.first_fetch_time).to eq(Time.utc(2026, 8, 24, 14, 47, 41))
+      end
+
+      it 'saves the schedule of every response' do
+        capture_output { VCR.use_cassette('pvnode_v2_success') { pvnode.fetch_data } }
+
+        # The recorded response recommends 2026-08-24T15:00:00Z
+        expect(state.next_poll_at).to eq(Time.utc(2026, 8, 24, 15, 0, 0))
+      end
+
+      it 'drops the saved schedule when a response carries none' do
+        state.save('2026-08-24T15:00:00Z')
+        stub_request(:get, %r{https://api\.pvnode\.com/v2/forecast/}).to_return(
+          status: 200,
+          body: '{"values":[]}',
+        )
+
+        capture_output { pvnode.fetch_data }
+
+        expect(state.next_poll_at).to be_nil
+      end
     end
   end
 end

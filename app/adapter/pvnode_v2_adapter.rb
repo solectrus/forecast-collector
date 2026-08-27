@@ -1,6 +1,7 @@
 require 'adapter/base_adapter'
 require 'adapter/pvnode/authorization'
 require 'adapter/pvnode/poll_schedule'
+require 'adapter/pvnode/poll_state'
 require 'adapter/pvnode/request_limit'
 require 'adapter/pvnode/response_error'
 require 'adapter/pvnode/timestamp'
@@ -20,17 +21,6 @@ require 'adapter/pvnode/timestamp'
 class PvnodeV2Adapter < BaseAdapter # rubocop:disable Metrics/ClassLength
   include Pvnode::Authorization
 
-  # @param site_id [String] the pvnode site to request. It comes from
-  #   PVNODE_SITE_ID or from the sites of the account, so the adapter takes it
-  #   as an argument instead of reading it from the configuration.
-  def initialize(config:, site_id:)
-    super(config:)
-
-    @site_id = site_id
-  end
-
-  attr_reader :site_id
-
   BASE_URL = 'https://api.pvnode.com/v2/forecast/'.freeze
 
   # The API returns naive site-local timestamps by default. Ask for UTC
@@ -42,13 +32,19 @@ class PvnodeV2Adapter < BaseAdapter # rubocop:disable Metrics/ClassLength
   # the collector never drops it. On top of it come pv_power_clearsky (W) from
   # `clearsky` and temp (°C), relative_humidity (%) and weather_code from
   # `weather`.
-  #
-  # None of them is bound to a plan today, but pvnode can move one to a higher
-  # plan at any time. The API then rejects the whole request with a 403 that
-  # names the group. The collector drops it and continues, instead of stopping
-  # for good.
   BASE_GROUP = 'default'.freeze
   OPTIONAL_GROUPS = %w[clearsky weather].freeze
+
+  # @param site_id [String] the pvnode site to request. It comes from
+  #   PVNODE_SITE_ID or from the sites of the account, so the adapter takes it
+  #   as an argument instead of reading it from the configuration.
+  def initialize(config:, site_id:)
+    super(config:)
+
+    @site_id = site_id
+  end
+
+  attr_reader :site_id
 
   def provider_name
     'pvnode (v2)'
@@ -61,6 +57,19 @@ class PvnodeV2Adapter < BaseAdapter # rubocop:disable Metrics/ClassLength
 
   def next_fetch_time
     schedule.next_fetch_time
+  end
+
+  # A restart must not repeat a request that the API already answered. If the
+  # stored slot is still ahead, the collector waits for it instead of asking
+  # again for the forecast that is already in InfluxDB.
+  def first_fetch_time
+    stored = state.next_poll_at
+    return Time.now unless stored&.>(Time.now)
+
+    schedule.record_recommendation(stored.iso8601)
+    puts "Found a saved pvnode schedule, no new forecast before #{stored.localtime}"
+
+    next_fetch_time
   end
 
   def pull_interval_message
@@ -87,7 +96,10 @@ class PvnodeV2Adapter < BaseAdapter # rubocop:disable Metrics/ClassLength
   def parse_json_response(http_response)
     report_error(http_response) unless http_response.is_a?(Net::HTTPOK)
 
-    super.tap { |data| schedule.record_recommendation(data['next_poll_at']) }
+    super.tap do |data|
+      schedule.record_recommendation(data['next_poll_at'])
+      state.save(data['next_poll_at'])
+    end
   end
 
   def parse_forecast_data(response_data)
@@ -140,6 +152,10 @@ class PvnodeV2Adapter < BaseAdapter # rubocop:disable Metrics/ClassLength
     @schedule ||= Pvnode::PollSchedule.new(request_limit_per_month: config.pvnode_request_limit)
   end
 
+  def state
+    @state ||= Pvnode::PollState.new(site_id:)
+  end
+
   # The attempt is recorded before the request, so a network error cannot cause
   # a fast retry loop. The quota headers come with every response, including
   # the 429 that reports an exhausted quota, so they are read before the status
@@ -170,6 +186,9 @@ class PvnodeV2Adapter < BaseAdapter # rubocop:disable Metrics/ClassLength
     exit 1
   end
 
+  # The quota counts per account, not per site. If other tools use the same
+  # pvnode account, their requests count too. Showing the number makes that
+  # visible and explains a collector that waits.
   def report_request_limit
     return unless request_limit
 

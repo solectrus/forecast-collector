@@ -18,6 +18,8 @@ class Loop
     exit(1) unless influx_ready?(max_wait)
 
     self.count = 0
+    sleep_until(config.adapter.first_fetch_time)
+
     loop do
       self.count += 1
       now = DateTime.now
@@ -25,11 +27,7 @@ class Loop
       push_to_influx(config.adapter.fetch_data)
       break if max_count && count >= max_count
 
-      next_request = config.adapter.next_fetch_time
-      sleep_duration = (next_request - Time.now).ceil
-      puts "  Sleeping until #{next_request.localtime} ..."
-
-      sleep sleep_duration
+      sleep_until(config.adapter.next_fetch_time)
     end
   end
 
@@ -55,6 +53,14 @@ class Loop
       puts "\nInfluxDB not ready after #{count * 5} seconds - aborting."
       false
     end
+  end
+
+  def sleep_until(time)
+    duration = (time - Time.now).ceil
+    return unless duration.positive?
+
+    puts "  Sleeping until #{time.localtime} ..."
+    sleep duration
   end
 
   def push_to_influx(data)
