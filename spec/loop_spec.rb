@@ -82,6 +82,59 @@ describe Loop do
       end
     end
 
+    context 'when pushing to InfluxDB fails' do
+      let(:config) { Config.from_env }
+
+      let(:flux_writer) do
+        instance_double(FluxWriter, ready?: true).tap do |flux_writer|
+          allow(FluxWriter).to receive(:new).with(config:).and_return(flux_writer)
+        end
+      end
+
+      let(:waits) { [] }
+
+      before do
+        flux_writer
+        # The retry waits between two attempts, which the suite must not do.
+        allow_any_instance_of(described_class).to receive(:sleep) { |_, duration| waits << duration } # rubocop:disable RSpec/AnyInstance
+      end
+
+      it 'repeats the push and continues after a temporary failure' do
+        attempt = 0
+        allow(flux_writer).to receive(:push) do
+          attempt += 1
+          raise Net::ReadTimeout if attempt == 1
+        end
+
+        stdout, stderr = capture_output do
+          VCR.use_cassette('forecast_solar_success') do
+            described_class.start(config: config, max_count: 1, max_wait: 1)
+          end
+        end
+
+        expect(stderr).to be_empty
+        expect(stdout).to include('FAILED (Net::ReadTimeout)')
+        expect(stdout).to include('Pushing forecast to InfluxDB ... OK')
+        expect(attempt).to eq(2)
+      end
+
+      it 'gives up after the last attempt, but keeps running' do
+        allow(flux_writer).to receive(:push).and_raise(Net::ReadTimeout)
+
+        stdout, stderr = capture_output do
+          VCR.use_cassette('forecast_solar_success') do
+            described_class.start(config: config, max_count: 1, max_wait: 1)
+          end
+        end
+
+        expect(stderr).to be_empty
+        expect(stdout).to include('WARNING: Cannot push to InfluxDB after 5 attempts')
+        expect(flux_writer).to have_received(:push).exactly(5).times
+        # Every attempt waits twice as long as the one before it
+        expect(waits).to eq([5, 10, 20, 40])
+      end
+    end
+
     context 'when InfluxDB is not ready' do
       let(:config) { Config.from_env }
 

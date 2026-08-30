@@ -4,6 +4,17 @@ require 'influxdb-client'
 require 'flux_writer'
 
 class Loop
+  # A write to InfluxDB can time out when the host is busy, and InfluxDB itself
+  # can restart. The collector must not stop for that, so it repeats the push
+  # before it gives up.
+  PUSH_ATTEMPTS = 5
+
+  # Seconds before the second attempt. Every further attempt waits twice as
+  # long, which gives 5, 10, 20 and 40 seconds, or 75 seconds in total. That is
+  # long enough for a restart of InfluxDB. It also stays far below the shortest
+  # interval between two forecasts, so a retry never delays the next one.
+  PUSH_RETRY_WAIT = 5
+
   def initialize(config:)
     @config = config
   end
@@ -63,12 +74,29 @@ class Loop
     sleep duration
   end
 
+  # A failed push never stops the collector. The forecast holds timestamps in
+  # the future, and the next fetch writes them again. A push that fails for
+  # good therefore costs data only until the next fetch.
   def push_to_influx(data)
     return unless data
 
-    print '  Pushing forecast to InfluxDB ... '
-    flux_writer.push(data)
-    puts 'OK'
+    attempt = 0
+
+    begin
+      attempt += 1
+      print '  Pushing forecast to InfluxDB ... '
+      flux_writer.push(data)
+      puts 'OK'
+    rescue StandardError => e
+      puts "FAILED (#{e.message})"
+      if attempt < PUSH_ATTEMPTS
+        sleep PUSH_RETRY_WAIT * (2**(attempt - 1))
+        retry
+      end
+
+      puts "  WARNING: Cannot push to InfluxDB after #{PUSH_ATTEMPTS} attempts, " \
+           'the next forecast repairs the data.'
+    end
   end
 
   def flux_writer
