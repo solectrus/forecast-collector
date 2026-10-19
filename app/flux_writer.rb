@@ -7,8 +7,10 @@ class FluxWriter
 
   attr_reader :config
 
-  def push(data)
-    filtered_data = filter_past_data(data)
+  # @param lookback [Integer] seconds before now that are still written. Older
+  #   timestamps are skipped, so a value that has passed stays as it was.
+  def push(data, lookback: 0)
+    filtered_data = filter_past_data(data, lookback)
     return if filtered_data.empty?
 
     points =
@@ -41,11 +43,11 @@ class FluxWriter
 
   private
 
-  def filter_past_data(data)
+  def filter_past_data(data, lookback)
     return [] unless data
 
-    current_time = Time.now.to_i
-    data.select { |timestamp, _| timestamp > current_time }
+    oldest_time = Time.now.to_i - lookback
+    data.select { |timestamp, _| timestamp > oldest_time }
   end
 
   def influx_measurement

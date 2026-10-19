@@ -85,7 +85,7 @@ class Loop
     begin
       attempt += 1
       print '  Pushing forecast to InfluxDB ... '
-      flux_writer.push(data)
+      flux_writer.push(data, lookback: config.adapter.lookback)
       puts 'OK'
     rescue StandardError => e
       puts "FAILED (#{e.message})"

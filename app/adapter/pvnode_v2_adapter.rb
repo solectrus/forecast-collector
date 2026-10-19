@@ -35,6 +35,12 @@ class PvnodeV2Adapter < BaseAdapter # rubocop:disable Metrics/ClassLength
   BASE_GROUP = 'default'.freeze
   OPTIONAL_GROUPS = %w[clearsky weather].freeze
 
+  # The satellite data of a response is about 20-25 minutes old. The values of
+  # the last three 15-minute steps therefore come from the observed clouds,
+  # not from the nowcast. Writing them replaces the nowcast that the collector
+  # stored before, so the series shows what the plant was able to produce.
+  LOOKBACK = 45 * 60
+
   # @param site_id [String] the pvnode site to request. It comes from
   #   PVNODE_SITE_ID or from the sites of the account, so the adapter takes it
   #   as an argument instead of reading it from the configuration.
@@ -74,6 +80,10 @@ class PvnodeV2Adapter < BaseAdapter # rubocop:disable Metrics/ClassLength
 
   def pull_interval_message
     schedule.message
+  end
+
+  def lookback
+    LOOKBACK
   end
 
   def fetch_data

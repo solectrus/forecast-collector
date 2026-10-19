@@ -143,6 +143,11 @@ class BaseAdapter
     Time.now
   end
 
+  # Returns the seconds before now that a fetch may still write.
+  # Can be overridden by subclasses whose recent past values are observations,
+  # not forecasts. Every other provider writes the future only.
+  def lookback = 0
+
   # Returns human-readable pull schedule for startup logging.
   # Can be overridden by subclasses with custom scheduling.
   def pull_interval_message

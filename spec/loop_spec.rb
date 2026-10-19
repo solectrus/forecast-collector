@@ -116,6 +116,7 @@ describe Loop do
         expect(stdout).to include('FAILED (Net::ReadTimeout)')
         expect(stdout).to include('Pushing forecast to InfluxDB ... OK')
         expect(attempt).to eq(2)
+        expect(flux_writer).to have_received(:push).with(Hash, lookback: 0).twice
       end
 
       it 'gives up after the last attempt, but keeps running' do

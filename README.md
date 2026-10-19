@@ -29,6 +29,12 @@ Collect solar forecast data from various providers and store them into an Influx
    container costs no request. If your API key or your site is wrong, the
    collector stops and reports what you must change.
 
+   With each pvnode forecast, the collector also writes the values of the last
+   45 minutes. pvnode calculates these values from observed satellite data, not
+   from the forecast. They replace the values that the collector wrote before,
+   so the stored series shows what your PV system was able to produce. The
+   other providers write future values only.
+
 2. Make sure your InfluxDB database is ready (not subject of this README)
 
 3. Prepare an `.env` file (see `.env.example`) with your InfluxDB credentials and the provider-specific settings, e.g., API key.

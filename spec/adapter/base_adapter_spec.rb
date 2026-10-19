@@ -182,4 +182,10 @@ describe BaseAdapter do
       expect(adapter.pull_interval_message).to eq('every 900 seconds')
     end
   end
+
+  describe '#lookback' do
+    it 'writes the future only' do
+      expect(adapter.lookback).to eq(0)
+    end
+  end
 end

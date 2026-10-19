@@ -19,7 +19,7 @@ describe FluxWriter do
     it 'writes scalar values as a watt field' do
       stub = stub_request(:post, write_url).with(body: "my-forecast watt=100i #{future}")
 
-      flux_writer.push(future => 100)
+      flux_writer.push({ future => 100 })
 
       expect(stub).to have_been_requested
     end
@@ -28,7 +28,7 @@ describe FluxWriter do
       stub = stub_request(:post, write_url)
              .with(body: "my-forecast temp=20.5,watt=100i,watt_clearsky=120i #{future}")
 
-      flux_writer.push(future => { watt: 100, watt_clearsky: 120, temp: 20.5 })
+      flux_writer.push({ future => { watt: 100, watt_clearsky: 120, temp: 20.5 } })
 
       expect(stub).to have_been_requested
     end
@@ -36,7 +36,17 @@ describe FluxWriter do
     it 'skips timestamps in the past' do
       stub = stub_request(:post, write_url).with(body: "my-forecast watt=100i #{future}")
 
-      flux_writer.push(past => 50, future => 100)
+      flux_writer.push({ past => 50, future => 100 })
+
+      expect(stub).to have_been_requested
+    end
+
+    it 'writes the recent past within the lookback' do
+      recent = now.to_i - 900
+      stub = stub_request(:post, write_url)
+             .with(body: "my-forecast watt=80i #{recent}\nmy-forecast watt=100i #{future}")
+
+      flux_writer.push({ past => 50, recent => 80, future => 100 }, lookback: 2700)
 
       expect(stub).to have_been_requested
     end
@@ -44,7 +54,7 @@ describe FluxWriter do
     it 'writes nothing when every timestamp is in the past' do
       stub = stub_request(:post, write_url)
 
-      flux_writer.push(past => 50)
+      flux_writer.push({ past => 50 })
 
       expect(stub).not_to have_been_requested
     end

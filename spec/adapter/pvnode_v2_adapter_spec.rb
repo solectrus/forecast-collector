@@ -467,6 +467,12 @@ describe PvnodeV2Adapter do
     end
   end
 
+  describe '#lookback' do
+    it 'writes the last three 15-minute steps' do
+      expect(pvnode.lookback).to eq(45 * 60)
+    end
+  end
+
   describe '#provider_name' do
     it 'names the provider and the API version' do
       expect(pvnode.provider_name).to eq('pvnode (v2)')
