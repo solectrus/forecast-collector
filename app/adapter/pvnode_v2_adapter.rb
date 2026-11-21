@@ -35,6 +35,26 @@ class PvnodeV2Adapter < BaseAdapter # rubocop:disable Metrics/ClassLength
   BASE_GROUP = 'default'.freeze
   OPTIONAL_GROUPS = %w[clearsky weather].freeze
 
+  # `variability` adds pv_power_min and pv_power_max (W), a band around
+  # pv_power for the next 40 hours or so. Outside that horizon the band is
+  # mostly flat: min == max == pv_power. Only the Plus plan includes the
+  # group, and a request for it on another plan fails with 403. The collector
+  # therefore requests it only after a response lists it in `available`.
+  PLAN_GROUPS = %w[variability].freeze
+
+  # Fields of a forecast step: the name the collector writes, the key in the
+  # response and the decimals to round to. A key that the response leaves out
+  # is skipped.
+  FIELDS = {
+    watt: ['pv_power', 0],
+    watt_clearsky: ['pv_power_clearsky', 0],
+    watt_min: ['pv_power_min', 0],
+    watt_max: ['pv_power_max', 0],
+    temp: ['temp', 1],
+    humidity: ['relative_humidity', 1],
+    weather_code: ['weather_code', 0],
+  }.freeze
+
   # The satellite data of a response is about 20-25 minutes old. The values of
   # the last three 15-minute steps therefore come from the observed clouds,
   # not from the nowcast. Writing them replaces the nowcast that the collector
@@ -101,14 +121,16 @@ class PvnodeV2Adapter < BaseAdapter # rubocop:disable Metrics/ClassLength
     retry
   end
 
-  # The schedule of the next request comes from the response body, so it is
-  # recorded here. This keeps #parse_forecast_data free of side effects.
+  # The schedule of the next request and the groups of the plan come from the
+  # response body, so they are recorded here. This keeps #parse_forecast_data
+  # free of side effects.
   def parse_json_response(http_response)
     report_error(http_response) unless http_response.is_a?(Net::HTTPOK)
 
     super.tap do |data|
       schedule.record_recommendation(data['next_poll_at'])
       state.save(data['next_poll_at'])
+      record_available_groups(data['available'])
     end
   end
 
@@ -118,13 +140,9 @@ class PvnodeV2Adapter < BaseAdapter # rubocop:disable Metrics/ClassLength
     response_data['values']&.each do |value_point|
       timestamp = Pvnode::Timestamp.parse(value_point['timestamp']).to_i
 
-      result[timestamp] = {
-        watt: value_point['pv_power']&.round,
-        watt_clearsky: value_point['pv_power_clearsky']&.round,
-        temp: value_point['temp']&.round(1),
-        humidity: value_point['relative_humidity']&.round(1),
-        weather_code: value_point['weather_code'],
-      }.compact
+      result[timestamp] = FIELDS.to_h do |field, (key, digits)|
+        [field, value_point[key]&.round(digits)]
+      end.compact
     end
 
     result
@@ -222,8 +240,9 @@ class PvnodeV2Adapter < BaseAdapter # rubocop:disable Metrics/ClassLength
          "your plan allows #{request_limit.limit} requests per month"
   end
 
-  # Groups of the running process. A group that the API rejected is gone, so
-  # the requests that follow leave it out.
+  # Groups of the running process. The first request asks for the optional
+  # groups. After that, the `available` field of each response decides. A
+  # group that the API rejected is gone until a response lists it again.
   def include_groups
     @include_groups ||= [BASE_GROUP, *OPTIONAL_GROUPS]
   end
@@ -237,5 +256,24 @@ class PvnodeV2Adapter < BaseAdapter # rubocop:disable Metrics/ClassLength
 
     puts "  NOTE: Your pvnode plan does not include the `#{group}` data. " \
          'Collecting the other data.'
+  end
+
+  def add_group(group)
+    include_groups << group
+
+    puts "  NOTE: Your pvnode plan includes the `#{group}` data. " \
+         'Collecting it from the next request on.'
+  end
+
+  # The `available` field lists the groups that the plan allows. An upgrade
+  # adds a group and a downgrade removes it, without a restart. The change
+  # applies from the next request on. A response without the field changes
+  # nothing.
+  def record_available_groups(available)
+    return unless available.is_a?(Array)
+
+    wanted = (OPTIONAL_GROUPS + PLAN_GROUPS) & available
+    (wanted - droppable_groups).each { |group| add_group(group) }
+    (droppable_groups - wanted).each { |group| drop_group(group) }
   end
 end

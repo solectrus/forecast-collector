@@ -35,6 +35,16 @@ Collect solar forecast data from various providers and store them into an Influx
    so the stored series shows what your PV system was able to produce. The
    other providers write future values only.
 
+   The pvnode Plus plan includes a variability band. The band is a lower and
+   an upper limit for the forecast of each 15-minute step. If you have the
+   Plus plan, the collector writes the limits as the fields `watt_min` and
+   `watt_max`. Each reply of pvnode lists the data that your plan includes. The
+   collector reads this list and asks for the band from the next request on.
+   After a restart, the band therefore starts with the second request. The
+   band covers about the next 40 hours. After that, both limits are usually
+   equal to `watt`. If your plan does not include the band, the collector
+   writes the same data as before.
+
 2. Make sure your InfluxDB database is ready (not subject of this README)
 
 3. Prepare an `.env` file (see `.env.example`) with your InfluxDB credentials and the provider-specific settings, e.g., API key.

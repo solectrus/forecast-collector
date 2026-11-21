@@ -47,9 +47,12 @@ module Pvnode
     end
 
     # The field group the API rejected, nil if the error is about something
-    # else. Today only `variability` is bound to a plan, and the collector does
-    # not request it. But pvnode can move a group to a higher plan at any time,
-    # and then a client that treats every 403 as fatal stops for good.
+    # else. Today only `variability` is bound to a plan. But pvnode can move a
+    # group to a higher plan at any time, and then a client that treats every
+    # 403 as fatal stops for good.
+    #
+    # The text names the group, for example "Your current plan does not
+    # include the forecast variability band (include=variability)."
     #
     # @param candidates [Array<String>] groups the collector can drop
     def rejected_group(candidates)

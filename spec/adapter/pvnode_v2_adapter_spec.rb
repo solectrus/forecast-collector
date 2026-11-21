@@ -8,6 +8,16 @@ describe PvnodeV2Adapter do
   let(:forecast_url) { %r{https://api\.pvnode\.com/v2/forecast/} }
 
   describe '#fetch_data' do
+    # The response lists the band in `available`, so the next request asks
+    # for it.
+    def request_band_next
+      stub_request(:get, forecast_url).to_return(
+        status: 200,
+        body: '{"available":["default","variability"],"values":[]}',
+      )
+      capture_output { pvnode.fetch_data }
+    end
+
     context 'when successful' do
       it 'returns pvnode data' do
         stdout, stderr = capture_output do
@@ -148,6 +158,135 @@ describe PvnodeV2Adapter do
       end
     end
 
+    # Two requests: the first one learns from `available` that the plan
+    # includes the band, the second one asks for it.
+    context 'when the plan includes variability (recorded)' do
+      def fetch_twice
+        data = nil
+
+        stdout, stderr = capture_output do
+          VCR.use_cassette('pvnode_v2_variability') do
+            pvnode.fetch_data
+            data = pvnode.fetch_data
+          end
+        end
+
+        [data, stdout, stderr]
+      end
+
+      it 'asks for the band with the second request' do
+        _, stdout, stderr = fetch_twice
+
+        expect(stderr).to be_empty
+        expect(stdout).to include('plan includes the `variability` data')
+        expect(a_request(:get, /include=variability/)).to have_been_made.once
+      end
+
+      it 'returns the band as watt_min and watt_max' do
+        data, = fetch_twice
+
+        expect(data.values).to all(include(:watt_min, :watt_max))
+        expect(data.values).to all(satisfy { |value| value[:watt_min] <= value[:watt_max] })
+        expect(data.values).to include(satisfy { |value| value[:watt_min] < value[:watt_max] })
+      end
+    end
+
+    # The bodies follow the API reference, so they can show every case.
+    # See https://pvnode.com/docs/api/forecast
+    context 'when the plan includes variability' do
+      let(:body_with_band) do
+        <<~JSON
+          {"available":["default","clearsky","weather","variability"],
+           "values":[{"timestamp":"2026-08-24T15:00:00Z","pv_power":100,
+                      "pv_power_min":80.4,"pv_power_max":120.6}]}
+        JSON
+      end
+
+      before do
+        stub_request(:get, forecast_url).to_return(status: 200, body: body_with_band)
+      end
+
+      it 'requests the band from the next request on and says so once' do
+        first_stdout, = capture_output { pvnode.fetch_data }
+        expect(a_request(:get, /include=variability/)).not_to have_been_made
+
+        second_stdout, = capture_output { pvnode.fetch_data }
+        expect(a_request(:get, /include=variability/)).to have_been_made.once
+
+        expect(first_stdout).to include('plan includes the `variability` data')
+        expect(second_stdout).not_to include('NOTE')
+      end
+
+      it 'leaves out the groups that the plan does not list' do
+        request_band_next
+
+        includes = URI.decode_www_form(URI.parse(pvnode.formatted_url(0)).query)
+                      .filter_map { |key, value| value if key == 'include' }
+        expect(includes).to eq(%w[default variability])
+      end
+
+      it 'drops the band when the plan loses it' do
+        capture_output { pvnode.fetch_data }
+
+        stub_request(:get, forecast_url).to_return(
+          status: 200,
+          body: '{"available":["default","clearsky","weather"],"values":[]}',
+        )
+        stdout, = capture_output { pvnode.fetch_data }
+        capture_output { pvnode.fetch_data }
+
+        expect(stdout).to include('does not include the `variability` data')
+        expect(a_request(:get, /include=variability/)).to have_been_made.once
+      end
+    end
+
+    # A plan can lose the band between two requests, for example after a
+    # downgrade. The `detail` text is the one of the API, recorded with a plan
+    # without the band.
+    context 'when the API rejects the band' do
+      before do
+        request_band_next
+
+        stub_request(:get, forecast_url).to_return(
+          status: 200,
+          body: '{"available":["default","clearsky","weather"],"values":[]}',
+        )
+        stub_request(:get, /include=variability/).to_return(
+          status: [403, 'Forbidden'],
+          body: '{"detail":"Your current plan does not include the forecast ' \
+                'variability band (include=variability)."}',
+        )
+      end
+
+      it 'drops the band and asks again, instead of stopping' do
+        stdout, = capture_output do
+          expect { pvnode.fetch_data }.not_to raise_error
+        end
+
+        expect(stdout).to include('does not include the `variability` data')
+        expect(a_request(:get, /include=variability/)).to have_been_made.once
+      end
+    end
+
+    context 'when the API rejects the band request for a reason that names no group' do
+      before do
+        request_band_next
+
+        stub_request(:get, forecast_url).to_return(
+          status: [403, 'Forbidden'],
+          body: '{"detail":"Your plan does not include the Forecast API."}',
+        )
+      end
+
+      it 'stops with the reason of the API' do
+        stdout, = capture_output do
+          expect { pvnode.fetch_data }.to raise_error(SystemExit)
+        end
+
+        expect(stdout).to include('ERROR: HTTP 403 Forbidden - Your plan does not include the Forecast API.')
+      end
+    end
+
     context 'when the API fails temporarily' do
       before do
         stub_request(:get, forecast_url).to_return(
@@ -192,7 +331,7 @@ describe PvnodeV2Adapter do
         VCR.use_cassette('pvnode_v2_success') { pvnode.fetch_data }
       end
 
-      expect(pvnode.request_limit).to have_attributes(limit: 15_000, remaining: 12_739)
+      expect(pvnode.request_limit).to have_attributes(limit: 15_000, remaining: 13_014)
       expect(stdout).to include('pvnode quota:', 'requests left this month')
       expect(stderr).to be_empty
     end
@@ -345,6 +484,11 @@ describe PvnodeV2Adapter do
       )
       expect(data.values.first).to eq(watt: 1235, temp: 21.4, humidity: 39.0)
     end
+
+    it 'rounds the band to whole watts' do
+      data = parse('2026-07-15T12:00:00Z', 'pv_power_min' => 80.4, 'pv_power_max' => 120.6)
+      expect(data.values.first).to eq(watt: 100, watt_min: 80, watt_max: 121)
+    end
   end
 
   describe '#formatted_url' do
@@ -357,7 +501,7 @@ describe PvnodeV2Adapter do
       expect(uri.path).to eq("/v2/forecast/#{config.pvnode_site_id}")
     end
 
-    it 'requests the default, clearsky and weather field groups' do
+    it 'requests the default, clearsky and weather field groups, but not the band' do
       includes = query.filter_map { |key, value| value if key == 'include' }
       expect(includes).to eq(%w[default clearsky weather])
     end
@@ -383,12 +527,12 @@ describe PvnodeV2Adapter do
 
   describe 'scheduling' do
     it 'follows the recommendation of the API' do
-      allow(Time).to receive(:now).and_return(Time.utc(2026, 8, 24, 14, 47, 41))
+      allow(Time).to receive(:now).and_return(Time.utc(2026, 11, 21, 11, 43, 12))
 
       capture_output { VCR.use_cassette('pvnode_v2_success') { pvnode.fetch_data } }
 
-      # The recorded response recommends 2026-08-24T15:00:00Z, plus the offset
-      expect(pvnode.next_fetch_time).to eq(Time.utc(2026, 8, 24, 15, 0, 30))
+      # The recorded response recommends 2026-11-21T11:45:00Z, plus the offset
+      expect(pvnode.next_fetch_time).to eq(Time.utc(2026, 11, 21, 11, 45, 30))
     end
   end
 
@@ -410,13 +554,13 @@ describe PvnodeV2Adapter do
     end
 
     it 'fetches less often than the API recommends' do
-      allow(Time).to receive(:now).and_return(Time.utc(2026, 8, 24, 14, 47, 41))
+      allow(Time).to receive(:now).and_return(Time.utc(2026, 11, 21, 11, 43, 12))
 
       capture_output { VCR.use_cassette('pvnode_v2_success') { pvnode.fetch_data } }
 
       # 200 requests spread over 31 days is one request every 3 hours and
-      # 43 minutes, which is later than the recommended 15:00:00Z
-      expect(pvnode.next_fetch_time).to eq(Time.utc(2026, 8, 24, 18, 30, 53))
+      # 43 minutes, which is later than the recommended 11:45:00Z
+      expect(pvnode.next_fetch_time).to eq(Time.utc(2026, 11, 21, 15, 26, 24))
     end
   end
 
@@ -449,8 +593,8 @@ describe PvnodeV2Adapter do
       it 'saves the schedule of every response' do
         capture_output { VCR.use_cassette('pvnode_v2_success') { pvnode.fetch_data } }
 
-        # The recorded response recommends 2026-08-24T15:00:00Z
-        expect(state.next_poll_at).to eq(Time.utc(2026, 8, 24, 15, 0, 0))
+        # The recorded response recommends 2026-11-21T11:45:00Z
+        expect(state.next_poll_at).to eq(Time.utc(2026, 11, 21, 11, 45, 0))
       end
 
       it 'drops the saved schedule when a response carries none' do
